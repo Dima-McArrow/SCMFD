@@ -42,7 +42,7 @@
 
 ## Suggested shape
 
-- A pure `nonisolated struct` (e.g. `ShipContextTracker` in `CSMFD/Deck`) holding the merged snapshot, the last
+- A pure `nonisolated struct` (e.g. `ShipContextTracker` in `SCMFD/Deck`) holding the merged snapshot, the last
   applied `(sessionId, revision)` and the override. Input: a `ServerState` plus the current `connectionId`
   (from `SessionPhase.ready(welcome)`). Output: a small value such as
   `DeckUpdate(enabled: Bool, shipName: String?, resetLocalState: Bool)`.
@@ -55,7 +55,7 @@
 
 Each row is one test; build states inline or decode the server fixtures
 `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-state-full.json` and `server-state-delta-clear-driver.json`
-(copy them into `CSMFDTests` if useful).
+(copy them into `SCMFDTests` if useful).
 
 | Input | Expected |
 |---|---|

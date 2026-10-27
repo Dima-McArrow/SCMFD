@@ -15,8 +15,13 @@ features, layout and status.
 - Prefer the Xcode MCP tools (`BuildProject`, `RunAllTests`, `RunSomeTests`, `XcodeRefreshCodeIssuesInFile`)
   over shell builds.
 - Run tests on a **simulator** (e.g. *iPad Pro 13-inch (M5)*); a physical iPad makes every run slow.
-- An incremental build can report "succeeded" without compiling new files. To count warnings, do a clean build into
-  a throwaway folder: `xcodebuild … -derivedDataPath /tmp/csmfd-dd build-for-testing`.
+- Check the active run destination (`XcodeListRunDestinations`) before running tests. If it is the physical iPad and
+  the iPad is locked, Xcode cancels the run ("cancelled by a user interaction") without running a single test.
+- Do not run `xcodebuild` or write to `/tmp` from the agent shell: it triggers permission prompts for folders the
+  user does not know, and the shell sandbox cannot launch the simulator test runner. To count warnings, grep the
+  `fullLogPath` that `BuildProject` returns.
+- Commits are GPG-signed and the agent cannot reach `~/.gnupg`, even outside the sandbox. Stage the files and give
+  the user the `git commit` command to run in Terminal.
 - The only expected build noise is `appintentsmetadataprocessor: Metadata extraction skipped`.
 
 ## Hard rules

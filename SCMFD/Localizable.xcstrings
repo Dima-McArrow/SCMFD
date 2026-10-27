@@ -233,7 +233,20 @@
 
     },
     "Cancelled" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Annulé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Отменено"
+          }
+        }
+      }
     },
     "Catching up with recorded activity…" : {
       "localizations" : {
@@ -1236,7 +1249,20 @@
       }
     },
     "Rejected" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Refusé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Отклонено"
+          }
+        }
+      }
     },
     "Released" : {
       "localizations" : {

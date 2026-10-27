@@ -9,7 +9,7 @@
 
 ## Problem
 
-`Manufacturer.logEntityPrefix` (`CSMFD/Theme/ManufacturerTheme.swift`) already lists the Game.log prefixes
+`Manufacturer.logEntityPrefix` (`SCMFD/Theme/ManufacturerTheme.swift`) already lists the Game.log prefixes
 (`"DRAK_"`, `"AEGS_"`, … with the trailing underscore) and is marked *reserved for automatic theme selection*, but
 nothing uses it and there is no Auto theme setting. The server sends the prefix **without** the underscore.
 

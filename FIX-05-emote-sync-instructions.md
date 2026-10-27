@@ -21,8 +21,8 @@ now incomplete:
 
 Replace the sync instructions in both files with:
 
-1. Edit `CSMFD/Commands/Emote.swift`.
-2. Run `python3 tools/gen-emotes-md.py CSMFD-emotes.md` (prints the new totals).
+1. Edit `SCMFD/Commands/Emote.swift`.
+2. Run `python3 tools/gen-emotes-md.py SCMFD-emotes.md` (prints the new totals).
 3. In SCMFDBE: update `ServerApp.DefaultEmotes` (`src/Csmfd.Server/Hosting/ServerApp.cs`) with the new names, in the
    same groups and order, and the count in `DefaultEmotesTests`.
 4. On a PC that already ran the server: replace `%LocalAppData%\CSMFD\emotes.txt` with the generated block (or delete

@@ -8,7 +8,7 @@
 
 ## Problem
 
-Measured on 2026-10-27: **114 of 165** entries in `CSMFD/Localizable.xcstrings` have no localizations at all, so
+Measured on 2026-10-27: **114 of 165** entries in `SCMFD/Localizable.xcstrings` have no localizations at all, so
 French and Russian users see English. They cover almost everything added with the network layer:
 
 - Connect to PC and pairing (*Connect to PC*, *Scan QR code*, *6-digit code*, *Matches the PC — pair*, camera
@@ -42,7 +42,7 @@ Two more defects in the same file:
 3. Check with (Windows: `py -3`, Mac: `python3`):
 
    ```sh
-   python3 -c "import json; s=json.load(open('CSMFD/Localizable.xcstrings', encoding='utf-8'))['strings']; m=[k for k,v in s.items() if not v.get('localizations') and v.get('shouldTranslate', True) and k.strip()]; print(len(m), 'untranslated'); print(*m, sep='\n')"
+   python3 -c "import json; s=json.load(open('SCMFD/Localizable.xcstrings', encoding='utf-8'))['strings']; m=[k for k,v in s.items() if not v.get('localizations') and v.get('shouldTranslate', True) and k.strip()]; print(len(m), 'untranslated'); print(*m, sep='\n')"
    ```
 
    Done when it prints `0 untranslated` and Xcode shows no *New* / *Needs review* states for fr and ru.

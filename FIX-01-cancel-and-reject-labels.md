@@ -9,7 +9,7 @@
 
 ## Problem
 
-- `InterruptionReason.label(for:)` in `CSMFD/Commands/CommandLink.swift` knows 4 of the 11 reasons the server
+- `InterruptionReason.label(for:)` in `SCMFD/Commands/CommandLink.swift` knows 4 of the 11 reasons the server
   sends with `input_cancelled` / `auto_released`. Every other reason shows the generic **Cancelled**, including the
   new `session_locked` (Windows locked with Win+L, user switch, RDP disconnect, logoff).
 - `CommandOutcome.failureLabel` shows the generic **Rejected** for `invalid`. That is the answer the user gets when
@@ -43,7 +43,7 @@
 Note: `client_replaced`, `revoked`, `disconnected` and `shutdown` usually arrive right before the socket closes, so a
 key may resolve as *Result unknown* instead. That is expected; do not add retries or waits for it.
 
-## Tests (Swift Testing, `CSMFDTests`)
+## Tests (Swift Testing, `SCMFDTests`)
 
 - `@Test(arguments:)` over the 11 wire reasons (a `nonisolated static let`): each maps to its own label, never to
   the fallback `Cancelled`.

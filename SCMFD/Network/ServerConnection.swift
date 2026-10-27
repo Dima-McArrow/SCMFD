@@ -56,6 +56,8 @@ final class ServerConnection {
     @ObservationIgnored private var loops: [Task<Void, Never>] = []
     /// Callbacks from an older socket compare against this and do nothing.
     @ObservationIgnored private var attempt = UUID()
+    /// For the log only: the session emits merged snapshots, so the wire kind is noted on arrival.
+    @ObservationIgnored private var incomingStateIsDelta = false
     @ObservationIgnored private let logger = Logger(subsystem: "com.csmfd.app", category: "Server")
     /// Only sessions of a stored pairing reconnect; pairing attempts and manual disconnects do not.
     @ObservationIgnored private var reconnectsAutomatically = false
@@ -291,6 +293,7 @@ final class ServerConnection {
         case .string(let text):
             do {
                 let decoded = try ProtocolV2.decode(Data(text.utf8))
+                if case .state(let state) = decoded { incomingStateIsDelta = state.partial }
                 update { $0.receive(decoded, at: .now) }
             } catch {
                 update { $0.receiveFailed("Undecodable message: \(error)") }
@@ -404,7 +407,7 @@ final class ServerConnection {
                 record("Code rejected (\(code)). Check the code on the PC and try again.")
             case .state(let state):
                 latestState = state
-                record("← state seq \(state.seq)")
+                record("← state seq \(state.seq)\(incomingStateIsDelta ? " (delta)" : " (full)")")
                 // ServerSession emits states only while ready.
                 if case .ready(let welcome) = phase { onState?(state, welcome.connectionId) }
             case .activity(let page):
