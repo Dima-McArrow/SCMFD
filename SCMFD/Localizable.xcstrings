@@ -128,6 +128,22 @@
         }
       }
     },
+    "Another device took over" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Un autre appareil a pris la main"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Управление перехвачено"
+          }
+        }
+      }
+    },
     "Armed" : {
       "localizations" : {
         "fr" : {
@@ -159,6 +175,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Автопосадка"
+          }
+        }
+      }
+    },
+    "Auto-released" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Relâché automatiquement"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Отпущено автоматически"
           }
         }
       }
@@ -308,6 +340,22 @@
     },
     "Connection log" : {
 
+    },
+    "Connection lost" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Connexion perdue"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Связь потеряна"
+          }
+        }
+      }
     },
     "Connection timed out" : {
 
@@ -628,10 +676,36 @@
       }
     },
     "Game ended" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Jeu terminé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Игра завершена"
+          }
+        }
+      }
     },
     "Game lost focus" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Le jeu a perdu le focus"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Игра потеряла фокус"
+          }
+        }
+      }
     },
     "Game not focused" : {
 
@@ -678,13 +752,42 @@
 
     },
     "Input paused" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Saisie en pause"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Ввод на паузе"
+          }
+        }
+      }
     },
     "Interface sounds" : {
 
     },
     "Invalid address" : {
 
+    },
+    "iPad unpaired" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "iPad dissocié"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "iPad отвязан"
+          }
+        }
+      }
     },
     "Landing gear" : {
       "localizations" : {
@@ -844,6 +947,22 @@
     "Not a CSMFD pairing code" : {
 
     },
+    "Not allowed on PC" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Non autorisé sur le PC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Не разрешено на ПК"
+          }
+        }
+      }
+    },
     "Not checked" : {
 
     },
@@ -956,6 +1075,22 @@
     },
     "PC IPv4 address" : {
 
+    },
+    "PC locked" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "PC verrouillé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "ПК заблокирован"
+          }
+        }
+      }
     },
     "Point the camera at the QR code in the Pair window on the PC." : {
 
@@ -1102,6 +1237,22 @@
     },
     "Rejected" : {
 
+    },
+    "Released" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Relâché"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Отпущено"
+          }
+        }
+      }
     },
     "Request landing" : {
       "extractionState" : "stale",
@@ -1266,6 +1417,22 @@
     "Server link" : {
 
     },
+    "Server stopped" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Serveur arrêté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Сервер остановлен"
+          }
+        }
+      }
+    },
     "Session contracts" : {
       "localizations" : {
         "fr" : {
@@ -1350,7 +1517,20 @@
 
     },
     "Ship changed" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Vaisseau changé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Корабль сменился"
+          }
+        }
+      }
     },
     "Sign language" : {
       "localizations" : {
@@ -1698,5 +1878,5 @@
 
     }
   },
-  "version" : "1.0"
+  "version" : "1.3"
 }

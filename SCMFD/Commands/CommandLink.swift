@@ -76,13 +76,22 @@ extension CommandLink {
 
 nonisolated enum InterruptionReason {
     /// Text for the server's `reason` of `input_cancelled` / `auto_released`.
+    /// Unknown or missing reasons fall back to "Cancelled".
     static func label(for reason: String?) -> LocalizedStringResource {
-        switch reason {
-        case "focus_lost": "Game lost focus"
-        case "ship_context_changed": "Ship changed"
-        case "paused": "Input paused"
-        case "game_ended": "Game ended"
-        default: "Cancelled"
+        guard let known = reason.flatMap(CancelReason.init(rawValue:)) else { return "Cancelled" }
+        // Exhaustive on purpose: a new CancelReason case must get its own label.
+        switch known {
+        case .focusLost: return "Game lost focus"
+        case .sessionLocked: return "PC locked"
+        case .gameEnded: return "Game ended"
+        case .shipContextChanged: return "Ship changed"
+        case .paused: return "Input paused"
+        case .clientReplaced: return "Another device took over"
+        case .revoked: return "iPad unpaired"
+        case .disconnected: return "Connection lost"
+        case .watchdog: return "Auto-released"
+        case .shutdown: return "Server stopped"
+        case .releaseAll: return "Released"
         }
     }
 }
@@ -102,6 +111,8 @@ nonisolated extension CommandOutcome {
             case .expired: "Expired"
             case .inputPaused: "Input paused"
             case .inputFailed: "Input failed"
+            // The PC's emotes.txt does not list the emote; the user can fix that on the PC.
+            case .invalid: "Not allowed on PC"
             default: "Rejected"
             }
         case .unknown:

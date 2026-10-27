@@ -163,6 +163,21 @@ nonisolated enum RejectReason: String, Sendable {
     case cancelled
 }
 
+/// `reason` of `input_cancelled` / `auto_released` (41.10). Unknown values stay raw strings in `ServerError`.
+nonisolated enum CancelReason: String, Sendable, CaseIterable {
+    case focusLost = "focus_lost"
+    case sessionLocked = "session_locked"
+    case gameEnded = "game_ended"
+    case shipContextChanged = "ship_context_changed"
+    case paused
+    case clientReplaced = "client_replaced"
+    case revoked
+    case disconnected
+    case watchdog
+    case shutdown
+    case releaseAll = "release_all"
+}
+
 nonisolated struct ServerError: Decodable, Sendable, Equatable {
     /// Raw code: `malformed`, `pair_unavailable`, `input_cancelled`, `auto_released`...
     let code: String
