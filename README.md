@@ -56,9 +56,11 @@ The PC accepts input only from one paired iPad. In short:
 
 Open `SCMFD.xcodeproj`, scheme **SCMFD**.
 
-The project, app and Swift module are named `SCMFD`. Existing bundle identifiers, Keychain service,
-session-history path and protocol v2 identifiers (`csmfd://`, `/csmfd`, `CSMFD-iPad`) retain their original
-spelling to preserve installed-app identity, saved data and compatibility with the Windows server.
+The project, app and Swift module are named `SCMFD`. The app bundle identifier is `Dima-McArrow.SCMFD`;
+the test bundle identifier is `Dima-McArrow.SCMFDTests`. This is a separate installation from the former
+`Dima-McArrow.CSMFD` app; its local data is not migrated automatically.
+The Keychain service, session-history path and protocol v2 identifiers (`csmfd://`, `/csmfd`, `CSMFD-iPad`)
+retain their original spelling. Protocol identifiers must match the Windows server.
 
 - **Run**: ⌘R on an iPad or the iPad simulator.
 - **Test**: ⌘U. Tests use Swift Testing and run fastest on a simulator (e.g. *iPad Pro 13-inch (M5)*).
