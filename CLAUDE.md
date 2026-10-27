@@ -27,6 +27,7 @@ features, layout and status.
 - Tests use **Swift Testing** (`import Testing`, `@Test`, `#expect`), not XCTest.
 - Code comments in English; user-facing text goes through the String Catalog (`Localizable.xcstrings`, en/fr/ru).
 - Keep changes to what was asked; mention other problems instead of fixing them silently.
+- Commit directly on `main`; no feature branches.
 
 ## Concurrency setup (read before adding types)
 
