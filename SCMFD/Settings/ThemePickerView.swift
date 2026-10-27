@@ -7,6 +7,7 @@ struct ThemePickerView: View {
 
     @AppStorage(InterfaceAudio.enabledKey) private var soundsEnabled = true
     @AppStorage(InterfaceAudio.volumeKey) private var soundsVolume = 0.5
+    @AppStorage(AppTheme.autoThemeKey) private var autoTheme = true
 
     @Binding var selection: AppTheme
     let onResetLights: () -> Void
@@ -46,6 +47,14 @@ struct ThemePickerView: View {
                     Text(theme.label(LocalizedStringResource("Theme")))
                         .mfdLabelStyle(theme, size: 13)
                         .foregroundStyle(theme.palette.dim)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Toggle("Auto theme", isOn: $autoTheme)
+                            .foregroundStyle(theme.palette.text)
+                        Text("Switches to the ship's manufacturer when you join its channel. A manual pick stays until the next ship.")
+                            .font(theme.typography.body.font(size: 13))
+                            .foregroundStyle(theme.palette.dim)
+                    }
 
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 16)], spacing: 16) {
                         ForEach(AppTheme.all) { appTheme in

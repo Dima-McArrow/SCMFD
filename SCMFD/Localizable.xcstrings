@@ -179,6 +179,22 @@
         }
       }
     },
+    "Auto theme" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Thème automatique"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Автоматическая тема"
+          }
+        }
+      }
+    },
     "Auto-released" : {
       "localizations" : {
         "fr" : {
@@ -1633,6 +1649,22 @@
     },
     "Step 2 · Server connection" : {
 
+    },
+    "Switches to the ship's manufacturer when you join its channel. A manual pick stays until the next ship." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Passe au thème du constructeur quand vous rejoignez le canal d’un vaisseau. Un choix manuel reste jusqu’au prochain vaisseau."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "При входе в канал корабля включает тему его производителя. Тема, выбранная вручную, остаётся до следующего корабля."
+          }
+        }
+      }
     },
     "Tap to destruct" : {
       "localizations" : {

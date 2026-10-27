@@ -53,7 +53,11 @@ final class DeckState {
         quantumTarget = update.quantumTarget
         hangarRequest = update.hangarRequest
         isShipDisconnected = !update.enabled
+        if let join = update.join { lastShipJoin = join }
     }
+
+    /// The latest ship-channel join; the app switches the auto theme when it changes.
+    private(set) var lastShipJoin: ShipJoin?
     var selfDestructArmed = false
     /// Mirrored from the server state; nil means no server data. The ship name survives a dropped link,
     /// the ATC status does not.

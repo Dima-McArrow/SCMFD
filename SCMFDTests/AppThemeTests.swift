@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import SCMFD
 
@@ -31,6 +32,31 @@ struct AppThemeTests {
         #expect(standard.palette.accent == rsi.palette.accent)
         #expect(standard.palette.background == rsi.palette.background)
         #expect(standard.typography.display.family == rsi.typography.display.family)
+    }
+
+    // MARK: - FIX-04: auto theme
+
+    @Test(arguments: Manufacturer.allCases)
+    func everyServerPrefixMapsToItsManufacturer(manufacturer: Manufacturer) {
+        let prefix = String(manufacturer.logEntityPrefix.dropLast())
+        #expect(Manufacturer(logPrefix: prefix) == manufacturer)
+    }
+
+    @Test func prefixesThatDoNotMatchTheLogNamesFollowTheSpecTable() {
+        #expect(Manufacturer(logPrefix: "XIAN") == .aopoa)
+        #expect(Manufacturer(logPrefix: "GAMA") == .gatac)
+        #expect(Manufacturer(logPrefix: "GRIN") == .greycat)
+    }
+
+    @Test(arguments: ["FOO", "DRAK_", "drak", ""])
+    func unknownPrefixIsRejected(prefix: String) {
+        #expect(Manufacturer(logPrefix: prefix) == nil)
+    }
+
+    @Test func joinSwitchesTheThemeOnlyWithAutoThemeOn() {
+        let join = ShipJoin(manufacturer: .aegis, sessionId: UUID(), revision: 3)
+        #expect(AppTheme.afterJoin(join, current: .standard, autoTheme: true) == .manufacturer(.aegis))
+        #expect(AppTheme.afterJoin(join, current: .standard, autoTheme: false) == .standard)
     }
 
     @Test func manufacturerThemesKeepTheirNames() {

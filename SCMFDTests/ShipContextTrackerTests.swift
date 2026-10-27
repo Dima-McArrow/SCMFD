@@ -19,7 +19,9 @@ struct ShipContextTrackerTests {
         sessionId: UUID = sessionId,
         qtTarget: QuantumTargetStatus = QuantumTargetStatus(mode: .unknown, internalName: nil, displayName: nil,
                                                             confidence: .stale, observedAt: nil),
-        hangar: HangarRequestStatus = .idle
+        hangar: HangarRequestStatus = .idle,
+        contextPrefix: String? = "DRAK",
+        shipPrefix: String? = "DRAK"
     ) -> ServerState {
         let reason: ShipContextStatus.Reason = switch status {
         case .assumed: .channelJoined
@@ -31,11 +33,12 @@ struct ShipContextTrackerTests {
             game: .value(GameStatus(running: true, focused: true, build: nil)),
             log: .value(LogStatus(status: .ready, generation: UUID(), observedAt: nil)),
             ship: .value(ship.map {
-                ShipStatus(name: $0, model: model, entityId: nil, manufacturerPrefix: "DRAK",
+                ShipStatus(name: $0, model: model, entityId: nil, manufacturerPrefix: shipPrefix,
                            confidence: .assumed, observedAt: observedAt)
             }),
             shipContext: .value(ShipContextStatus(revision: revision, status: status, reason: reason,
-                                                  contextId: nil, manufacturerPrefix: "DRAK", observedAt: nil)),
+                                                  contextId: nil, manufacturerPrefix: contextPrefix,
+                                                  observedAt: nil)),
             qtTarget: .value(qtTarget),
             hangarRequest: .value(HangarRequestState(status: hangar, commandId: nil, contextId: nil,
                                                      since: nil, updatedAt: nil))
@@ -61,7 +64,8 @@ struct ShipContextTrackerTests {
         var tracker = ShipContextTracker()
         let state = snapshot(revision: 3, status: .assumed, ship: Self.rambler)
         let first = tracker.receive(state, connectionId: Self.connectionId)
-        #expect(first == DeckUpdate(enabled: true, shipName: Self.rambler, resetLocalState: true, hangarRequest: .idle))
+        #expect(first == DeckUpdate(enabled: true, shipName: Self.rambler, resetLocalState: true, hangarRequest: .idle,
+                                    join: ShipJoin(manufacturer: .drake, sessionId: Self.sessionId, revision: 3)))
         #expect(tracker.receive(state, connectionId: Self.connectionId)?.resetLocalState == false)
     }
 
@@ -180,6 +184,56 @@ struct ShipContextTrackerTests {
         let update = tracker.enableManually()
         #expect(update?.quantumTarget == .destination("OOC_Stanton_1_Hurston"))
         #expect(update?.hangarRequest == .pending)
+    }
+
+    // MARK: - FIX-04: ship-channel join drives the auto theme
+
+    @Test func channelJoinReportsTheManufacturer() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Aegis Gladius",
+                                              contextPrefix: "AEGS", shipPrefix: "AEGS"),
+                                     connectionId: Self.connectionId)
+        #expect(update?.join == ShipJoin(manufacturer: .aegis, sessionId: Self.sessionId, revision: 3))
+    }
+
+    @Test func shipPrefixIsTheFallback() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Aegis Gladius",
+                                              contextPrefix: nil, shipPrefix: "AEGS"),
+                                     connectionId: Self.connectionId)
+        #expect(update?.join?.manufacturer == .aegis)
+    }
+
+    @Test func clearDriverIsNotAJoin() {
+        var tracker = joined()
+        let update = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
+        #expect(update?.join == nil)
+    }
+
+    @Test func sameRevisionWithAnotherPrefixIsNotAJoin() {
+        var tracker = joined()
+        let enriched = snapshot(revision: 3, status: .assumed, ship: Self.rambler, contextPrefix: "AEGS",
+                                shipPrefix: "AEGS")
+        #expect(tracker.receive(enriched, connectionId: Self.connectionId)?.join == nil)
+    }
+
+    @Test func reconnectIsNotAJoin() {
+        var tracker = joined()
+        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: Self.rambler), connectionId: UUID())
+        #expect(update?.join == nil)
+    }
+
+    @Test func unknownPrefixKeepsTheTheme() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Mystery",
+                                              contextPrefix: "FOO", shipPrefix: "FOO"),
+                                     connectionId: Self.connectionId)
+        #expect(update?.join == nil)
+    }
+
+    @Test func manualDeckEnableIsNotAJoin() {
+        var tracker = clearedAndEnabledManually()
+        #expect(tracker.enableManually()?.join == nil)
     }
 
     @Test func lostConnectionClearsReadoutsButKeepsTheDeck() {

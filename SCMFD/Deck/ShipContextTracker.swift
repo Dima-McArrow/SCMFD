@@ -10,6 +10,16 @@ nonisolated struct DeckUpdate: Equatable, Sendable {
     var quantumTarget: QuantumTarget = .unknown
     /// nil means no server data yet, not `idle`.
     var hangarRequest: HangarRequestStatus? = nil
+    /// Set only on a `channelJoined` transition with a known manufacturer; drives the auto theme (FIX-04).
+    var join: ShipJoin? = nil
+}
+
+/// The player joined a ship channel. Unique per context, so joining the same manufacturer twice is two events
+/// (a manual theme pick in between must be overridden by the second join).
+nonisolated struct ShipJoin: Equatable, Sendable {
+    let manufacturer: Manufacturer
+    let sessionId: UUID
+    let revision: Int
 }
 
 nonisolated extension QuantumTarget {
@@ -71,7 +81,20 @@ nonisolated struct ShipContextTracker: Sendable {
         if let override, override != Override(context: key, connectionId: connectionId) {
             self.override = nil
         }
-        return update(enabled: isEnabled, resetLocalState: isTransition)
+        var result = update(enabled: isEnabled, resetLocalState: isTransition)
+        if isTransition, context.reason == .channelJoined {
+            result.join = Self.join(context: context, state: state)
+        }
+        return result
+    }
+
+    /// The context prefix first, then the ship's (41.9). Unknown prefixes keep the current theme.
+    private static func join(context: ShipContextStatus, state: ServerState) -> ShipJoin? {
+        var shipPrefix: String?
+        if case .value(let ship) = state.ship { shipPrefix = ship?.manufacturerPrefix }
+        guard let prefix = context.manufacturerPrefix ?? shipPrefix,
+              let manufacturer = Manufacturer(logPrefix: prefix) else { return nil }
+        return ShipJoin(manufacturer: manufacturer, sessionId: state.sessionId, revision: context.revision)
     }
 
     /// Ties "Enable Deck manually" to the current context and connection. Sends nothing to the game.

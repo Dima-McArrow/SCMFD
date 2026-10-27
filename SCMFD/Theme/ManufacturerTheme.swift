@@ -71,8 +71,16 @@ nonisolated enum Manufacturer: String, CaseIterable, Identifiable, Codable, Send
         }
     }
 
+    /// The server's `manufacturerPrefix` (41.9): the log prefix without the underscore, e.g. `"DRAK"`.
+    /// Exact match only; anything else, including `"DRAK_"`, is unknown.
+    init?(logPrefix: String) {
+        guard let match = Self.allCases.first(where: { $0.logEntityPrefix.dropLast() == logPrefix }) else {
+            return nil
+        }
+        self = match
+    }
+
     /// Ship entity prefix as it appears in Game.log (e.g. `AEGS_Gladius`).
-    /// Reserved for automatic theme selection driven by the Windows server.
     var logEntityPrefix: String {
         switch self {
         case .rsi: "RSI_"
@@ -128,6 +136,14 @@ nonisolated enum Manufacturer: String, CaseIterable, Identifiable, Codable, Send
 nonisolated enum AppTheme: Hashable, Identifiable, Sendable, RawRepresentable {
     case standard
     case manufacturer(Manufacturer)
+
+    /// `@AppStorage` key of the Auto theme setting (on by default): a ship-channel join picks its manufacturer.
+    static let autoThemeKey = "autoTheme"
+
+    /// The theme after a ship-channel join: the ship's manufacturer with Auto theme on, otherwise unchanged.
+    static func afterJoin(_ join: ShipJoin, current: AppTheme, autoTheme: Bool) -> AppTheme {
+        autoTheme ? .manufacturer(join.manufacturer) : current
+    }
 
     /// Picker order: SCMFD first, then every manufacturer.
     static let all: [AppTheme] = [.standard] + Manufacturer.allCases.map(AppTheme.manufacturer)

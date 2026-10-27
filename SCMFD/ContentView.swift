@@ -28,6 +28,7 @@ nonisolated enum AppScreen: Hashable, Identifiable, Sendable {
 struct ContentView: View {
     /// The key predates the SCMFD theme; a stored manufacturer raw value still decodes (see `AppTheme`).
     @AppStorage("manufacturer") private var appTheme: AppTheme = .standard
+    @AppStorage(AppTheme.autoThemeKey) private var autoTheme = true
     @Environment(\.scenePhase) private var scenePhase
     @State private var screen: AppScreen = .deck
     @State private var deck: DeckState
@@ -86,6 +87,12 @@ struct ContentView: View {
                 activity.setConnected(false)
                 deck.connectionLost()
             }
+        }
+        // Only a join switches the theme; ClearDriver, reconnects and manual Deck enable never do (FIX-04).
+        // Writing the picker's own storage means a manual pick wins until the next join.
+        .onChange(of: deck.lastShipJoin) { _, join in
+            guard let join else { return }
+            appTheme = AppTheme.afterJoin(join, current: appTheme, autoTheme: autoTheme)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
