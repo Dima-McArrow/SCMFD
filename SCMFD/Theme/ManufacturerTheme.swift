@@ -120,6 +120,45 @@ nonisolated enum Manufacturer: String, CaseIterable, Identifiable, Codable, Send
     }
 }
 
+// MARK: - App theme choice
+
+/// The theme the user picked: the neutral SCMFD theme or a manufacturer's.
+/// Stored as a string under the old `manufacturer` key: `"standard"` or a manufacturer raw value, so a saved
+/// `"rsi"` keeps meaning RSI.
+nonisolated enum AppTheme: Hashable, Identifiable, Sendable, RawRepresentable {
+    case standard
+    case manufacturer(Manufacturer)
+
+    /// Picker order: SCMFD first, then every manufacturer.
+    static let all: [AppTheme] = [.standard] + Manufacturer.allCases.map(AppTheme.manufacturer)
+
+    init?(rawValue: String) {
+        if rawValue == "standard" {
+            self = .standard
+        } else if let manufacturer = Manufacturer(rawValue: rawValue) {
+            self = .manufacturer(manufacturer)
+        } else {
+            return nil
+        }
+    }
+
+    var rawValue: String {
+        switch self {
+        case .standard: "standard"
+        case .manufacturer(let manufacturer): manufacturer.rawValue
+        }
+    }
+
+    var id: String { rawValue }
+
+    var theme: ManufacturerTheme {
+        switch self {
+        case .standard: .standard
+        case .manufacturer(let manufacturer): manufacturer.theme
+        }
+    }
+}
+
 // MARK: - Theme tokens
 
 nonisolated struct ManufacturerTheme: Sendable {
@@ -165,13 +204,18 @@ nonisolated struct ManufacturerTheme: Sendable {
         let glowRadius: CGFloat
     }
 
-    let manufacturer: Manufacturer
+    /// nil for the neutral SCMFD theme, which is not a manufacturer (DEFAULT-THEME-DESIGN.md).
+    let manufacturer: Manufacturer?
     let colorScheme: ColorScheme
     let palette: Palette
     let typography: Typography
     let key: Key
     let icons: Icons
     let backdrop: ThemeBackdrop
+
+    /// Brand shown in the top bar and the theme picker. The app name is not translated.
+    var shortName: String { manufacturer?.shortName ?? "SCMFD" }
+    var displayName: String { manufacturer?.displayName ?? "Star Citizen MFD" }
 
     func label(_ text: String) -> String {
         typography.labelUppercased ? text.uppercased() : text
@@ -322,6 +366,17 @@ nonisolated extension ManufacturerTheme {
             pattern: .stars,
             baseBottom: nil
         )
+    )
+
+    /// Neutral app theme outside a ship: the RSI look under the SCMFD name.
+    static let standard = ManufacturerTheme(
+        manufacturer: nil,
+        colorScheme: rsi.colorScheme,
+        palette: rsi.palette,
+        typography: rsi.typography,
+        key: rsi.key,
+        icons: rsi.icons,
+        backdrop: rsi.backdrop
     )
 
     static let drake = ManufacturerTheme(
@@ -519,7 +574,7 @@ nonisolated extension ManufacturerTheme {
 // MARK: - Environment
 
 nonisolated private struct ManufacturerThemeKey: EnvironmentKey {
-    static let defaultValue: ManufacturerTheme = .rsi
+    static let defaultValue: ManufacturerTheme = .standard
 }
 
 extension EnvironmentValues {

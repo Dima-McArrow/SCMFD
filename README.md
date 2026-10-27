@@ -27,7 +27,8 @@ Both sides follow **protocol v2**, specified in section 41 of
   deduplication and saved iPad history. Spending, fines and wallet balance are not tracked. See
   [`SESSION-REWARDS-CONTRACTS.md`](SESSION-REWARDS-CONTRACTS.md) and protocol section 41.21.
 - **18 manufacturer themes** (RSI, Drake, Aegis, Anvil, Origin, MISC, Crusader, …) with their own palettes, fonts,
-  key shapes and HUD details, plus interface sounds.
+  key shapes and HUD details, plus interface sounds. The default **SCMFD** theme is the RSI look under the app's
+  own name, for when no ship is involved ([`DEFAULT-THEME-DESIGN.md`](DEFAULT-THEME-DESIGN.md)).
 - **Localization**: English source strings with French and Russian translations (`Localizable.xcstrings`).
 - **Connect to PC**: tap the link status in the top bar, scan the QR code from the server's Pair window with the
   iPad camera, type the 6-digit code. Manual address entry with a fingerprint check is the fallback.
@@ -82,7 +83,7 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | `SCMFD/Emotes` | Emote board |
 | `SCMFD/Network` | Protocol v2 DTOs, pairing link parser, Keychain store, TLS pinning, session state machine, WebSocket driver |
 | `SCMFD/Pairing` | Connect to PC sheet (tap the link status in the top bar) and the AVFoundation QR scanner |
-| `SCMFD/Theme` | Manufacturer themes, fonts, key shapes, HUD primitives |
+| `SCMFD/Theme` | SCMFD and manufacturer themes (`AppTheme` is the stored choice), fonts, key shapes, HUD primitives |
 | `SCMFD/Settings` | Theme picker and deck settings |
 | `SCMFD/Debug` | Connection test screens (Debug builds) |
 | `SCMFD/Sounds`, `SCMFD/Fonts` | Interface sounds; bundled OFL fonts (licenses in `Fonts/Licenses`) |

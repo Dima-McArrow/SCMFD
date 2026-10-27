@@ -26,7 +26,8 @@ nonisolated enum AppScreen: Hashable, Identifiable, Sendable {
 }
 
 struct ContentView: View {
-    @AppStorage("manufacturer") private var manufacturer: Manufacturer = .rsi
+    /// The key predates the SCMFD theme; a stored manufacturer raw value still decodes (see `AppTheme`).
+    @AppStorage("manufacturer") private var appTheme: AppTheme = .standard
     @Environment(\.scenePhase) private var scenePhase
     @State private var screen: AppScreen = .deck
     @State private var deck: DeckState
@@ -52,7 +53,7 @@ struct ContentView: View {
         _networkLink = State(initialValue: NetworkCommandLink(connection: server))
     }
 
-    private var theme: ManufacturerTheme { manufacturer.theme }
+    private var theme: ManufacturerTheme { appTheme.theme }
 
     /// Paired: every key goes to the server, and nothing is sent while the link is down.
     /// Not paired: the console stub keeps the deck usable for UI work.
@@ -76,7 +77,7 @@ struct ContentView: View {
         .tint(theme.palette.accent)
         .manufacturerTheme(theme)
         .environment(\.commandLink, commandLink)
-        .animation(.smooth(duration: 0.45), value: manufacturer)
+        .animation(.smooth(duration: 0.45), value: appTheme)
         .task { connectIfPaired() }
         .onChange(of: server.phase) { _, phase in
             if case .ready = phase {
@@ -100,7 +101,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showsSettings) {
             ThemePickerView(
-                selection: $manufacturer,
+                selection: $appTheme,
                 onResetLights: deck.resetLights,
                 isDeckDisconnected: deck.isShipDisconnected,
                 onEnableDeck: {
@@ -178,11 +179,11 @@ struct ContentView: View {
                 .fill(theme.palette.accent)
                 .frame(width: 2, height: 30)
             VStack(alignment: .leading, spacing: 3) {
-                Text(verbatim: theme.manufacturer.shortName)
+                Text(verbatim: theme.shortName)
                     .mfdLabelStyle(theme, size: 18, display: true)
                     .foregroundStyle(theme.palette.accent)
                     .contentTransition(.opacity)
-                Text(verbatim: theme.manufacturer.displayName.uppercased())
+                Text(verbatim: theme.displayName.uppercased())
                     .font(.system(size: 8, weight: .medium, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(theme.palette.dim)

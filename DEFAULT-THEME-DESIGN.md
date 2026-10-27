@@ -108,6 +108,11 @@ Use a distinct default app theme, not a fake manufacturer or log prefix. Refacto
 necessary so the theme picker and app branding can represent neutral CSMFD as well as manufacturer themes.
 Exact colors, typography and default-theme visual styling are separate design work; this note does not prescribe them.
 
+**Done (FE):** the default theme exists as `AppTheme.standard` / `ManufacturerTheme.standard`. By the user's choice it
+reuses every RSI token (palette, fonts, keys, backdrop) and shows the untranslated app name `SCMFD` /
+`Star Citizen MFD` instead of RSI. It has no `Manufacturer` and no log prefix. It is first in the picker and the
+default for new installs; a stored manufacturer choice (e.g. `"rsi"`) keeps decoding under the same storage key.
+
 Keep manual theme choice separate from automatic selection. Suggested settings behavior: Auto theme enabled by
 default; disabling it uses the user's explicit theme choice (default can also be selectable). Do not overwrite
 that manual preference whenever automatic selection changes. Manual overrides must not accidentally change the

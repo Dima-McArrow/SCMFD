@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Settings sheet: pick the manufacturer skin and reset the button lights.
+/// Settings sheet: pick the SCMFD or a manufacturer skin and reset the button lights.
 struct ThemePickerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.manufacturerTheme) private var theme
@@ -8,7 +8,7 @@ struct ThemePickerView: View {
     @AppStorage(InterfaceAudio.enabledKey) private var soundsEnabled = true
     @AppStorage(InterfaceAudio.volumeKey) private var soundsVolume = 0.5
 
-    @Binding var selection: Manufacturer
+    @Binding var selection: AppTheme
     let onResetLights: () -> Void
     let isDeckDisconnected: Bool
     let onEnableDeck: () -> Void
@@ -43,20 +43,20 @@ struct ThemePickerView: View {
                     }
                     .foregroundStyle(theme.palette.text)
 
-                    Text(theme.label("Manufacturer"))
+                    Text(theme.label(LocalizedStringResource("Theme")))
                         .mfdLabelStyle(theme, size: 13)
                         .foregroundStyle(theme.palette.dim)
 
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 16)], spacing: 16) {
-                        ForEach(Manufacturer.allCases) { manufacturer in
+                        ForEach(AppTheme.all) { appTheme in
                             Button {
-                                withAnimation(.smooth(duration: 0.4)) { selection = manufacturer }
+                                withAnimation(.smooth(duration: 0.4)) { selection = appTheme }
                             } label: {
-                                ManufacturerCard(manufacturer: manufacturer, isSelected: manufacturer == selection)
+                                ThemeCard(theme: appTheme.theme, isSelected: appTheme == selection)
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(Text(verbatim: manufacturer.displayName))
-                            .accessibilityAddTraits(manufacturer == selection ? .isSelected : [])
+                            .accessibilityLabel(Text(verbatim: appTheme.theme.displayName))
+                            .accessibilityAddTraits(appTheme == selection ? .isSelected : [])
                         }
                     }
 
@@ -104,13 +104,12 @@ private struct DeckRecoverySettings: View {
     }
 }
 
-/// Live preview of a manufacturer skin: its own backdrop, key shape and fonts.
-private struct ManufacturerCard: View {
-    let manufacturer: Manufacturer
+/// Live preview of a skin: its own backdrop, key shape and fonts.
+private struct ThemeCard: View {
+    let theme: ManufacturerTheme
     let isSelected: Bool
 
     var body: some View {
-        let theme = manufacturer.theme
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
                 ThemeBackdropView()
@@ -127,10 +126,10 @@ private struct ManufacturerCard: View {
 
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: theme.manufacturer.shortName)
+                    Text(verbatim: theme.shortName)
                         .mfdLabelStyle(theme, size: 16, display: true)
                         .foregroundStyle(theme.palette.text)
-                    Text(verbatim: manufacturer.displayName)
+                    Text(verbatim: theme.displayName)
                         .font(theme.typography.body.font(size: 12))
                         .foregroundStyle(theme.palette.dim)
                 }
@@ -153,7 +152,7 @@ private struct ManufacturerCard: View {
 }
 
 #Preview("Settings / picker", traits: .fixedLayout(width: 834, height: 1000)) {
-    @Previewable @State var selection = Manufacturer.rsi
+    @Previewable @State var selection = AppTheme.standard
     @Previewable @State var deck: DeckState = {
         let deck = DeckState()
         deck.apply(DeckUpdate(enabled: false, shipName: nil, resetLocalState: true))

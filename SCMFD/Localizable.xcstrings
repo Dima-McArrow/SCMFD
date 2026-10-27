@@ -872,22 +872,6 @@
         }
       }
     },
-    "Manufacturer" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Constructeur"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Производитель"
-          }
-        }
-      }
-    },
     "Matches the PC — pair" : {
 
     },
@@ -1735,6 +1719,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Недавний список ограничен 128 событиями. Итоги сессии учитывают все полученные награды."
+          }
+        }
+      }
+    },
+    "Theme" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Thème"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Тема"
           }
         }
       }

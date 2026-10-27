@@ -84,7 +84,7 @@ private struct KeyGeometrySample: View {
     var body: some View {
         let key = theme.key
         VStack(alignment: .leading, spacing: 8) {
-            Text(theme.manufacturer.shortName)
+            Text(verbatim: theme.shortName)
                 .font(theme.typography.body.font(size: 12, weight: theme.typography.labelWeight))
                 .tracking(theme.labelTracking(for: 12))
                 .foregroundStyle(theme.palette.dim)
