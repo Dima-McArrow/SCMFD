@@ -95,6 +95,7 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | Part | State |
 |---|---|
 | UI: Deck, Emotes, themes, sounds | Working; without a pairing the keys go to `ConsoleCommandLink` (Xcode console) |
+| Localization en/fr/ru ([FIX-06](FIX-06-missing-translations.md)) | Every catalog string has fr and ru; `Pair window` / `Pair iPad…` stay in English to match the PC app |
 | Protocol v2, pairing link, Keychain, TLS pinning, session logic | Implemented and unit-tested |
 | Connect to PC (in-app QR scanner, 6-digit code, manual fallback), WebSocket driver, auto-reconnect | Implemented; not yet verified against the real server |
 | Keys and emotes over the network: rejection feedback with a label for every cancel/reject reason, hold stops on `input_cancelled` | Implemented; not yet verified in game |

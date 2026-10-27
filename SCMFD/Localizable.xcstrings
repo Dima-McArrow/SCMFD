@@ -101,16 +101,52 @@
       }
     },
     "6-digit code" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code à 6 chiffres"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6-значный код"
+          }
+        }
+      }
     },
-    "21:48:04 UTC · запрос инвентаря" : {
-
-    },
-    "192.168.1.42" : {
-
+    "21:48:04 UTC · inventory request" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "21:48:04 UTC · demande d’inventaire"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "21:48:04 UTC · запрос инвентаря"
+          }
+        }
+      }
     },
     "A successful check opens and immediately closes a TCP connection without sending application data. A TLS server may log this as an incomplete handshake." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une vérification réussie ouvre puis ferme aussitôt une connexion TCP sans envoyer de données applicatives. Un serveur TLS peut l’enregistrer comme une négociation incomplète."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Успешная проверка открывает и сразу закрывает TCP-соединение, не отправляя данных приложения. TLS-сервер может записать это в журнал как незавершённое рукопожатие."
+          }
+        }
+      }
     },
     "Accepted" : {
       "localizations" : {
@@ -132,13 +168,13 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Un autre appareil a pris la main"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Управление перехвачено"
           }
         }
@@ -161,7 +197,20 @@
       }
     },
     "ATC · No data" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATC · Aucune donnée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATC · Нет данных"
+          }
+        }
+      }
     },
     "Auto land" : {
       "localizations" : {
@@ -183,13 +232,13 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Thème automatique"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Автоматическая тема"
           }
         }
@@ -199,26 +248,65 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Relâché automatiquement"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Отпущено автоматически"
           }
         }
       }
     },
     "Awaiting response" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente de réponse"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание ответа"
+          }
+        }
+      }
     },
     "Back in the pilot seat? Enable the controls here. This does not power on your ship." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De retour aux commandes ? Activez le pupitre ici. Cela ne démarre pas votre vaisseau."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Снова в кресле пилота? Включите пульт здесь. Корабль при этом не запускается."
+          }
+        }
+      }
     },
     "Busy" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Occupé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Занято"
+          }
+        }
+      }
     },
     "Button lights follow your taps, not the game." : {
       "localizations" : {
@@ -237,28 +325,80 @@
       }
     },
     "Camera access is off. Allow it in Settings › Privacy › Camera, or enter the address manually below." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’accès à l’appareil photo est désactivé. Autorisez-le dans Réglages › Confidentialité › Appareil photo, ou saisissez l’adresse manuellement ci-dessous."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступ к камере выключен. Разрешите его в Настройках › Конфиденциальность › Камера или введите адрес вручную ниже."
+          }
+        }
+      }
     },
     "Camera unavailable on this device. Enter the address manually below." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil photo indisponible sur cet appareil. Saisissez l’adresse manuellement ci-dessous."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Камера на этом устройстве недоступна. Введите адрес вручную ниже."
+          }
+        }
+      }
     },
     "Camera viewfinder" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viseur de l’appareil photo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видоискатель камеры"
+          }
+        }
+      }
     },
     "Cancel" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменить"
+          }
+        }
+      }
     },
     "Cancelled" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Annulé"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Отменено"
           }
         }
@@ -281,25 +421,116 @@
       }
     },
     "Check cancelled." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification annulée."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка отменена."
+          }
+        }
+      }
     },
     "Check connection" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier la connexion"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить соединение"
+          }
+        }
+      }
     },
     "Check that the Windows server port is reachable from this device. This does not connect the Deck or verify TLS, WebSocket, pairing or game input." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifie que le port du serveur Windows est joignable depuis cet appareil. Cela ne connecte pas le pupitre et ne vérifie ni TLS, ni WebSocket, ni l’association, ni la saisie en jeu."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверяет, доступен ли порт сервера Windows с этого устройства. Пульт при этом не подключается, а TLS, WebSocket, привязка и ввод в игре не проверяются."
+          }
+        }
+      }
     },
     "Checking code…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification du code…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка кода…"
+          }
+        }
+      }
     },
     "Clear log" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer le journal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить журнал"
+          }
+        }
+      }
     },
     "Closed: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermée : %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрыто: %@"
+          }
+        }
+      }
     },
     "Compare with the fingerprint in the Pair window on the PC:" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparez avec l’empreinte affichée dans la fenêtre Pair sur le PC :"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сравните с отпечатком в окне Pair на ПК:"
+          }
+        }
+      }
     },
     "Completed" : {
       "localizations" : {
@@ -318,10 +549,36 @@
       }
     },
     "Connect" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключиться"
+          }
+        }
+      }
     },
     "Connect to PC" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion au PC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключение к ПК"
+          }
+        }
+      }
     },
     "Connect to the PC server to begin recording live contract events." : {
       "localizations" : {
@@ -356,38 +613,116 @@
       }
     },
     "Connected" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключено"
+          }
+        }
+      }
     },
     "Connecting" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключение"
+          }
+        }
+      }
     },
     "Connecting…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключение…"
+          }
+        }
+      }
     },
     "Connection failed" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la connexion"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подключиться"
+          }
+        }
+      }
     },
     "Connection log" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal de connexion"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Журнал подключения"
+          }
+        }
+      }
     },
     "Connection lost" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Connexion perdue"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Связь потеряна"
           }
         }
       }
     },
     "Connection timed out" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Délai de connexion dépassé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Время ожидания подключения истекло"
+          }
+        }
+      }
     },
     "Console link" : {
       "localizations" : {
@@ -470,7 +805,20 @@
       }
     },
     "Data source and limitations" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source des données et limites"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Источник данных и ограничения"
+          }
+        }
+      }
     },
     "Deck" : {
       "localizations" : {
@@ -489,10 +837,36 @@
       }
     },
     "Deck is already enabled." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le pupitre est déjà activé."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пульт уже включён."
+          }
+        }
+      }
     },
     "Disconnect" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se déconnecter"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отключиться"
+          }
+        }
+      }
     },
     "Disconnected. Showing saved session data." : {
       "localizations" : {
@@ -511,7 +885,20 @@
       }
     },
     "Does not match" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne correspond pas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не совпадает"
+          }
+        }
+      }
     },
     "Done" : {
       "localizations" : {
@@ -562,7 +949,20 @@
       }
     },
     "Enable Deck manually" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer le pupitre manuellement"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить пульт вручную"
+          }
+        }
+      }
     },
     "Engage quantum" : {
       "localizations" : {
@@ -613,10 +1013,36 @@
       }
     },
     "Enter a private IPv4 address and a port from 1 to 65535." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisissez une adresse IPv4 privée et un port de 1 à 65535."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите частный IPv4-адрес и порт от 1 до 65535."
+          }
+        }
+      }
     },
     "Enter the address manually" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisir l’adresse manuellement"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ввести адрес вручную"
+          }
+        }
+      }
     },
     "Exit seat" : {
       "localizations" : {
@@ -635,7 +1061,20 @@
       }
     },
     "Expired" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expiré"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Истекло"
+          }
+        }
+      }
     },
     "Failed" : {
       "localizations" : {
@@ -686,7 +1125,20 @@
       }
     },
     "Forget this PC" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oublier ce PC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Забыть этот ПК"
+          }
+        }
+      }
     },
     "Free mode" : {
       "localizations" : {
@@ -708,13 +1160,13 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Jeu terminé"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Игра завершена"
           }
         }
@@ -724,23 +1176,49 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Le jeu a perdu le focus"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Игра потеряла фокус"
           }
         }
       }
     },
     "Game not focused" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeu en arrière-plan"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игра не в фокусе"
+          }
+        }
+      }
     },
     "Game not running" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeu non lancé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игра не запущена"
+          }
+        }
+      }
     },
     "Gestures" : {
       "localizations" : {
@@ -774,45 +1252,81 @@
         }
       }
     },
-    "HDPC-Farnesway" : {
-
-    },
     "Input failed" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la saisie"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка ввода"
+          }
+        }
+      }
     },
     "Input paused" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Saisie en pause"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Ввод на паузе"
           }
         }
       }
     },
     "Interface sounds" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sons de l’interface"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звуки интерфейса"
+          }
+        }
+      }
     },
     "Invalid address" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse non valide"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неверный адрес"
+          }
+        }
+      }
     },
     "iPad unpaired" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "iPad dissocié"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "iPad отвязан"
           }
         }
@@ -851,10 +1365,36 @@
       }
     },
     "Live feedback from the app's connection. Pair or reconnect from the link status in the top bar." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour en direct de la connexion de l’app. Associez ou reconnectez depuis l’état de la liaison dans la barre du haut."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Состояние подключения приложения в реальном времени. Привязать ПК или переподключиться можно через статус связи в верхней панели."
+          }
+        }
+      }
     },
     "Local connection check" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification de la connexion locale"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка локального соединения"
+          }
+        }
+      }
     },
     "Locked" : {
       "localizations" : {
@@ -889,7 +1429,20 @@
       }
     },
     "Matches the PC — pair" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correspond au PC — associer"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Совпадает с ПК — привязать"
+          }
+        }
+      }
     },
     "Monitoring session" : {
       "localizations" : {
@@ -908,13 +1461,52 @@
       }
     },
     "No active request" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune demande en cours"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет активного запроса"
+          }
+        }
+      }
     },
     "No confirmation · Retry" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de confirmation · Réessayez"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет подтверждения · Повторите"
+          }
+        }
+      }
     },
     "No connection within 10 seconds. Check the IP, listener, firewall and Local Network permission." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune connexion en 10 secondes. Vérifiez l’IP, le serveur à l’écoute, le pare-feu et l’autorisation Réseau local."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет подключения за 10 секунд. Проверьте IP-адрес, запущен ли сервер, брандмауэр и разрешение «Локальная сеть»."
+          }
+        }
+      }
     },
     "No contract events recorded in this session." : {
       "localizations" : {
@@ -933,7 +1525,20 @@
       }
     },
     "No link" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de liaison"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет связи"
+          }
+        }
+      }
     },
     "No reward notifications recorded in this session." : {
       "localizations" : {
@@ -952,38 +1557,116 @@
       }
     },
     "No server link" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de liaison serveur"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет связи с сервером"
+          }
+        }
+      }
     },
     "No ship connection" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun vaisseau connecté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет связи с кораблём"
+          }
+        }
+      }
     },
     "Not a CSMFD pairing code" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce n’est pas un code d’association CSMFD"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это не код привязки CSMFD"
+          }
+        }
+      }
     },
     "Not allowed on PC" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Non autorisé sur le PC"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Не разрешено на ПК"
           }
         }
       }
     },
     "Not checked" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non vérifié"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не проверено"
+          }
+        }
+      }
     },
     "Not connected" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non connecté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не подключено"
+          }
+        }
+      }
     },
     "Not paired" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non associé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не привязан"
+          }
+        }
+      }
     },
     "Not tracked yet" : {
       "localizations" : {
@@ -1050,19 +1733,100 @@
       }
     },
     "On iPad, allow Local Network access when prompted. If the first check times out while granting permission, run it again." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur l’iPad, autorisez l’accès au réseau local quand c’est demandé. Si la première vérification expire pendant l’autorisation, relancez-la."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На iPad разрешите доступ к локальной сети, когда появится запрос. Если первая проверка не успеет завершиться во время выдачи разрешения, запустите её снова."
+          }
+        }
+      }
     },
     "On the PC, open the CSMFD tray icon and choose **Pair iPad…**, then scan the QR code it shows." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sur le PC, ouvrez l’icône CSMFD de la zone de notification, choisissez **Pair iPad…**, puis scannez le QR code affiché."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На ПК откройте значок CSMFD в трее, выберите **Pair iPad…** и отсканируйте показанный QR-код."
+          }
+        }
+      }
     },
     "On Windows" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous Windows"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В Windows"
+          }
+        }
+      }
+    },
+    "Only creates a local demo receipt. Nothing is sent to the game." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crée seulement un reçu de démo local. Rien n’est envoyé au jeu."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создаёт только локальную демо-квитанцию. Команда не отправляется в игру."
+          }
+        }
+      }
     },
     "Open the original Game.log sample ↗" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir l’extrait original du Game.log ↗"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть исходный фрагмент Game.log ↗"
+          }
+        }
+      }
     },
     "Opens Connect to PC" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre Connexion au PC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открывает «Подключение к ПК»"
+          }
+        }
+      }
     },
     "Operator mode" : {
       "localizations" : {
@@ -1081,35 +1845,100 @@
       }
     },
     "Pair" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Associer"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Привязать"
+          }
+        }
+      }
     },
     "Pair again" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Associer à nouveau"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Привязать заново"
+          }
+        }
+      }
     },
     "PC IPv4 address" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse IPv4 du PC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPv4-адрес ПК"
+          }
+        }
+      }
     },
     "PC locked" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "PC verrouillé"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "ПК заблокирован"
           }
         }
       }
     },
     "Point the camera at the QR code in the Pair window on the PC." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pointez l’appareil photo vers le QR code de la fenêtre Pair sur le PC."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наведите камеру на QR-код в окне Pair на ПК."
+          }
+        }
+      }
     },
     "Port" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Port"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порт"
+          }
+        }
+      }
     },
     "Poses" : {
       "localizations" : {
@@ -1144,7 +1973,20 @@
       }
     },
     "Preview sound" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écouter le son"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прослушать звук"
+          }
+        }
+      }
     },
     "Purchase, sale and rental requests are excluded until their amounts and completion can be verified." : {
       "localizations" : {
@@ -1211,10 +2053,36 @@
       }
     },
     "Read fingerprint" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lire l’empreinte"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прочитать отпечаток"
+          }
+        }
+      }
     },
     "Reading certificate…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lecture du certificat…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтение сертификата…"
+          }
+        }
+      }
     },
     "Ready" : {
       "localizations" : {
@@ -1228,6 +2096,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Готово"
+          }
+        }
+      }
+    },
+    "Received by the simulator. The result in the game is unknown." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reçue par le simulateur. Le résultat dans le jeu est inconnu."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Получена имитатором. Результат в игре неизвестен."
           }
         }
       }
@@ -1252,13 +2136,13 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Refusé"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Отклонено"
           }
         }
@@ -1268,37 +2152,33 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Relâché"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Отпущено"
           }
         }
       }
     },
-    "Request landing" : {
-      "extractionState" : "stale",
+    "Request landing / takeoff" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Demande d'atterrissage"
+            "value" : "Demande d’atterrissage / décollage"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запрос посадки"
+            "value" : "Запрос посадки / взлёта"
           }
         }
       }
-    },
-    "Request landing / takeoff" : {
-
     },
     "Required cargo and objective text are not a cargo hold reading. Rewards are listed separately in Finances." : {
       "localizations" : {
@@ -1349,10 +2229,36 @@
       }
     },
     "Response received" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réponse reçue"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ответ получен"
+          }
+        }
+      }
     },
     "Result unknown" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résultat inconnu"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Результат неизвестен"
+          }
+        }
+      }
     },
     "Rewards are not assigned to contracts without a matching mission ID." : {
       "localizations" : {
@@ -1403,7 +2309,20 @@
       }
     },
     "Scan QR code" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanner le QR code"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сканировать QR-код"
+          }
+        }
+      }
     },
     "SCM / NAV" : {
       "localizations" : {
@@ -1422,7 +2341,20 @@
       }
     },
     "Secure connection log" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal de la connexion sécurisée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Журнал защищённого подключения"
+          }
+        }
+      }
     },
     "Self-destruct" : {
       "localizations" : {
@@ -1441,19 +2373,32 @@
       }
     },
     "Server link" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liaison serveur"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Связь с сервером"
+          }
+        }
+      }
     },
     "Server stopped" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Serveur arrêté"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Сервер остановлен"
           }
         }
@@ -1540,19 +2485,32 @@
       }
     },
     "Ship · No data" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaisseau · Aucune donnée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Корабль · Нет данных"
+          }
+        }
+      }
     },
     "Ship changed" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Vaisseau changé"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Корабль сменился"
           }
         }
@@ -1607,7 +2565,20 @@
       }
     },
     "Sound volume" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volume du son"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Громкость звука"
+          }
+        }
+      }
     },
     "Spending and fines" : {
       "localizations" : {
@@ -1642,26 +2613,81 @@
       }
     },
     "Start the server on the PC’s private IPv4 address, port 47823. Allow inbound TCP for that app on your Private network. Both devices must have a route to each other; guest Wi-Fi may block this." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancez le serveur sur l’adresse IPv4 privée du PC, port 47823. Autorisez le TCP entrant pour cette app sur votre réseau privé. Les deux appareils doivent pouvoir se joindre ; un Wi-Fi invité peut le bloquer."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запустите сервер на частном IPv4-адресе ПК, порт 47823. Разрешите входящие TCP-подключения для этого приложения в частной сети. Устройства должны видеть друг друга; гостевой Wi-Fi может это блокировать."
+          }
+        }
+      }
     },
     "Step 1 · TCP reachability" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape 1 · Accessibilité TCP"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шаг 1 · Доступность по TCP"
+          }
+        }
+      }
     },
     "Step 2 · Server connection" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape 2 · Connexion au serveur"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шаг 2 · Подключение к серверу"
+          }
+        }
+      }
     },
     "Switches to the ship's manufacturer when you join its channel. A manual pick stays until the next ship." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Passe au thème du constructeur quand vous rejoignez le canal d’un vaisseau. Un choix manuel reste jusqu’au prochain vaisseau."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "При входе в канал корабля включает тему его производителя. Тема, выбранная вручную, остаётся до следующего корабля."
+          }
+        }
+      }
+    },
+    "Tap a button on the left. The panel shows the demo service receiving it." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez un bouton à gauche. Le panneau montre sa réception par le service de démo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите кнопку слева. Панель покажет получение команды демо-сервисом."
           }
         }
       }
@@ -1731,13 +2757,52 @@
       }
     },
     "TCP connection established. TLS, WebSocket and server identity are not verified." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion TCP établie. TLS, WebSocket et l’identité du serveur ne sont pas vérifiés."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TCP-соединение установлено. TLS, WebSocket и подлинность сервера не проверены."
+          }
+        }
+      }
     },
     "TCP reachable" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessible en TCP"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступен по TCP"
+          }
+        }
+      }
     },
     "The camera could not start. Try again, or enter the address manually below." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appareil photo n’a pas pu démarrer. Réessayez ou saisissez l’adresse manuellement ci-dessous."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось запустить камеру. Попробуйте ещё раз или введите адрес вручную ниже."
+          }
+        }
+      }
     },
     "The recent list is limited to the latest 128 activity events. Session reward totals retain all received rewards." : {
       "localizations" : {
@@ -1759,14 +2824,30 @@
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Thème"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Тема"
+          }
+        }
+      }
+    },
+    "This is a sighting. The current position and any later movement are unknown." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ceci est une observation. La position actuelle et tout déplacement ultérieur sont inconnus."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это точка наблюдения. Текущее положение и дальнейшее перемещение неизвестны."
           }
         }
       }
@@ -1788,7 +2869,20 @@
       }
     },
     "Too fast" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trop rapide"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слишком быстро"
+          }
+        }
+      }
     },
     "Tracking session" : {
       "localizations" : {
@@ -1807,7 +2901,20 @@
       }
     },
     "Type the 6-digit code shown in the Pair window on the PC." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisissez le code à 6 chiffres affiché dans la fenêtre Pair sur le PC."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите 6-значный код из окна Pair на ПК."
+          }
+        }
+      }
     },
     "Up to 12 tracking sessions are saved on this iPad. Changing ships does not reset a session." : {
       "localizations" : {
@@ -1826,7 +2933,20 @@
       }
     },
     "Use the private IPv4 address shown in the Pair window. You will compare the certificate fingerprint before anything is sent." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez l’adresse IPv4 privée affichée dans la fenêtre Pair. Vous comparerez l’empreinte du certificat avant tout envoi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используйте частный IPv4-адрес из окна Pair. Перед отправкой любых данных нужно будет сравнить отпечаток сертификата."
+          }
+        }
+      }
     },
     "VTOL" : {
       "localizations" : {
@@ -1840,6 +2960,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "VTOL"
+          }
+        }
+      }
+    },
+    "Waiting for a command" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente d’une commande"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание команды"
           }
         }
       }
@@ -1861,10 +2997,36 @@
       }
     },
     "Waiting for network" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente du réseau"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание сети"
+          }
+        }
+      }
     },
     "Waiting for the code" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente du code"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание кода"
+          }
+        }
+      }
     },
     "Waiting for the server activity feed. Saved history remains available." : {
       "localizations" : {
@@ -1883,7 +3045,20 @@
       }
     },
     "Waiting: %@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente : %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание: %@"
+          }
+        }
+      }
     },
     "Weapons" : {
       "localizations" : {
@@ -1902,7 +3077,20 @@
       }
     },
     "Windows IPv4 address" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse IPv4 Windows"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPv4-адрес Windows"
+          }
+        }
+      }
     },
     "Withdrawn" : {
       "localizations" : {
@@ -1919,21 +3107,6 @@
           }
         }
       }
-    },
-    "Нажми кнопку слева. Панель покажет получение команды демо-сервисом." : {
-
-    },
-    "Ожидание команды" : {
-
-    },
-    "Получена имитатором. Результат в игре неизвестен." : {
-
-    },
-    "Создаёт только локальную демо-квитанцию. Команда не отправляется в игру." : {
-
-    },
-    "Это точка наблюдения. Текущее положение и дальнейшее перемещение неизвестны." : {
-
     }
   },
   "version" : "1.3"

@@ -17,14 +17,14 @@ struct CommandTerminalView: View {
 
             MFDPanel(theme: theme, highlighted: true) {
                 MFDLabel(text: "ПОСЛЕДНЯЯ ЗАМЕЧЕННАЯ ЛОКАЦИЯ", theme: theme)
-                Text("HDPC-Farnesway")
+                Text(verbatim: "HDPC-Farnesway")
                     .font(.system(.largeTitle, design: .monospaced).weight(.medium))
                     .foregroundStyle(theme.accent)
                     .fixedSize(horizontal: false, vertical: true)
-                Label("21:48:04 UTC · запрос инвентаря", systemImage: "clock")
+                Label("21:48:04 UTC · inventory request", systemImage: "clock")
                     .font(.system(.callout, design: .monospaced))
                     .foregroundStyle(theme.muted)
-                Text("Это точка наблюдения. Текущее положение и дальнейшее перемещение неизвестны.")
+                Text("This is a sighting. The current position and any later movement are unknown.")
                     .font(.callout)
                     .foregroundStyle(theme.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -51,7 +51,7 @@ struct CommandTerminalView: View {
                             }
                             .buttonStyle(MFDButtonStyle(theme: theme))
                             .accessibilityHint(
-                                "Создаёт только локальную демо-квитанцию. Команда не отправляется в игру."
+                                "Only creates a local demo receipt. Nothing is sent to the game."
                             )
                             .accessibilityIdentifier("terminal.\(command.rawValue)")
                         }
@@ -66,9 +66,9 @@ struct CommandTerminalView: View {
                                 .font(.largeTitle)
                                 .foregroundStyle(theme.accent)
                                 .accessibilityHidden(true)
-                            Text("Ожидание команды")
+                            Text("Waiting for a command")
                                 .font(.system(.headline, design: .monospaced))
-                            Text("Нажми кнопку слева. Панель покажет получение команды демо-сервисом.")
+                            Text("Tap a button on the left. The panel shows the demo service receiving it.")
                                 .font(.callout)
                                 .foregroundStyle(theme.muted)
                         }
@@ -79,7 +79,7 @@ struct CommandTerminalView: View {
                                 MFDLabel(text: "ДЕМО / ACK–\(receipt.id)", theme: theme)
                                 Text(receipt.command.title)
                                     .font(.system(.callout, design: .monospaced).weight(.medium))
-                                Text("Получена имитатором. Результат в игре неизвестен.")
+                                Text("Received by the simulator. The result in the game is unknown.")
                                     .font(.caption)
                                     .foregroundStyle(theme.muted)
                                 Rectangle().fill(theme.edge).frame(height: 1)

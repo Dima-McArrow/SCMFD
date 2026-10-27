@@ -23,7 +23,7 @@ struct ConnectionDebugView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
-                    TextField("Windows IPv4 address", text: $host, prompt: Text("192.168.1.42"))
+                    TextField("Windows IPv4 address", text: $host, prompt: Text(verbatim: "192.168.1.42"))
                         .autocorrectionDisabled()
                         .textFieldStyle(.roundedBorder)
                     TextField("Port", text: $port)
