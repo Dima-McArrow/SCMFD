@@ -98,7 +98,7 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | Connect to PC (in-app QR scanner, 6-digit code, manual fallback), WebSocket driver, auto-reconnect | Implemented; not yet verified against the real server |
 | Keys and emotes over the network: rejection feedback, hold stops on `input_cancelled` | Implemented; not yet verified in game |
 | Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
-| State reducer (ship context, ClearDriver, QT, ATC), auto theme | Next steps |
+| State reducer (ship context, ClearDriver, QT, ATC), auto theme | Next steps: [FIX-02](FIX-02-server-state-drives-the-deck.md), [FIX-03](FIX-03-quantum-target-and-atc-from-state.md), [FIX-04](FIX-04-auto-theme-from-manufacturer.md) |
 
 ## Keeping the emote list in sync
 
