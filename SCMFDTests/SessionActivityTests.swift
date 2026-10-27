@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 struct SessionActivityTests {
     private let server = UUID()

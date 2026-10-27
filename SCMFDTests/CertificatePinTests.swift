@@ -1,7 +1,7 @@
 import Foundation
 import Security
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 /// Self-signed P-256 certificates shaped like the server's (820 days, DNS SAN, CA:FALSE),
 /// generated with OpenSSL 3.6.5 on 2026-10-27; valid until 2029-01-24.

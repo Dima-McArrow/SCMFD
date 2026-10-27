@@ -1,4 +1,4 @@
-# CLAUDE.md — CSMFD iPad app
+# CLAUDE.md — SCMFD iPad app
 
 Guidance for coding agents working in this repository. `AGENTS.md` points here; keep this file the single source.
 
@@ -11,7 +11,7 @@ features, layout and status.
 
 ## Build and test
 
-- Xcode project `CSMFD.xcodeproj`, scheme **CSMFD** (it also runs the tests). Deployment target iOS 26.0, SDK 27.1.
+- Xcode project `SCMFD.xcodeproj`, scheme **SCMFD** (it also runs the tests). Deployment target iOS 26.0, SDK 27.1.
 - Prefer the Xcode MCP tools (`BuildProject`, `RunAllTests`, `RunSomeTests`, `XcodeRefreshCodeIssuesInFile`)
   over shell builds.
 - Run tests on a **simulator** (e.g. *iPad Pro 13-inch (M5)*); a physical iPad makes every run slow.
@@ -33,13 +33,13 @@ features, layout and status.
 
 - Swift 5 language mode with `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, approachable concurrency and
   `NonisolatedNonsendingByDefault`. Everything is `@MainActor` unless marked otherwise.
-- Pure data, protocol and network-logic types are declared `nonisolated` (see `CSMFD/Network`,
+- Pure data, protocol and network-logic types are declared `nonisolated` (see `SCMFD/Network`,
   `KeyEvent`, `ShipAction`). UI state is `@MainActor @Observable final class`.
 - The test target has the same default isolation. Static properties used inside `@Test(arguments:)` must be
   `nonisolated static let`, or every use becomes a warning (an error in Swift 6).
 - In `@Sendable` callbacks, copy a `[weak self]` capture into a `let` before using it in a `Task`.
 
-## Network layer (`CSMFD/Network`)
+## Network layer (`SCMFD/Network`)
 
 | File | Role |
 |---|---|
@@ -62,7 +62,7 @@ Security rules that must not regress:
 - Never retry a command automatically or replay commands after reconnect; a lost ack means *unknown*.
 - Protocol decisions belong in `ServerSession` with a test, not in the driver or the views.
 
-## Pairing UI (`CSMFD/Pairing`)
+## Pairing UI (`SCMFD/Pairing`)
 
 - `QRCameraScanner`: AVFoundation only. `AVCaptureMetadataOutput` decodes QR codes; `AVCaptureVideoDataOutput`
   frames become `CGImage` for a SwiftUI `Image`. All capture state lives on one private queue (hence
@@ -73,15 +73,15 @@ Security rules that must not regress:
 
 ## Project mechanics
 
-- Folders are **file-system synchronized groups**: new files inside `CSMFD/` or `CSMFDTests/` are picked up
+- Folders are **file-system synchronized groups**: new files inside `SCMFD/` or `SCMFDTests/` are picked up
   automatically. Do not add file references to `project.pbxproj`.
-- `CSMFDTests` is hosted in the app (`TEST_HOST`/`BUNDLE_LOADER`) and has a target dependency on `CSMFD`. Debug
-  builds put the app code in `CSMFD.debug.dylib`; without the dependency, linking the tests fails with undefined
+- `SCMFDTests` is hosted in the app (`TEST_HOST`/`BUNDLE_LOADER`) and has a target dependency on `SCMFD`. Debug
+  builds put the app code in `SCMFD.debug.dylib`; without the dependency, linking the tests fails with undefined
   symbols.
 - Change build settings with `UpdateTargetBuildSetting`, not by editing `project.pbxproj`.
 
 ## Emotes
 
-The server types only emotes listed in its `emotes.txt`. After editing `CSMFD/Commands/Emote.swift`, run
+The server types only emotes listed in its `emotes.txt`. After editing `SCMFD/Commands/Emote.swift`, run
 `python3 tools/gen-emotes-md.py <output.md>`; the generated file ends with the `emotes.txt` block for the PC. The
 script fails loudly if an `EmoteGroup(...)` call has an unexpected shape.

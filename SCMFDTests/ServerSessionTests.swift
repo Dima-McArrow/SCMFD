@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 struct ServerSessionTests {
     static let serverId = UUID(uuidString: "366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1")!

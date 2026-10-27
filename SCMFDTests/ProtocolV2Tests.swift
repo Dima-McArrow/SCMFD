@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 /// Protocol v2 wire format against the examples in section 41 of CSMFD-discussion.md.
 struct ProtocolV2Tests {

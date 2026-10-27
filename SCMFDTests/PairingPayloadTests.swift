@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 struct PairingPayloadTests {
     // nonisolated: @Test arguments are evaluated outside the main actor.

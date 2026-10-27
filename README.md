@@ -1,6 +1,6 @@
-# CSMFD — iPad MFD for Star Citizen
+# SCMFD — iPad MFD for Star Citizen
 
-CSMFD turns an iPad into a multi-function display for Star Citizen. Ship functions (flight ready, landing gear,
+SCMFD turns an iPad into a multi-function display for Star Citizen. Ship functions (flight ready, landing gear,
 lights, power, quantum, ATC landing request…) and emotes sit on themed touch keys; a small companion server on the
 gaming PC presses the matching game bindings and reports what it reads from `Game.log`.
 
@@ -22,7 +22,7 @@ Both sides follow **protocol v2**, specified in section 41 of
   one-tap timed holds (e.g. quantum engage 1.5 s, self-destruct 3 s behind a slide-to-arm). Quantum target readout
   and a landing-request indicator.
 - **Emotes**: 48 emote families / 132 chat commands (`/wave`, `/dance3`…), listed in
-  `CSMFD/Commands/Emote.swift`.
+  `SCMFD/Commands/Emote.swift`.
 - **Session Contracts and Finances**: live observed contract/objective events and reward totals, with reconnect
   deduplication and saved iPad history. Spending, fines and wallet balance are not tracked. See
   [`SESSION-REWARDS-CONTRACTS.md`](SESSION-REWARDS-CONTRACTS.md) and protocol section 41.21.
@@ -54,7 +54,11 @@ The PC accepts input only from one paired iPad. In short:
 
 ## Build and test
 
-Open `CSMFD.xcodeproj`, scheme **CSMFD**.
+Open `SCMFD.xcodeproj`, scheme **SCMFD**.
+
+The project, app and Swift module are named `SCMFD`. Existing bundle identifiers, Keychain service,
+session-history path and protocol v2 identifiers (`csmfd://`, `/csmfd`, `CSMFD-iPad`) retain their original
+spelling to preserve installed-app identity, saved data and compatibility with the Windows server.
 
 - **Run**: ⌘R on an iPad or the iPad simulator.
 - **Test**: ⌘U. Tests use Swift Testing and run fastest on a simulator (e.g. *iPad Pro 13-inch (M5)*).
@@ -62,7 +66,7 @@ Open `CSMFD.xcodeproj`, scheme **CSMFD**.
 Command line:
 
 ```sh
-xcodebuild -project CSMFD.xcodeproj -scheme CSMFD \
+xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
   -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' test
 ```
 
@@ -70,17 +74,17 @@ xcodebuild -project CSMFD.xcodeproj -scheme CSMFD \
 
 | Folder | Content |
 |---|---|
-| `CSMFD/Commands` | `ShipAction` (functions + default bindings), `KeyChord`, `Emote`, `CommandLink` transport protocol |
-| `CSMFD/Controls` | MFD keys, timed hold, slide-to-arm, tick ring |
-| `CSMFD/Deck` | Deck screen, `DeckState`, disconnected state, quantum readout |
-| `CSMFD/Emotes` | Emote board |
-| `CSMFD/Network` | Protocol v2 DTOs, pairing link parser, Keychain store, TLS pinning, session state machine, WebSocket driver |
-| `CSMFD/Pairing` | Connect to PC sheet (tap the link status in the top bar) and the AVFoundation QR scanner |
-| `CSMFD/Theme` | Manufacturer themes, fonts, key shapes, HUD primitives |
-| `CSMFD/Settings` | Theme picker and deck settings |
-| `CSMFD/Debug` | Connection test screens (Debug builds) |
-| `CSMFD/Sounds`, `CSMFD/Fonts` | Interface sounds; bundled OFL fonts (licenses in `Fonts/Licenses`) |
-| `CSMFDTests` | Swift Testing suites for the network layer |
+| `SCMFD/Commands` | `ShipAction` (functions + default bindings), `KeyChord`, `Emote`, `CommandLink` transport protocol |
+| `SCMFD/Controls` | MFD keys, timed hold, slide-to-arm, tick ring |
+| `SCMFD/Deck` | Deck screen, `DeckState`, disconnected state, quantum readout |
+| `SCMFD/Emotes` | Emote board |
+| `SCMFD/Network` | Protocol v2 DTOs, pairing link parser, Keychain store, TLS pinning, session state machine, WebSocket driver |
+| `SCMFD/Pairing` | Connect to PC sheet (tap the link status in the top bar) and the AVFoundation QR scanner |
+| `SCMFD/Theme` | Manufacturer themes, fonts, key shapes, HUD primitives |
+| `SCMFD/Settings` | Theme picker and deck settings |
+| `SCMFD/Debug` | Connection test screens (Debug builds) |
+| `SCMFD/Sounds`, `SCMFD/Fonts` | Interface sounds; bundled OFL fonts (licenses in `Fonts/Licenses`) |
+| `SCMFDTests` | Swift Testing suites for the network layer |
 | `tools` | `gen-emotes-md.py`: emote list and server `emotes.txt` from `Emote.swift` |
 
 ## Status
@@ -99,7 +103,7 @@ xcodebuild -project CSMFD.xcodeproj -scheme CSMFD \
 The server only types emotes listed in its `emotes.txt`. After changing `Emote.swift`, regenerate the list:
 
 ```sh
-python3 tools/gen-emotes-md.py CSMFD-emotes.md
+python3 tools/gen-emotes-md.py SCMFD-emotes.md
 ```
 
 and copy its `emotes.txt` block to `%LocalAppData%\CSMFD\emotes.txt` on the PC.

@@ -1,7 +1,7 @@
 import Foundation
 import Security
 import Testing
-@testable import CSMFD
+@testable import SCMFD
 
 /// Runs against the real simulator Keychain with a unique service per test.
 struct ServerTrustStoreTests {

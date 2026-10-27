@@ -280,6 +280,6 @@ struct ContentView: View {
     }
 }
 
-#Preview("CSMFD / App", traits: .fixedLayout(width: 1194, height: 834)) {
+#Preview("SCMFD / App", traits: .fixedLayout(width: 1194, height: 834)) {
     ContentView()
 }

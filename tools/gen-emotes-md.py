@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate CSMFD-emotes.md from CSMFD/Commands/Emote.swift.
+"""Generate SCMFD-emotes.md from SCMFD/Commands/Emote.swift.
 
 Usage: python3 tools/gen-emotes-md.py [output.md]   (default: stdout)
 
@@ -12,7 +12,7 @@ import pathlib
 import re
 import sys
 
-SOURCE = pathlib.Path(__file__).resolve().parent.parent / "CSMFD" / "Commands" / "Emote.swift"
+SOURCE = pathlib.Path(__file__).resolve().parent.parent / "SCMFD" / "Commands" / "Emote.swift"
 
 # Matches EmoteGroup("stem"), EmoteGroup("stem", variants: 2), EmoteGroup("stem", title: "T")
 # and EmoteGroup("stem", variants: 2, title: "T"), in the argument order of the Swift initializer.
@@ -60,8 +60,8 @@ def main():
         sys.exit("error: duplicate emote stem in Emote.swift")
 
     lines = [
-        "# CSMFD emotes\n",
-        f"Generated from `CSMFD/Commands/Emote.swift` ({datetime.date.today().isoformat()}) "
+        "# SCMFD emotes\n",
+        f"Generated from `SCMFD/Commands/Emote.swift` ({datetime.date.today().isoformat()}) "
         "by `tools/gen-emotes-md.py`. Source of the commands: starcitizen.tools/Emotes "
         "(command table from 3.7 PTU).\n",
         "## How the iPad sends them\n",
