@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Xcode per-user state (scheme visibility, breakpoints, window layout)
+xcuserdata/
+*.xcuserstate
+
+# Build products
+DerivedData/
+build/
+*.xcresult
+
+# Python tooling
+__pycache__/
+*.pyc
