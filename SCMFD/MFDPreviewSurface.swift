@@ -4,7 +4,6 @@ enum MFDPreviewScenario {
     case standard
     case abandoned
     case withFine
-    case withReceipts
 }
 
 struct MFDPreviewSurface: View {
@@ -22,9 +21,6 @@ struct MFDPreviewSurface: View {
             session.replayAbandonment()
         case .withFine:
             session.toggleFine()
-        case .withReceipts:
-            session.sendDemoCommand(.requestLanding)
-            session.sendDemoCommand(.toggleGear)
         }
         _session = State(initialValue: session)
     }
@@ -43,8 +39,6 @@ struct MFDPreviewSurface: View {
                             MissionControlView(store: activity, horizontal: geometry.size.width >= 800)
                         case .credits:
                             CreditRecorderView(store: activity, horizontal: geometry.size.width >= 800)
-                        case .terminal:
-                            CommandTerminalView(session: session, horizontal: geometry.size.width >= 800)
                         }
                     }
                     .padding(geometry.size.width >= 600 ? 32 : 16)

@@ -24,19 +24,10 @@ struct MFDTheme {
         text: Color(red: 0.97, green: 0.91, blue: 0.81),
         muted: Color(red: 0.73, green: 0.66, blue: 0.53)
     )
-    static let terminal = MFDTheme(
-        accent: Color(red: 0.69, green: 0.92, blue: 0.54),
-        background: Color(red: 0.035, green: 0.065, blue: 0.045),
-        surface: Color(red: 0.06, green: 0.105, blue: 0.075),
-        text: Color(red: 0.86, green: 0.94, blue: 0.82),
-        muted: Color(red: 0.58, green: 0.71, blue: 0.57)
-    )
-
     static func theme(for page: MFDPage) -> MFDTheme {
         switch page {
         case .mission: .mission
         case .credits: .credits
-        case .terminal: .terminal
         }
     }
 }

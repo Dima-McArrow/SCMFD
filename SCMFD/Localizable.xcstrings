@@ -116,22 +116,6 @@
         }
       }
     },
-    "21:48:04 UTC · inventory request" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "21:48:04 UTC · demande d’inventaire"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "21:48:04 UTC · запрос инвентаря"
-          }
-        }
-      }
-    },
     "A successful check opens and immediately closes a TCP connection without sending application data. A TLS server may log this as an incomplete handshake." : {
       "localizations" : {
         "fr" : {
@@ -1780,22 +1764,6 @@
         }
       }
     },
-    "Only creates a local demo receipt. Nothing is sent to the game." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crée seulement un reçu de démo local. Rien n’est envoyé au jeu."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Создаёт только локальную демо-квитанцию. Команда не отправляется в игру."
-          }
-        }
-      }
-    },
     "Open the original Game.log sample ↗" : {
       "localizations" : {
         "fr" : {
@@ -2096,22 +2064,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Готово"
-          }
-        }
-      }
-    },
-    "Received by the simulator. The result in the game is unknown." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reçue par le simulateur. Le résultat dans le jeu est inconnu."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Получена имитатором. Результат в игре неизвестен."
           }
         }
       }
@@ -2676,22 +2628,6 @@
         }
       }
     },
-    "Tap a button on the left. The panel shows the demo service receiving it." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Touchez un bouton à gauche. Le panneau montre sa réception par le service de démo."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нажмите кнопку слева. Панель покажет получение команды демо-сервисом."
-          }
-        }
-      }
-    },
     "Tap to destruct" : {
       "localizations" : {
         "fr" : {
@@ -2836,22 +2772,6 @@
         }
       }
     },
-    "This is a sighting. The current position and any later movement are unknown." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ceci est une observation. La position actuelle et tout déplacement ultérieur sont inconnus."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Это точка наблюдения. Текущее положение и дальнейшее перемещение неизвестны."
-          }
-        }
-      }
-    },
     "Thrusters" : {
       "localizations" : {
         "fr" : {
@@ -2960,22 +2880,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "VTOL"
-          }
-        }
-      }
-    },
-    "Waiting for a command" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En attente d’une commande"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ожидание команды"
           }
         }
       }

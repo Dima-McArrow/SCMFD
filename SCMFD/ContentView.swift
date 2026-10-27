@@ -32,7 +32,6 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var screen: AppScreen = .deck
     @State private var deck: DeckState
-    @State private var session = DemoSession()
     @State private var activity: SessionActivityStore
     @State private var showsSettings = false
     @State private var showsConnect = false
@@ -149,7 +148,6 @@ struct ContentView: View {
         switch page {
         case .mission: MissionControlView(store: activity, horizontal: horizontal)
         case .credits: CreditRecorderView(store: activity, horizontal: horizontal)
-        case .terminal: CommandTerminalView(session: session, horizontal: horizontal)
         }
     }
 

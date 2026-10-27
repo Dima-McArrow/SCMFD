@@ -57,8 +57,7 @@ features, layout and status.
 | `NetworkCommandLink.swift` | `CommandLink` over the server. `send` is synchronous (keeps press order) and returns a `CommandTicket` whose `outcome` resolves with the ack |
 
 Keys follow the outcome, not the finger: a toggle flips only after its key-down is `sent`, a rejected hold stops
-its animation, and `CommandOutcome.failureLabel` is shown on the key. Note the name `CommandReceipt` is already
-taken by the demo terminal in `MFDModel.swift`.
+its animation, and `CommandOutcome.failureLabel` is shown on the key.
 
 Security rules that must not regress:
 

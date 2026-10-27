@@ -4,7 +4,6 @@ import Observation
 enum MFDPage: String, CaseIterable, Identifiable {
     case mission
     case credits
-    case terminal
 
     var id: String { rawValue }
 
@@ -12,7 +11,6 @@ enum MFDPage: String, CaseIterable, Identifiable {
         switch self {
         case .mission: "Mission Control"
         case .credits: "Credit Recorder"
-        case .terminal: "Command Terminal"
         }
     }
 
@@ -20,7 +18,6 @@ enum MFDPage: String, CaseIterable, Identifiable {
         switch self {
         case .mission: "Missions"
         case .credits: "Finances"
-        case .terminal: "Terminal"
         }
     }
 
@@ -28,7 +25,6 @@ enum MFDPage: String, CaseIterable, Identifiable {
         switch self {
         case .mission: "shippingbox"
         case .credits: "list.bullet.rectangle"
-        case .terminal: "terminal"
         }
     }
 
@@ -36,7 +32,6 @@ enum MFDPage: String, CaseIterable, Identifiable {
         switch self {
         case .mission: "01"
         case .credits: "02"
-        case .terminal: "03"
         }
     }
 }
@@ -56,53 +51,10 @@ struct CreditEntry: Identifiable {
     let source: String
 }
 
-enum ShipCommand: String, CaseIterable, Identifiable {
-    case requestLanding
-    case toggleGear
-    case toggleLights
-    case closeDoors
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .requestLanding: "Запрос посадки"
-        case .toggleGear: "Переключить шасси"
-        case .toggleLights: "Переключить свет"
-        case .closeDoors: "Закрыть двери"
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .requestLanding: "antenna.radiowaves.left.and.right"
-        case .toggleGear: "airplane.arrival"
-        case .toggleLights: "lightbulb"
-        case .closeDoors: "door.left.hand.closed"
-        }
-    }
-
-    var code: String {
-        switch self {
-        case .requestLanding: "ATC_REQUEST"
-        case .toggleGear: "GEAR_TOGGLE"
-        case .toggleLights: "LIGHTS_TOGGLE"
-        case .closeDoors: "DOORS_CLOSE"
-        }
-    }
-}
-
-struct CommandReceipt: Identifiable {
-    let id: Int
-    let command: ShipCommand
-}
-
 @Observable
 final class DemoSession {
     private(set) var missionAbandoned = false
     private(set) var includesFine = false
-    private(set) var receipts: [CommandReceipt] = []
-    private var nextReceiptID = 1
 
     // These objectives belong to the same captured contract; they are not cargo telemetry.
     let objectives = [
@@ -164,18 +116,9 @@ final class DemoSession {
         includesFine.toggle()
     }
 
-    func sendDemoCommand(_ command: ShipCommand) {
-        // A local receipt confirms only the simulation, never execution by the game.
-        receipts.insert(CommandReceipt(id: nextReceiptID, command: command), at: 0)
-        nextReceiptID += 1
-        receipts = Array(receipts.prefix(6))
-    }
-
     func reset() {
         missionAbandoned = false
         includesFine = false
-        receipts = []
-        nextReceiptID = 1
     }
 }
 
