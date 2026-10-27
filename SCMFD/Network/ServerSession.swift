@@ -86,6 +86,7 @@ nonisolated enum SessionEffect: Equatable, Sendable {
     /// The server revoked this device (4006).
     case forgetPairing
     case pairingCodeRejected(code: String)
+    /// The merged snapshot after an accepted state message, never a bare delta.
     case state(ServerState)
     case activity(ServerActivityPage)
     case commandFinished(UUID, CommandOutcome)
@@ -113,7 +114,8 @@ nonisolated struct ServerSession: Sendable {
     /// The ping whose pong would give a round-trip time.
     private var awaitedPong: (id: String, sentAt: Instant)?
     private var pingCounter = 0
-    private var lastSeq: Int?
+    /// Every state of this connection merged so far; its `seq` is the last one applied.
+    private var snapshot: ServerState?
     private var pending: Set<UUID> = []
 
     init(configuration: SessionConfiguration, serverId: UUID?, token: String?) {
@@ -177,7 +179,7 @@ nonisolated struct ServerSession: Sendable {
             if let serverId, serverId != welcome.serverId { return close(.serverIdentityMismatch) }
             serverId = welcome.serverId
             enter(.ready(welcome), at: now)
-            lastSeq = nil
+            snapshot = nil
             // The first ping is due one interval after welcome.
             lastPingSentAt = now
             return []
@@ -185,14 +187,16 @@ nonisolated struct ServerSession: Sendable {
         case .state(let state):
             guard case .ready(let welcome) = phase else { return violation("state before welcome") }
             guard state.sessionId == welcome.sessionId else { return violation("state from another session") }
-            if let lastSeq {
+            if let snapshot {
                 // Older or repeated snapshots are dropped, not applied.
-                guard state.seq > lastSeq else { return [] }
+                guard state.seq > snapshot.seq else { return [] }
             } else if state.partial {
                 return violation("first state is a delta")
             }
-            lastSeq = state.seq
-            return [.state(state)]
+            // Consumers always get the complete picture, never a bare delta.
+            let merged = snapshot?.merged(with: state) ?? state
+            snapshot = merged
+            return [.state(merged)]
 
         case .activity(let page):
             guard case .ready(let welcome) = phase, page.sessionId == welcome.sessionId, page.isValid else {

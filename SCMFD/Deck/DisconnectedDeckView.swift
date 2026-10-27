@@ -33,16 +33,16 @@ struct DisconnectedDeckView: View {
 #Preview("Deck / ship connection", traits: .fixedLayout(width: 1194, height: 834)) {
     @Previewable @State var state: DeckState = {
         let state = DeckState()
-        state.applyShipContext(name: nil)
+        state.apply(DeckUpdate(enabled: false, shipName: nil, resetLocalState: true))
         return state
     }()
     VStack(spacing: 16) {
         HStack {
             Button("Simulate ClearDriver") {
-                state.applyShipContext(name: nil)
+                state.apply(DeckUpdate(enabled: false, shipName: nil, resetLocalState: true))
             }
             Button("Simulate ship connection") {
-                state.applyShipContext(name: "Drake Cutter Rambler")
+                state.apply(DeckUpdate(enabled: true, shipName: "Drake Cutter Rambler", resetLocalState: true))
             }
         }
         DeckView(state: state)

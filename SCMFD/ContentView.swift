@@ -29,7 +29,7 @@ struct ContentView: View {
     @AppStorage("manufacturer") private var manufacturer: Manufacturer = .rsi
     @Environment(\.scenePhase) private var scenePhase
     @State private var screen: AppScreen = .deck
-    @State private var deck = DeckState()
+    @State private var deck: DeckState
     @State private var session = DemoSession()
     @State private var activity: SessionActivityStore
     @State private var showsSettings = false
@@ -43,8 +43,11 @@ struct ContentView: View {
     init() {
         let server = ServerConnection()
         let activity = SessionActivityStore()
+        let deck = DeckState()
         server.onActivity = { page in activity.receive(page) }
+        server.onState = { state, connectionId in deck.receive(state, connectionId: connectionId) }
         _activity = State(initialValue: activity)
+        _deck = State(initialValue: deck)
         _server = State(initialValue: server)
         _networkLink = State(initialValue: NetworkCommandLink(connection: server))
     }

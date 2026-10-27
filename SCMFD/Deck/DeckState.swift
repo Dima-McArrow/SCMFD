@@ -32,15 +32,22 @@ final class DeckState {
     private(set) var lit: Set<ShipAction> = []
     /// The console playground stays usable until an explicit ship-context update arrives.
     private(set) var isShipDisconnected = false
+    @ObservationIgnored private var shipContext = ShipContextTracker()
 
-    /// Future state.ship adapter: nil represents ClearDriver/no selected ship,
-    /// not a missing field in a partial update or a network disconnect.
-    func applyShipContext(name: String?) {
-        resetLights()
-        quantumTarget = .unknown
-        hangarRequest = nil
-        shipName = name
-        isShipDisconnected = name == nil
+    /// A merged snapshot from the server. Transport loss never calls this, so it does not disable the Deck.
+    func receive(_ state: ServerState, connectionId: UUID) {
+        guard let update = shipContext.receive(state, connectionId: connectionId) else { return }
+        apply(update)
+    }
+
+    func apply(_ update: DeckUpdate) {
+        if update.resetLocalState {
+            resetLights()
+            quantumTarget = .unknown
+            hangarRequest = nil
+        }
+        shipName = update.shipName
+        isShipDisconnected = !update.enabled
     }
     var selfDestructArmed = false
     /// Presentation placeholders for protocol v1; nil means no server observation yet.
@@ -73,13 +80,11 @@ final class DeckState {
     }
 
     /// Local override only: does not infer ship identity or send any game input.
-    /// A subsequent nil ship context still disconnects the deck.
+    /// It lasts until the next ship-context transition or reconnect.
     func enableManually() {
         guard isShipDisconnected else { return }
-        resetLights()
-        quantumTarget = .unknown
-        hangarRequest = nil
-        isShipDisconnected = false
+        apply(shipContext.enableManually()
+              ?? DeckUpdate(enabled: true, shipName: shipName, resetLocalState: true))
     }
 
     /// For when the lights drift from the game, e.g. after a respawn.

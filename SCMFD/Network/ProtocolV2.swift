@@ -333,9 +333,34 @@ nonisolated extension ServerState: Decodable {
     }
 }
 
+nonisolated extension ServerState {
+    /// The snapshot after applying `next` (41.8). A full state replaces everything; in a delta a missing
+    /// key keeps the old value and a present key replaces the whole object (no deep merge). The result
+    /// always has every key, so it is marked full.
+    func merged(with next: ServerState) -> ServerState {
+        guard next.partial else { return next }
+        return ServerState(
+            sessionId: next.sessionId,
+            seq: next.seq,
+            partial: false,
+            game: next.game.keeping(game),
+            log: next.log.keeping(log),
+            ship: next.ship.keeping(ship),
+            shipContext: next.shipContext.keeping(shipContext),
+            qtTarget: next.qtTarget.keeping(qtTarget),
+            hangarRequest: next.hangarRequest.keeping(hangarRequest)
+        )
+    }
+}
+
 nonisolated private extension StateField {
     var isAbsent: Bool {
         if case .absent = self { true } else { false }
+    }
+
+    /// This value if it was sent, otherwise the previous one.
+    func keeping(_ previous: StateField) -> StateField {
+        isAbsent ? previous : self
     }
 }
 

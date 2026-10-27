@@ -41,7 +41,8 @@ final class ServerConnection {
     }
 
     @ObservationIgnored var onActivity: ((ServerActivityPage) -> Void)?
-    @ObservationIgnored var onState: ((ServerState) -> Void)?
+    /// Merged snapshot plus the `connectionId` of the welcome it arrived on.
+    @ObservationIgnored var onState: ((ServerState, UUID) -> Void)?
     @ObservationIgnored var onCommandFinished: ((UUID, CommandOutcome) -> Void)?
     @ObservationIgnored var onInputEnded: ((UUID, String?) -> Void)?
 
@@ -403,8 +404,9 @@ final class ServerConnection {
                 record("Code rejected (\(code)). Check the code on the PC and try again.")
             case .state(let state):
                 latestState = state
-                record("← state seq \(state.seq)\(state.partial ? " (delta)" : " (full)")")
-                onState?(state)
+                record("← state seq \(state.seq)")
+                // ServerSession emits states only while ready.
+                if case .ready(let welcome) = phase { onState?(state, welcome.connectionId) }
             case .activity(let page):
                 onActivity?(page)
             case .commandFinished(let id, let outcome):

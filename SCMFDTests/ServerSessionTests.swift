@@ -159,7 +159,51 @@ struct ServerSessionTests {
         #expect(session.receive(.state(state(seq: 12, partial: true)), at: t0).isEmpty)
         #expect(session.receive(.state(state(seq: 11, partial: true)), at: t0).isEmpty)
         let next = state(seq: 15, partial: true) // gaps are allowed
-        #expect(session.receive(.state(next), at: t0) == [.state(next)])
+        #expect(session.receive(.state(next), at: t0) == [.state(full.merged(with: next))])
+    }
+
+    @Test func deltaKeepsMissingKeysAndReplacesSentOnes() {
+        var session = readySession()
+        let full = state(seq: 1, partial: false)
+        _ = session.receive(.state(full), at: t0)
+        let unfocused = GameStatus(running: true, focused: false, build: nil)
+        let delta = ServerState(sessionId: Self.sessionId, seq: 2, partial: true, game: .value(unfocused),
+                                log: .absent, ship: .absent, shipContext: .absent, qtTarget: .absent,
+                                hangarRequest: .absent)
+        guard case .state(let merged) = session.receive(.state(delta), at: t0).first else {
+            Issue.record("Expected a merged state")
+            return
+        }
+        #expect(!merged.partial)
+        #expect(merged.seq == 2)
+        #expect(merged.game == .value(unfocused))
+        #expect(merged.log == full.log)
+        #expect(merged.ship == full.ship)
+        #expect(merged.shipContext == full.shipContext)
+        #expect(merged.qtTarget == full.qtTarget)
+        #expect(merged.hangarRequest == full.hangarRequest)
+    }
+
+    @Test func shipNullInADeltaClearsTheShipButAMissingShipKeepsIt() {
+        let ship = ShipStatus(name: "Drake Cutter Rambler", model: nil, entityId: nil, manufacturerPrefix: "DRAK",
+                              confidence: .assumed, observedAt: wallClock)
+        let base = state(seq: 1, partial: false)
+        let full = ServerState(sessionId: base.sessionId, seq: 1, partial: false, game: base.game, log: base.log,
+                               ship: .value(ship), shipContext: base.shipContext, qtTarget: base.qtTarget,
+                               hangarRequest: base.hangarRequest)
+        let withoutShip = state(seq: 2, partial: true)
+        #expect(full.merged(with: withoutShip).ship == .value(ship))
+
+        let clearDriver = ServerState(sessionId: Self.sessionId, seq: 3, partial: true, game: .absent, log: .absent,
+                                      ship: .value(nil), shipContext: .absent, qtTarget: .absent,
+                                      hangarRequest: .absent)
+        #expect(full.merged(with: clearDriver).ship == .value(nil))
+    }
+
+    @Test func fullStateReplacesTheWholeSnapshot() {
+        let first = state(seq: 1, partial: false)
+        let second = state(seq: 2, partial: false)
+        #expect(first.merged(with: second) == second)
     }
 
     @Test func stateFromAnotherSessionIsAViolation() {

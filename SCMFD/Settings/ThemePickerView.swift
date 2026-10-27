@@ -156,7 +156,7 @@ private struct ManufacturerCard: View {
     @Previewable @State var selection = Manufacturer.rsi
     @Previewable @State var deck: DeckState = {
         let deck = DeckState()
-        deck.applyShipContext(name: nil)
+        deck.apply(DeckUpdate(enabled: false, shipName: nil, resetLocalState: true))
         return deck
     }()
     ThemePickerView(
