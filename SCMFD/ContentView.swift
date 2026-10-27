@@ -83,6 +83,7 @@ struct ContentView: View {
                 activity.setConnected(true)
             } else {
                 activity.setConnected(false)
+                deck.connectionLost()
             }
         }
         .onChange(of: scenePhase) { _, phase in

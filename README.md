@@ -99,7 +99,8 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | Keys and emotes over the network: rejection feedback with a label for every cancel/reject reason, hold stops on `input_cancelled` | Implemented; not yet verified in game |
 | Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
 | Merged server state drives the Deck: ship context, ClearDriver, manual override ([FIX-02](FIX-02-server-state-drives-the-deck.md)) | Implemented and unit-tested; not yet verified against the real server |
-| QT readout and ATC from state, auto theme | Next steps: [FIX-03](FIX-03-quantum-target-and-atc-from-state.md), [FIX-04](FIX-04-auto-theme-from-manufacturer.md) |
+| QT readout and ATC status mirrored from state ([FIX-03](FIX-03-quantum-target-and-atc-from-state.md)) | Implemented and unit-tested; not yet verified against the real server |
+| Auto theme from the ship's manufacturer | Next step: [FIX-04](FIX-04-auto-theme-from-manufacturer.md) |
 
 ## Keeping the emote list in sync
 

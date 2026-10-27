@@ -1,8 +1,6 @@
 import Observation
 import SwiftUI
 
-/// Tablet-side state of the deck. Lit keys follow the player's taps, not the game,
-/// until the server starts reporting real ship state from Game.log.
 /// Quantum travel target as reported by Game.log through the server.
 nonisolated enum QuantumTarget: Equatable, Sendable {
     /// No data yet: the server is not connected or the log has not mentioned a target.
@@ -27,6 +25,8 @@ nonisolated enum HangarRequestStatus: String, Sendable {
     }
 }
 
+/// Tablet-side state of the deck. Lit keys follow the player's taps, not the game; the server only decides
+/// whether the Deck is enabled and supplies the ship name, QT target and ATC status (`ShipContextTracker`).
 @Observable
 final class DeckState {
     private(set) var lit: Set<ShipAction> = []
@@ -40,21 +40,27 @@ final class DeckState {
         apply(update)
     }
 
+    /// Shows QT and ATC as "no data" while the server link is down; keys and lights stay as they are.
+    func connectionLost() {
+        shipContext.connectionLost()
+        quantumTarget = .unknown
+        hangarRequest = nil
+    }
+
     func apply(_ update: DeckUpdate) {
-        if update.resetLocalState {
-            resetLights()
-            quantumTarget = .unknown
-            hangarRequest = nil
-        }
+        if update.resetLocalState { resetLights() }
         shipName = update.shipName
+        quantumTarget = update.quantumTarget
+        hangarRequest = update.hangarRequest
         isShipDisconnected = !update.enabled
     }
     var selfDestructArmed = false
-    /// Presentation placeholders for protocol v1; nil means no server observation yet.
+    /// Mirrored from the server state; nil means no server data. The ship name survives a dropped link,
+    /// the ATC status does not.
     var shipName: String?
     var hangarRequest: HangarRequestStatus?
 
-    /// Filled by the Game.log feed once the server link exists.
+    /// Mirrored from the server's `qtTarget`; `.unknown` without server data.
     var quantumTarget: QuantumTarget = .unknown
 
     func binding(for action: ShipAction) -> Binding<Bool> {
