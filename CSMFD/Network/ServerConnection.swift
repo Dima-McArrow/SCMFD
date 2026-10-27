@@ -40,6 +40,7 @@ final class ServerConnection {
         }
     }
 
+    @ObservationIgnored var onActivity: ((ServerActivityPage) -> Void)?
     @ObservationIgnored var onState: ((ServerState) -> Void)?
     @ObservationIgnored var onCommandFinished: ((UUID, CommandOutcome) -> Void)?
     @ObservationIgnored var onInputEnded: ((UUID, String?) -> Void)?
@@ -404,6 +405,8 @@ final class ServerConnection {
                 latestState = state
                 record("← state seq \(state.seq)\(state.partial ? " (delta)" : " (full)")")
                 onState?(state)
+            case .activity(let page):
+                onActivity?(page)
             case .commandFinished(let id, let outcome):
                 record("← \(id.wireString.prefix(8)): \(outcome)")
                 onCommandFinished?(id, outcome)

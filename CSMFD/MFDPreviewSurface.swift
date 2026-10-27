@@ -10,6 +10,7 @@ enum MFDPreviewScenario {
 struct MFDPreviewSurface: View {
     let page: MFDPage
     @State private var session: DemoSession
+    @State private var activity = SessionActivityStore(fileURL: nil)
 
     init(page: MFDPage, scenario: MFDPreviewScenario = .standard) {
         self.page = page
@@ -39,9 +40,9 @@ struct MFDPreviewSurface: View {
                         MFDTag(text: "DEMO / ARCHIVE 19 JUN 2026", theme: theme)
                         switch page {
                         case .mission:
-                            MissionControlView(session: session, horizontal: geometry.size.width >= 800)
+                            MissionControlView(store: activity, horizontal: geometry.size.width >= 800)
                         case .credits:
-                            CreditRecorderView(session: session, horizontal: geometry.size.width >= 800)
+                            CreditRecorderView(store: activity, horizontal: geometry.size.width >= 800)
                         case .terminal:
                             CommandTerminalView(session: session, horizontal: geometry.size.width >= 800)
                         }

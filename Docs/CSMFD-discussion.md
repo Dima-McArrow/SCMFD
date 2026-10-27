@@ -1589,3 +1589,115 @@ finally {
 Следующие ступени Debug, ещё не реализованные: проверка закреплённого TLS-сертификата → WebSocket upgrade → hello/pair/welcome → полный state → ping/pong и RTT → fake input sink → разрешённая команда в игре. Не перескакивать от TCP reachable к сообщению «BE подключён». Путь /csmfd и v2 потребуются на WebSocket-ступени, не в TCP-пробе.
 
 Правило для Windows MVP уже можно зафиксировать: **порт 47823, выбранный частный IPv4, целевой WSS endpoint /csmfd, JSON v2 по этому разделу.** Никакого временного небезопасного ws-подключения с реальными токенами и командами.
+
+### 41.21. Session rewards and observed contract history (2026-10-27)
+
+This additive v2 extension implements the approved first version of session rewards and contract history.
+It does not implement Party, default themes, gear estimates, spending, sales, rentals, fines, wallet balance,
+or a complete authoritative mission list. Existing command/input security and ship-state semantics are unchanged.
+
+#### Ownership and source
+
+The existing single Game.log reader feeds a bounded `ActivityJournal`. Only explicit new notification additions
+are recognized, with up to eight lines / 4096 UTF-16 code units of notification assembly. Queue reprints and
+UpdateNotificationItem changes are not events. The source starts at EOF; no archived history is silently imported.
+Unrelated game lines use a cheap marker check without entering the journal lock or allocating event objects.
+
+The BE retains at most 256 events in memory, plus a bounded 512-entry notification identity cache. It keeps no
+disk ledger or per-user profit calculation. Notification identity uses the original timestamp and notification
+metadata, not amount alone; different notifications with identical reward amounts remain separate observations.
+The FE owns totals, contract grouping, session boundaries, saved history and all visual updates.
+
+#### Activity wire message
+
+After authenticated welcome and the first full state, the server sends `activity` messages through the existing
+single send loop. Acks/errors retain priority; ship state is serviced before at most one activity page per loop.
+Activity does not enter the bounded ack/error queue and is not discarded by state coalescing. Remaining pages
+schedule another send iteration. An activity-change wakeup is coalesced to avoid one semaphore signal per event.
+The existing 16 KiB frame limit and send deadlines apply. No unpaired client receives activity.
+
+```json
+{
+  "v": 2,
+  "type": "activity",
+  "sessionId": "7a42291e-21db-4ac5-a3e1-ea278bb54900",
+  "streamId": "982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1",
+  "startedAt": "2026-10-27T12:00:00.000Z",
+  "firstSeq": 1,
+  "latestSeq": 1,
+  "ended": false,
+  "events": [
+    {
+      "seq": 1,
+      "kind": "reward",
+      "at": "2026-10-27T12:00:01.000Z",
+      "text": "Awarded 500 aUEC:",
+      "amount": 500,
+      "currency": "aUEC"
+    }
+  ]
+}
+```
+
+- `sessionId` must match the authenticated welcome's server-run session, independently of activity stream identity.
+- `streamId` is a fresh UUID per journal capture: server start or log-generation reset. It is not a WebSocket ID,
+  ship ID, account ID, mission ID, or proof of a complete game session.
+- `startedAt` is the start of observation, not necessarily game launch. Timestamps are ISO 8601 UTC with milliseconds.
+- Activity `seq` starts at 1 and increases per event within the stream, independent of ship-state `seq`.
+- `firstSeq` is the earliest event still retained. `latestSeq` is the latest journal sequence when the page is read,
+  not necessarily the last event on this page. FE deduplication uses `(streamId, seq)`.
+- A page contains at most 4 events, strictly increasing and contiguous within the page. Reconnect starts replay
+  from the earliest retained event; an existing FE skips already recorded sequences.
+- An initially empty stream has firstSeq 1, latestSeq 0 and an empty events array. Later pages are non-empty.
+- Event kinds: `reward`, `contractAccepted`, `contractComplete`, `contractWithdrawn`, `contractFailed`,
+  `newObjective`, `objectiveComplete`, `sessionEnded`.
+- `text` is a sanitized, bounded log-derived description (maximum 160 Unicode scalar values). It is not localized
+  by the BE. `objectiveId`, when present, has a maximum of 96 Unicode scalar values. Control characters are excluded.
+- Contract/objective events carry a nonzero `missionId`. Objective identity is included when present in the source.
+  Objective text is an observed notification, not cargo telemetry or guaranteed complete progress.
+- Only `reward` carries `amount` and `currency`: positive integer amount up to 1,000,000,000, currency `aUEC` or
+  `UEC`. Currencies are never silently combined. A nonzero source missionId can be retained; zero becomes absent.
+- `ended` describes the capture's end state. A `sessionEnded` event is emitted once for observed SystemQuit or
+  game-process exit; ordinary network/server disconnection does not invent a reward/contract event or reset totals.
+  Log-generation reset creates another stream. Ship changes and ClearDriver do not reset the journal.
+- Existing v2 clients ignore the unknown `activity` message type. New clients talking to older servers show that
+  the feed is unavailable/waiting; they never substitute demo transactions.
+
+Reference fixture: `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-activity-rewards.json`.
+The FE protocol test uses the same example. Both sides validate page shape and money constraints.
+
+#### Totals, gaps and persistence
+
+The FE records only received rewards. A sequence jump marks that session incomplete; it must not display the
+partial total as an authoritative session profit. A reconnect within replay retention can recover missed events
+without double counting. More than 256 unseen events, BE restart or lost source continuity can leave gaps;
+replay is bounded recovery, not a durable BE transaction log.
+
+An initial FE record starts at the BE's observation boundary and includes available replay. A manual Start new
+tracking session closes the current local record, starts at zero, and carries forward the last processed stream
+cursor. Its boundary is the next unprocessed observation, not a synchronized timestamp cutoff in the game.
+The action is disabled while disconnected or catching up. It sends no game input and does not restart the BE.
+
+The iPad atomically saves up to 12 tracking sessions in its Application Support `CSMFD/session-history.json`.
+It retains the latest 128 activity entries per session, session reward totals, up to 128 observed contracts and
+32 objectives per contract. Contract/objective truncation marks history incomplete. Older sessions may be removed
+to stay within the 16 MiB history limit. A shrinking recent-event list does not reduce the running reward totals.
+Unreadable history is preserved instead of overwritten; a visible warning explains that new changes cannot be saved.
+New streams archive unfinished previous captures with an incomplete flag; saved history remains available offline.
+
+Contract records are grouped by missionId. Repeated acceptance does not create another contract record or
+regress an observed terminal state. Rewards with no matching mission ID are not assigned to a nearby contract.
+Purchase/sale/rental requests, Transaction Complete without amounts, and unvalidated fines are excluded.
+
+#### Validation and limits
+
+BE checks include parsing, multiline assembly, duplicate handling, bounds, stream reset/end, worst-case Unicode
+frame size, authenticated WebSocket paging/replay and denial to unpaired clients. A read-only replay of the
+35-file local corpus matched the independently extracted counts: 552 rewards, 119 accepted, 240 new objectives,
+87 objective completions, 39 contract completions, 6 withdrawals and 1 failure.
+
+FE tests cover reconnect deduplication, separate currencies, gaps, manual boundaries, contract/objective identity,
+terminal status, stream changes, saved history, corrupt-history preservation, rolling-list limits and wire/session
+validation. These Swift tests require Xcode on macOS; authoring them on Windows does not establish that they pass.
+In-game event completeness and frametime impact still require a controlled live run. The ledger is explicitly
+observed income; wallet balance, all spending and overall session profit remain unknown.

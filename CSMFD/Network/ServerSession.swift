@@ -87,6 +87,7 @@ nonisolated enum SessionEffect: Equatable, Sendable {
     case forgetPairing
     case pairingCodeRejected(code: String)
     case state(ServerState)
+    case activity(ServerActivityPage)
     case commandFinished(UUID, CommandOutcome)
     /// A hold or tap that already got `sent` ended early (`input_cancelled`) or by the safety ceiling (`auto_released`).
     case inputEnded(commandId: UUID, code: String, reason: String?)
@@ -192,6 +193,12 @@ nonisolated struct ServerSession: Sendable {
             }
             lastSeq = state.seq
             return [.state(state)]
+
+        case .activity(let page):
+            guard case .ready(let welcome) = phase, page.sessionId == welcome.sessionId, page.isValid else {
+                return violation("Invalid activity page or activity before welcome")
+            }
+            return [.activity(page)]
 
         case .ack(let ack):
             guard case .ready = phase else { return violation("ack before welcome") }

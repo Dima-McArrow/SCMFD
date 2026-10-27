@@ -1,6 +1,598 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Session finances" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finances de la session"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Финансы сессии"
+          }
+        }
+      }
+    },
+    "Rewards recorded while monitoring. Wallet balance and unrecorded spending are unknown." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récompenses relevées pendant le suivi. Le solde et les dépenses non relevées sont inconnus."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Награды, записанные во время наблюдения. Баланс и неучтённые расходы неизвестны."
+          }
+        }
+      }
+    },
+    "Logged rewards" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récompenses relevées"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записанные награды"
+          }
+        }
+      }
+    },
+    "%@ aUEC" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ aUEC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ aUEC"
+          }
+        }
+      }
+    },
+    "%@ UEC" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ UEC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ UEC"
+          }
+        }
+      }
+    },
+    "%lld reward notifications" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld notifications de récompense"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уведомлений о наградах: %lld"
+          }
+        }
+      }
+    },
+    "Currencies are counted separately. This is recorded income, not session profit." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les devises sont comptées séparément. Il s’agit des revenus relevés, pas du bénéfice de la session."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Валюты учитываются отдельно. Это записанный доход, а не прибыль за сессию."
+          }
+        }
+      }
+    },
+    "Spending and fines" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépenses et amendes"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Расходы и штрафы"
+          }
+        }
+      }
+    },
+    "Not tracked yet" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas encore suivi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока не отслеживается"
+          }
+        }
+      }
+    },
+    "Purchase, sale and rental requests are excluded until their amounts and completion can be verified." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les demandes d’achat, de vente et de location sont exclues tant que leurs montants et leur exécution ne sont pas vérifiés."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запросы покупки, продажи и аренды исключены, пока суммы и завершение операций не подтверждены."
+          }
+        }
+      }
+    },
+    "Rewards are not assigned to contracts without a matching mission ID." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les récompenses ne sont pas attribuées aux contrats sans identifiant de mission correspondant."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Награды не привязываются к контрактам без совпадающего идентификатора миссии."
+          }
+        }
+      }
+    },
+    "Recent rewards" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récompenses récentes"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недавние награды"
+          }
+        }
+      }
+    },
+    "No reward notifications recorded in this session." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune notification de récompense relevée dans cette session."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В этой сессии уведомления о наградах не записаны."
+          }
+        }
+      }
+    },
+    "The recent list is limited to the latest 128 activity events. Session reward totals retain all received rewards." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La liste récente se limite aux 128 derniers événements. Les totaux conservent toutes les récompenses reçues."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недавний список ограничен 128 событиями. Итоги сессии учитывают все полученные награды."
+          }
+        }
+      }
+    },
+    "Connect to the PC server to begin recording live rewards." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous au serveur PC pour relever les récompenses en direct."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключитесь к серверу на ПК для записи наград в реальном времени."
+          }
+        }
+      }
+    },
+    "Session contracts" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrats de la session"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Контракты сессии"
+          }
+        }
+      }
+    },
+    "Contracts and objectives observed in Game.log. The active contract list and objective progress may be incomplete." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrats et objectifs relevés dans Game.log. La liste des contrats actifs et leur progression peuvent être incomplètes."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Контракты и цели, замеченные в Game.log. Список активных контрактов и прогресс целей могут быть неполными."
+          }
+        }
+      }
+    },
+    "No contract events recorded in this session." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun événement de contrat relevé dans cette session."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В этой сессии события контрактов не записаны."
+          }
+        }
+      }
+    },
+    "Contracts already active when monitoring began may not appear." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les contrats déjà actifs au début du suivi peuvent ne pas apparaître."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Контракты, активные до начала наблюдения, могут отсутствовать."
+          }
+        }
+      }
+    },
+    "Contract details unavailable" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails du contrat indisponibles"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Данные контракта недоступны"
+          }
+        }
+      }
+    },
+    "Required cargo and objective text are not a cargo hold reading. Rewards are listed separately in Finances." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fret requis et le texte des objectifs ne mesurent pas le contenu de la soute. Les récompenses figurent dans Finances."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Требуемый груз и текст целей не показывают содержимое трюма. Награды перечислены отдельно в финансах."
+          }
+        }
+      }
+    },
+    "Connect to the PC server to begin recording live contract events." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous au serveur PC pour relever les événements de contrat en direct."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключитесь к серверу на ПК для записи событий контрактов."
+          }
+        }
+      }
+    },
+    "Accepted" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Принят"
+          }
+        }
+      }
+    },
+    "Completed" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завершён"
+          }
+        }
+      }
+    },
+    "Withdrawn" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retiré"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отозван"
+          }
+        }
+      }
+    },
+    "Failed" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échoué"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Провален"
+          }
+        }
+      }
+    },
+    "Observed" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Observé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зафиксирован"
+          }
+        }
+      }
+    },
+    "Tracking session" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session de suivi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сессия наблюдения"
+          }
+        }
+      }
+    },
+    "Start new tracking session" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commencer une nouvelle session de suivi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать новую сессию наблюдения"
+          }
+        }
+      }
+    },
+    "Saved session" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session enregistrée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённая сессия"
+          }
+        }
+      }
+    },
+    "Monitoring session" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session en cours de suivi"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сессия наблюдения"
+          }
+        }
+      }
+    },
+    "Waiting for the server activity feed. Saved history remains available." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente des événements du serveur. L’historique enregistré reste disponible."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание событий сервера. Сохранённая история доступна."
+          }
+        }
+      }
+    },
+    "Disconnected. Showing saved session data." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déconnecté. Affichage des données enregistrées."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет подключения. Показаны сохранённые данные сессии."
+          }
+        }
+      }
+    },
+    "Catching up with recorded activity…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récupération des événements enregistrés…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка записанных событий…"
+          }
+        }
+      }
+    },
+    "Some activity was missed or could not be retained. Totals and contract history are incomplete." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Des événements ont été manqués ou n’ont pas pu être conservés. Les totaux et l’historique des contrats sont incomplets."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Часть событий пропущена или не сохранена. Итоги и история контрактов неполны."
+          }
+        }
+      }
+    },
+    "Session history could not be loaded or saved. Current changes may not survive an app restart." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de charger ou d’enregistrer l’historique. Les changements actuels peuvent être perdus au redémarrage."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить или сохранить историю. Текущие изменения могут потеряться при перезапуске."
+          }
+        }
+      }
+    },
+    "Up to 12 tracking sessions are saved on this iPad. Changing ships does not reset a session." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jusqu’à 12 sessions de suivi sont conservées sur cet iPad. Changer de vaisseau ne réinitialise pas la session."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На iPad сохраняется до 12 сессий наблюдения. Смена корабля не сбрасывает сессию."
+          }
+        }
+      }
+    },
     "" : {
 
     },

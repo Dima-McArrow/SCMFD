@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var screen: AppScreen = .deck
     @State private var deck = DeckState()
     @State private var session = DemoSession()
+    @State private var activity: SessionActivityStore
     @State private var showsSettings = false
     @State private var showsConnect = false
     /// One server connection for the whole app; the Debug tab shows the same one.
@@ -41,6 +42,9 @@ struct ContentView: View {
 
     init() {
         let server = ServerConnection()
+        let activity = SessionActivityStore()
+        server.onActivity = { page in activity.receive(page) }
+        _activity = State(initialValue: activity)
         _server = State(initialValue: server)
         _networkLink = State(initialValue: NetworkCommandLink(connection: server))
     }
@@ -71,6 +75,13 @@ struct ContentView: View {
         .environment(\.commandLink, commandLink)
         .animation(.smooth(duration: 0.45), value: manufacturer)
         .task { connectIfPaired() }
+        .onChange(of: server.phase) { _, phase in
+            if case .ready = phase {
+                activity.setConnected(true)
+            } else {
+                activity.setConnected(false)
+            }
+        }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             // The server releases every held key when the connection closes.
@@ -124,8 +135,8 @@ struct ContentView: View {
     @ViewBuilder
     private func infoPage(_ page: MFDPage, horizontal: Bool) -> some View {
         switch page {
-        case .mission: MissionControlView(session: session, horizontal: horizontal)
-        case .credits: CreditRecorderView(session: session, horizontal: horizontal)
+        case .mission: MissionControlView(store: activity, horizontal: horizontal)
+        case .credits: CreditRecorderView(store: activity, horizontal: horizontal)
         case .terminal: CommandTerminalView(session: session, horizontal: horizontal)
         }
     }

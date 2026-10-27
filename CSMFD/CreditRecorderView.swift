@@ -1,127 +1,70 @@
 import SwiftUI
 
 struct CreditRecorderView: View {
-    let session: DemoSession
+    let store: SessionActivityStore
     let horizontal: Bool
     @Environment(\.manufacturerTheme) private var manufacturerTheme
+    @State private var selectedID: UUID?
     private var theme: MFDTheme { MFDTheme(manufacturerTheme) }
+    private var record: RecordedSession? { store.sessions.first(where: { $0.id == selectedID }) ?? store.sessions.first }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            MFDPageHeading(
-                eyebrow: "INDUSTRIAL SERIES / LEDGER / MFD–02",
-                title: "Transaction History",
-                subtitle: "Rewards and fines recorded in the archived log. Wallet balance is unknown.",
-                theme: theme
-            )
-
-            MFDColumns(horizontal: horizontal) {
-                recordedDelta
-            } trailing: {
-                MFDPanel(theme: theme) {
-                    MFDLabel(text: "LEDGER / NEWEST FIRST", theme: theme)
-                    ForEach(session.creditEntries) { entry in
-                        VStack(alignment: .leading, spacing: 10) {
-                            MFDLabel(text: "\(entry.time) UTC / NOTIFICATION", theme: theme)
-                            ViewThatFits(in: .horizontal) {
-                                HStack(alignment: .firstTextBaseline) {
-                                    Text(entry.title)
-                                    Spacer()
-                                    entryAmount(entry)
-                                }
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(entry.title)
-                                    entryAmount(entry)
-                                }
-                            }
-                            .font(.callout)
-                            Text(entry.source)
-                                .font(.caption)
-                                .foregroundStyle(theme.muted)
-                            Rectangle().fill(theme.edge).frame(height: 1)
+            Text("Session finances").font(.largeTitle.bold()).foregroundStyle(theme.accent)
+            Text("Rewards recorded while monitoring. Wallet balance and unrecorded spending are unknown.")
+                .foregroundStyle(theme.muted)
+            ActivitySessionControls(store: store, selectedID: $selectedID)
+            if let record {
+                MFDColumns(horizontal: horizontal) {
+                    MFDPanel(theme: theme, highlighted: true) {
+                        Text("Logged rewards").font(.headline)
+                        Text("\(record.rewards["aUEC", default: 0].formatted()) aUEC")
+                            .font(.system(size: 42, weight: .medium, design: .monospaced))
+                            .minimumScaleFactor(0.5).lineLimit(1)
+                            .accessibilityIdentifier("credits.sessionRewards")
+                        if let uec = record.rewards["UEC"], uec > 0 {
+                            Text("\(uec.formatted()) UEC").monospacedDigit()
                         }
-                        .accessibilityElement(children: .combine)
+                        Text("\(record.rewardCount) reward notifications")
+                        Text("Currencies are counted separately. This is recorded income, not session profit.")
+                            .font(.caption).foregroundStyle(theme.muted)
                     }
-                    Text("The reward cannot be linked to a specific mission: the notification contains a zero mission ID.")
-                        .font(.caption)
-                        .foregroundStyle(theme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
+                } trailing: {
+                    MFDPanel(theme: theme) {
+                        Text("Spending and fines").font(.headline)
+                        Text("Not tracked yet")
+                        Text("Purchase, sale and rental requests are excluded until their amounts and completion can be verified.")
+                            .foregroundStyle(theme.muted)
+                        Text("Rewards are not assigned to contracts without a matching mission ID.")
+                            .font(.caption).foregroundStyle(theme.muted)
+                    }
                 }
-            }
-
-            Button {
-                session.toggleFine()
-            } label: {
-                Label(
-                    session.includesFine ? "Remove fine entry" : "Add fine entry",
-                    systemImage: session.includesFine ? "minus.rectangle" : "plus.rectangle"
-                )
-            }
-            .buttonStyle(MFDButtonStyle(theme: theme, prominent: true))
-            .accessibilityIdentifier("credits.toggleFine")
-
-            MFDReceipt(
-                title: "LOCAL TOTAL / ENTRIES: \(session.creditEntries.count)",
-                message: session.includesFine
-                    ? "28,375 − 20,000 = +8,375. This is the net change from the two displayed entries; other transactions are unknown."
-                    : "One reward is shown. Add the fine entry to see the combined total.",
-                theme: theme
-            )
-
-            MFDSourceNote(
-                theme: theme,
-                lines: [
-                    "Sample: 19 Jun 2026 · SC Tracker / sample-events.log.",
-                    "Reward: 28,375 aUEC at 22:09:03 UTC. Fine: 20,000 UEC at 21:17:46 UTC.",
-                    "Both entries come from notifications, not a balance API.",
-                    "The total combines the nominal UEC/aUEC amounts in the sample.",
-                    "The history may be incomplete. Purchases, sales, and unrecorded transactions are excluded.",
-                ])
-        }
-    }
-
-    private var recordedDelta: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text("TOTAL OF DISPLAYED ENTRIES")
-                .font(.system(.caption, design: .monospaced))
-                .tracking(1.5)
-            Text(MFDFormat.signed(session.recordedCreditDelta))
-                .font(.system(size: 60, weight: .medium, design: .monospaced))
-                .monospacedDigit()
-                .minimumScaleFactor(0.5)
-                .lineLimit(1)
-                .accessibilityIdentifier("credits.delta")
-            Text("UEC / aUEC")
-                .font(.system(.body, design: .monospaced))
-            Rectangle().fill(theme.background.opacity(0.25)).frame(height: 1)
-            VStack(alignment: .leading, spacing: 8) {
-                Text("WALLET / NO DATA")
-                    .font(.system(.callout, design: .monospaced).weight(.medium))
-                Text("These entries cannot determine your current balance.")
-                    .font(.callout)
-                    .fixedSize(horizontal: false, vertical: true)
+                MFDPanel(theme: theme) {
+                    Text("Recent rewards").font(.headline)
+                    let rewards = record.recentEvents.filter { $0.kind == "reward" }
+                    if rewards.isEmpty {
+                        Text("No reward notifications recorded in this session.").foregroundStyle(theme.muted)
+                    }
+                    ForEach(rewards) { event in
+                        HStack {
+                            Text(event.at, format: .dateTime.hour().minute().second())
+                            Spacer()
+                            Text(verbatim: "+\((event.amount ?? 0).formatted()) \(event.currency ?? "")")
+                                .monospacedDigit().foregroundStyle(theme.accent)
+                        }
+                    }
+                    Text("The recent list is limited to the latest 128 activity events. Session reward totals retain all received rewards.")
+                        .font(.caption).foregroundStyle(theme.muted)
+                }
+            } else {
+                Text("Connect to the PC server to begin recording live rewards.").foregroundStyle(theme.muted)
             }
         }
-        .foregroundStyle(theme.background)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(24)
-        .background(theme.accent)
-        .clipShape(CutCornerShape(cut: 16))
-    }
-
-    private func entryAmount(_ entry: CreditEntry) -> some View {
-        Text(MFDFormat.signed(entry.amount))
-            .font(.system(.title3, design: .monospaced).weight(.medium))
-            .monospacedDigit()
-            .foregroundStyle(theme.accent)
-            .fixedSize()
+        .foregroundStyle(theme.text)
     }
 }
 
-#Preview("Credits / Reward", traits: .fixedLayout(width: 1194, height: 834)) {
-    MFDPreviewSurface(page: .credits)
-}
-
-#Preview("Credits / With fine", traits: .fixedLayout(width: 1194, height: 834)) {
-    MFDPreviewSurface(page: .credits, scenario: .withFine)
+#Preview("Live session finances") {
+    CreditRecorderView(store: SessionActivityStore(fileURL: nil), horizontal: true)
+        .padding().manufacturerTheme(.rsi)
 }

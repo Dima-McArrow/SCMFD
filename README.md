@@ -23,7 +23,9 @@ Both sides follow **protocol v2**, specified in section 41 of
   and a landing-request indicator.
 - **Emotes**: 48 emote families / 132 chat commands (`/wave`, `/dance3`…), listed in
   `CSMFD/Commands/Emote.swift`.
-- **Info pages**: Missions and Finances screens (currently demo data).
+- **Session Contracts and Finances**: live observed contract/objective events and reward totals, with reconnect
+  deduplication and saved iPad history. Spending, fines and wallet balance are not tracked. See
+  [`SESSION-REWARDS-CONTRACTS.md`](SESSION-REWARDS-CONTRACTS.md) and protocol section 41.21.
 - **18 manufacturer themes** (RSI, Drake, Aegis, Anvil, Origin, MISC, Crusader, …) with their own palettes, fonts,
   key shapes and HUD details, plus interface sounds.
 - **Localization**: English source strings with French and Russian translations (`Localizable.xcstrings`).
@@ -89,6 +91,7 @@ xcodebuild -project CSMFD.xcodeproj -scheme CSMFD \
 | Protocol v2, pairing link, Keychain, TLS pinning, session logic | Implemented and unit-tested |
 | Connect to PC (in-app QR scanner, 6-digit code, manual fallback), WebSocket driver, auto-reconnect | Implemented; not yet verified against the real server |
 | Keys and emotes over the network: rejection feedback, hold stops on `input_cancelled` | Implemented; not yet verified in game |
+| Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
 | State reducer (ship context, ClearDriver, QT, ATC), auto theme | Next steps |
 
 ## Keeping the emote list in sync
