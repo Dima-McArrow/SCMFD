@@ -4,9 +4,21 @@ SCMFD turns an iPad into a multi-function display for Star Citizen. Ship functio
 lights, power, quantum, ATC landing request…) and emotes sit on themed touch keys; a small companion server on the
 gaming PC presses the matching game bindings and reports what it reads from `Game.log`.
 
-This repository is the **iPad app (SwiftUI)**. The Windows server is a separate project (`SCMFDBE`, .NET 10).
+This repository is the **iPad app (SwiftUI)**. Its companion is the
+[SCMFDBE Windows server](https://github.com/Dima-McArrow/SCMFDBE) (.NET 10).
 Both sides follow **protocol v2**, specified in section 41 of
 [`Claude outputs/CSMFD-discussion.md`](Claude%20outputs/CSMFD-discussion.md).
+
+## Two repositories, one companion
+
+| Repository | Role | Runs on |
+|---|---|---|
+| [SCMFD](https://github.com/Dima-McArrow/SCMFD) (this repository) | Touch controls, themes, observed activity and local history | iPad |
+| [SCMFDBE](https://github.com/Dima-McArrow/SCMFDBE) | Game input, log observations, pairing and secure transport | Windows gaming PC |
+
+For connected use, build both projects and put the iPad and PC on the same private network. Follow the
+[server setup and pairing instructions](https://github.com/Dima-McArrow/SCMFDBE#first-start), then use
+**Connect to PC** in the iPad app. Update both sides together when the shared protocol changes.
 
 ```text
  iPad (this app)                         Windows PC
@@ -15,6 +27,41 @@ Both sides follow **protocol v2**, specified in section 41 of
  │ ServerConnection    │ ◀────────────── │ Game.log tailer + state  │◀─Game.log──┘
  └─────────────────────┘ ack · state     └──────────────────────────┘
 ```
+
+## Why SCMFD?
+
+**Touch controls and log-driven information, together on a native iPad MFD.** SCMFD combines a cockpit-style
+control surface with feedback from the events Star Citizen exposes in `Game.log`. The aim is to make useful
+log observations visible beside the controls you use, and expand that feedback as more event formats are verified.
+
+- **A cockpit that follows your ship.** With Auto theme enabled, a recognized ship-channel join switches the
+  interface to the ship manufacturer's theme. Leaving the ship channel returns it to the default SCMFD theme.
+  The 18 manufacturer themes bring their own palettes, fonts, key shapes and HUD details; manual selection
+  remains available.
+- **Your selected quantum destination beside Engage.** When a starmap selection is reported in the log, the
+  Quantum page shows its target name directly above the Engage key. Target names can still be technical names;
+  the app displays what the server actually observes.
+- **Feedback beyond button presses.** Landing requests show pending, answered or timeout status. Observed
+  contracts, objectives and rewards populate the session pages, while the read-only Party tab shows observed
+  members, the last known leader and membership events, with explicit uncertainty when information is incomplete.
+- **Native touch interaction.** SwiftUI controls, timed holds, a slide-to-arm for self-destruct, interface sounds
+  and English/French/Russian text make the iPad a dedicated companion display.
+- **A direct local connection.** The iPad talks to its Windows companion over the private network. Normal
+  operation requires no project account, cloud service, AI provider or subscription. The PC reuses one log reader;
+  presentation and history belong to the iPad.
+
+Input is restricted to an allowlist, checked against game focus and physical-key conflicts, with release paths
+for disconnects and other safety events. Log-derived information is partial; current validation and remaining
+limits are documented below. No game-memory access or modification is used.
+
+### Respect to fellow companion projects
+
+Much respect to [GameGlass](https://gameglass.gg/) for its touchscreen game-control panels and to
+[Wingman AI](https://www.wingman-ai.com/) for showing how Star Citizen's game log can inform a companion's
+responses to game events. SCMFD brings these two ideas together in its own form: a native iPad touch interface
+and visual feedback driven by verified `Game.log` observations. It has no voice assistant; the shared idea with
+Wingman AI here is reading the game log. Thanks to both teams and their communities for advancing companion
+experiences in the 'verse.
 
 ## Features
 
@@ -50,8 +97,8 @@ The PC accepts input only from one paired iPad. In short:
 ## Requirements
 
 - Xcode 27.1 (iOS 27.1 SDK); deployment target iOS/iPadOS 26.0.
-- For a real connection: the Windows server running on the same private network
-  (see the server's README for firewall and pairing steps).
+- For a real connection: the [Windows server](https://github.com/Dima-McArrow/SCMFDBE) running on the same private
+  network (see its [README](https://github.com/Dima-McArrow/SCMFDBE#readme) for firewall and pairing steps).
 
 ## Build and test
 
