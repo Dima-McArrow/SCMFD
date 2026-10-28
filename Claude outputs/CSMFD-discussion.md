@@ -1723,3 +1723,37 @@ Authentication failures remain non-retryable and never erase or bypass certifica
 The chat transport/calibrated delays are updated in 41.12. Verified ship aliases currently include
 RSI Aurora Mk I LN → RSI_Aurora_GS_LN and Anvil C8R Pisces Rescue → ANVL_C8R_Pisces.
 These fixes require the live validation described in SESSION-RELIABILITY-FIXES.md.
+
+
+### 41.23. One ship-context path: the ship channel (owner decision, 2026-10-28)
+
+Supersedes the ClearDriver rows of 41.9, the manual-override rules tied to ClearDriver, and the channel part
+of 41.22. No wire version change; one new `shipContext.reason` value.
+
+Evidence: in the 2026-10-28 game test the server sent `channelJoined` with `manufacturerPrefix` `ANVL` / `DRAK`,
+but the theme stayed default. The activity channel events were never produced from real logs (the two-line
+join notification left ` :` before the regex anchor) and `sessionEnded` counted as channel evidence, which
+silenced the state path on the iPad. Two sources for one fact; one of them broken.
+
+Rules:
+
+- The ship context travels only in `state.shipContext`. Ship channels are not `activity` events any more.
+- Transitions (each `revision++`): `channelJoined`; `channelLeft` (only the channel of the current ship, same
+  name and owner); `vehicleDestroyed` (new); `gameEnded`; `logReset`.
+- `vehicleDestroyed`: verified line `<[ActorState] Dead> … ejected from zone '<model>_<id>' [<id>] … due to previous
+  zone being in a destroyed vehicle` for the current ship, or for the ship whose channel was just left (real logs
+  write leave and destruction in either order, sometimes without a leave). Seen only with the player aboard.
+- ClearDriver (leaving the seat) is never a transition. The server still releases held input on it.
+- Storing the ship at a terminal has no verified line yet; a controlled in-game test is needed before it can
+  become a reason.
+- An unknown future `reason` must not be a decoding error on the iPad.
+
+iPad behaviour (details and tests in `FIX-07-one-path-deck-and-theme.md`): Deck on after `channelJoined`, off
+after `channelLeft` / `gameEnded` / `logReset` / `vehicleDestroyed`; one-tap Enable Deck on the off screen until
+the next transition; theme of the manufacturer on join and SCMFD on the other transitions (Auto theme on);
+keys kept across ships and leaves, reset to defaults (landing gear lit) only on `vehicleDestroyed` or the local
+Reset Deck icon. Reason: on foot the Deck keys do other things (`mouse1` fires the weapon in hand, a held
+`Backspace` kills the character).
+
+Reference fixture: `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-state-delta-vehicle-destroyed.json`.
+Server commits: `ffff70f`, `9064f12`, `cc0cd1c`.
