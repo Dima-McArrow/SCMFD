@@ -71,7 +71,7 @@ nonisolated struct RecordedSession: Codable, Sendable, Equatable, Identifiable {
                 contracts = Array(contracts.prefix(128))
                 incomplete = true
             }
-        } else {
+        } else if event.kind != "shipChannelJoined" && event.kind != "shipChannelLeft" {
             incomplete = true
         }
     }
@@ -80,6 +80,9 @@ nonisolated struct RecordedSession: Codable, Sendable, Equatable, Identifiable {
 /// FE-owned ledger/history. Replayed pages cannot double-count rewards or reset sessions on reconnect.
 @Observable
 final class SessionActivityStore {
+    private(set) var channelThemeChange: ChannelThemeChange?
+    private(set) var hasChannelThemeEvidence = false
+    @ObservationIgnored private var channelThemeTracker = ShipChannelThemeTracker()
     private(set) var sessions: [RecordedSession] = []
     private(set) var storageFailed = false
     private(set) var receivedLiveFeed = false
@@ -116,6 +119,8 @@ final class SessionActivityStore {
 
     func receive(_ page: ServerActivityPage) {
         guard page.isValid else { return }
+        if let change = channelThemeTracker.receive(page) { channelThemeChange = change }
+        hasChannelThemeEvidence = channelThemeTracker.hasEvidence
         receivedLiveFeed = true
         isConnected = true
         var index: Int

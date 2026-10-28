@@ -33,6 +33,7 @@ nonisolated struct SessionActivityEvent: Codable, Sendable, Equatable, Identifia
     let objectiveId: String?
     let amount: Int64?
     let currency: String?
+    var channelId: String? = nil
 
     var id: Int64 { seq }
 
@@ -46,6 +47,11 @@ nonisolated struct SessionActivityEvent: Codable, Sendable, Equatable, Identifia
                   currency == "aUEC" || currency == "UEC" else { return false }
         } else if amount != nil || currency != nil {
             return false
+        }
+        if let channelId, channelId.count != 64 || !channelId.utf8.allSatisfy({ (48...57).contains($0) || (97...102).contains($0) }) { return false }
+        if kind == "shipChannelJoined" || kind == "shipChannelLeft" {
+            // Older saved histories omitted channelId; keep them readable, but do not infer membership.
+            guard missionId == nil, objectiveId == nil else { return false }
         }
         if Self.contractKinds.contains(kind), missionId == nil { return false }
         return true

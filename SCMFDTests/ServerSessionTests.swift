@@ -131,7 +131,7 @@ struct ServerSessionTests {
     @Test func tenSecondsOfSilenceClosesAndSettlesPendingAsUnknown() {
         var session = readySession()
         let id = UUID()
-        _ = session.send(.key(KeyEvent(action: .lights, phase: .down, timestamp: wallClock)), id: id)
+        _ = session.send(.key(KeyEvent(action: .lights, phase: .down, timestamp: wallClock)), id: id, at: t0)
         // Every message from the server resets liveness.
         _ = session.receive(.unknown(type: "future"), at: at(4))
         #expect(!session.tick(at: at(13.9), wallClock: wallClock).contains(.close(.livenessTimeout)))
@@ -217,13 +217,13 @@ struct ServerSessionTests {
     @Test func commandBeforeReadyIsNotSentOrQueued() {
         var session = ServerSession(configuration: Self.configuration, serverId: Self.serverId, token: "token")
         let id = UUID()
-        #expect(session.send(.releaseAll, id: id) == [.commandFinished(id, .notSent(.notConnected))])
+        #expect(session.send(.releaseAll, id: id, at: t0) == [.commandFinished(id, .notSent(.notConnected))])
     }
 
     @Test func ackFinishesTheMatchingCommandOnce() {
         var session = readySession()
         let id = UUID()
-        #expect(session.send(.chat("/wave"), id: id) == [.send(.chat(id: id, text: "/wave"))])
+        #expect(session.send(.chat("/wave"), id: id, at: t0) == [.send(.chat(id: id, text: "/wave"))])
         let ack = ServerAck(id: id, status: .rejected, reason: "busy")
         #expect(session.receive(.ack(ack), at: t0) == [.commandFinished(id, .rejected("busy"))])
         // A duplicate ack does not finish it twice.
@@ -232,9 +232,9 @@ struct ServerSessionTests {
 
     @Test func pendingCommandsAreBounded() {
         var session = readySession()
-        for _ in 0..<32 { _ = session.send(.releaseAll, id: UUID()) }
+        for _ in 0..<32 { _ = session.send(.releaseAll, id: UUID(), at: t0) }
         let id = UUID()
-        #expect(session.send(.releaseAll, id: id) == [.commandFinished(id, .notSent(.tooManyPending))])
+        #expect(session.send(.releaseAll, id: id, at: t0) == [.commandFinished(id, .notSent(.tooManyPending))])
     }
 
     @Test func cancelledHoldIsReportedWithItsCommandId() {
@@ -249,12 +249,12 @@ struct ServerSessionTests {
     @Test func revokedDeviceForgetsPairingAndDoesNotReconnect() {
         var session = readySession()
         let id = UUID()
-        _ = session.send(.releaseAll, id: id)
+        _ = session.send(.releaseAll, id: id, at: t0)
         #expect(session.transportClosed(code: 4006) == [.commandFinished(id, .unknown), .forgetPairing])
         #expect(!SessionCloseReason.closedByServer(code: 4006).allowsReconnect)
         // Nothing is sent on a closed session.
         let late = UUID()
-        #expect(session.send(.releaseAll, id: late) == [.commandFinished(late, .notSent(.notConnected))])
+        #expect(session.send(.releaseAll, id: late, at: t0) == [.commandFinished(late, .notSent(.notConnected))])
     }
 
     @Test(arguments: [(4001, false), (4002, false), (4003, false), (4004, true), (4005, true), (1000, true)])
@@ -272,4 +272,23 @@ struct ReconnectBackoffTests {
         let delays = (0..<8).map(ServerConnection.reconnectDelay(afterFailures:))
         #expect(delays == [1, 2, 4, 8, 16, 30, 30, 30])
     }
+    @Test func missingAckClosesEvenWhileServerMessagesKeepArriving() {
+        var session = readySession()
+        let id = UUID()
+        _ = session.send(.chat("/wave"), id: id, at: t0)
+        _ = session.receive(.unknown(type: "future"), at: at(14))
+        #expect(session.tick(at: at(15), wallClock: wallClock) == [.commandFinished(id, .unknown), .close(.acknowledgementTimeout)])
+        #expect(SessionCloseReason.acknowledgementTimeout.allowsReconnect)
+        #expect(session.transportClosed(code: nil).isEmpty)
+    }
+
+    @Test func acknowledgedCommandDoesNotLeaveADeadlineBehind() {
+        var session = readySession()
+        let id = UUID()
+        _ = session.send(.chat("/wave"), id: id, at: t0)
+        _ = session.receive(.ack(ServerAck(id: id, status: .sent, reason: nil)), at: at(1))
+        _ = session.receive(.unknown(type: "future"), at: at(14))
+        #expect(!session.tick(at: at(15), wallClock: wallClock).contains(.close(.acknowledgementTimeout)))
+    }
+
 }

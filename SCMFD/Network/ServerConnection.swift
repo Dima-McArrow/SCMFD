@@ -111,6 +111,9 @@ final class ServerConnection {
     /// Manual pairing, first half: read the certificate fingerprint and abort without sending anything.
     func captureFingerprint(host: String, port: UInt16) {
         reconnectsAutomatically = false
+        reconnectTask?.cancel()
+        reconnectTask = nil
+        update { $0.cancel() }
         teardown()
         capturedFingerprint = nil
         isCapturingFingerprint = true
@@ -160,7 +163,7 @@ final class ServerConnection {
         if session == nil {
             onCommandFinished?(id, .notSent(.notConnected))
         } else {
-            update { $0.send(command, id: id) }
+            update { $0.send(command, id: id, at: .now) }
         }
         return id
     }
@@ -196,6 +199,7 @@ final class ServerConnection {
     private func start(_ target: Target, serverId: UUID?, token: String?) {
         reconnectTask?.cancel()
         reconnectTask = nil
+        update { $0.cancel() }
         teardown()
         let attempt = UUID()
         self.attempt = attempt
@@ -219,7 +223,7 @@ final class ServerConnection {
         // so hello cannot leave before the certificate is verified.
         update { $0.transportOpened(at: .now) }
         loops = [
-            sendLoop(stream, task: task),
+            sendLoop(stream, task: task, attempt: attempt),
             receiveLoop(task, attempt: attempt),
             tickLoop(attempt: attempt),
         ]
@@ -245,13 +249,13 @@ final class ServerConnection {
     }
 
     /// The only place that writes to the socket, so messages leave in order.
-    private func sendLoop(_ stream: AsyncStream<String>, task: URLSessionWebSocketTask) -> Task<Void, Never> {
-        Task {
+    private func sendLoop(_ stream: AsyncStream<String>, task: URLSessionWebSocketTask, attempt: UUID) -> Task<Void, Never> {
+        Task { [weak self] in
             for await text in stream {
                 do {
                     try await task.send(.string(text))
                 } catch {
-                    // The receive loop reports the failure and closes the session.
+                    self?.transportEnded(task, error: error, attempt: attempt)
                     return
                 }
             }

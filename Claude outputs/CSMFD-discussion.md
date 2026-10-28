@@ -1393,7 +1393,7 @@ SendInput ограничен UIPI, не сбрасывает текущее со
 
 `chat.text` — только команда из явного allowlist эмоций, согласованного с `Emote.swift`; простой проверки «начинается с /» недостаточно. До передачи Windows проверить длину 2…64 Unicode scalar values и отсутствие любых управляющих символов, CR/LF/tab/NUL. Сетевых команд произвольного чата/консоли нет.
 
-Клавиша чата (`enter` либо `f12`) — локальная настройка BE, отражённая в welcome. Начальная последовательность: открыть чат → 120 мс → Unicode-ввод → 30 мс → Enter. Это калибруемые задержки, не подтверждённая длительность реакции игры. Проверять фокус перед каждым этапом, выполнять одну последовательность за раз; второй chat/key во время неё получает busy. UP/releaseAll и аварийная отмена имеют приоритет.
+Клавиша чата (`enter` либо `f12`) — локальная настройка BE, отражённая в welcome. Текущая последовательность (исправление 2026-10-28): нажать клавишу чата на 60 мс → отпустить → подождать 300 мс → ввести allowlisted ASCII-команду через scan codes, полученные для foreground keyboard layout → подождать 100 мс → Enter на 60 мс. KEYEVENTF_UNICODE больше не используется для эмоций: он создавал VK_PACKET, а в игровом испытании чат открывался и закрывался пустым. Это рабочая гипотеза причины; новый путь ещё требует проверки в игре. Поддерживаются буквы, цифры, / и _; неподдерживаемая раскладка или Ctrl/Alt mapping отменяет ввод до Enter. При частичной вставке отпускать только реально вставленные down; неудачный cleanup блокирует новый ввод до локального reset. Это калибруемые задержки, не подтверждённая длительность реакции игры. Проверять фокус перед каждым этапом, выполнять одну последовательность за раз; второй chat/key во время неё получает busy. UP/releaseAll и аварийная отмена имеют приоритет.
 
 Если фокус потерян после открытия чата или частичного текста, отменить оставшиеся шаги. Не возвращать фокус и не нажимать Enter автоматически. Частично введённый текст может остаться в игре; это отображаемая ошибка, а не основание для слепого повтора. При отсутствии достоверного состояния чата нельзя гарантировать, что клавиша открытия всегда откроет, а не закроет уже открытый чат. Это обязательный пункт игрового испытания.
 
@@ -1701,3 +1701,25 @@ terminal status, stream changes, saved history, corrupt-history preservation, ro
 validation. These Swift tests require Xcode on macOS; authoring them on Windows does not establish that they pass.
 In-game event completeness and frametime impact still require a controlled live run. The ledger is explicitly
 observed income; wallet balance, all spending and overall session profit remain unknown.
+
+
+### 41.22. Session reliability corrections (2026-10-28)
+
+No wire version change. Decode optional `activity.events[].channelId` (64 lowercase hexadecimal
+characters, opaque identity scoped to streamId). Channel join/leave events have no mission/objective IDs,
+amount or currency; text is the bounded channel ship name without its owner. Missing channelId in older
+saved history remains readable but cannot establish an association. Unknown names cannot select a manufacturer.
+FE associates the latest recognized joined ship channel. A leave resets the theme only for that exact identity;
+ClearDriver affects the Deck but not channel association or theme. Replayed events are deduplicated by
+streamId/seq and theme changes wait until all announced pages are processed. A replay gap invalidates the
+association until fresh evidence; no ship storage/destruction is inferred. Auto theme off suppresses selection.
+State-based channelJoined remains a fallback when no channel activity evidence is available.
+
+An unacknowledged command has a client-local 15 s deadline driven by the existing monotonic tick.
+Expiry closes the connection, settles pending commands as unknown and permits transient reconnection.
+Never retry input. Socket send failures also close the session; replacing a session settles old tickets.
+Authentication failures remain non-retryable and never erase or bypass certificate pinning automatically.
+
+The chat transport/calibrated delays are updated in 41.12. Verified ship aliases currently include
+RSI Aurora Mk I LN → RSI_Aurora_GS_LN and Anvil C8R Pisces Rescue → ANVL_C8R_Pisces.
+These fixes require the live validation described in SESSION-RELIABILITY-FIXES.md.

@@ -88,9 +88,12 @@ extension View {
     /// Tracks a raw finger-down / finger-up, unlike `Button`, which only reports the release.
     /// Needed because the game must receive the key press the moment the finger lands.
     /// Dragging off the key keeps it held until the finger lifts, like a physical button.
-    func trackingPress(_ state: GestureState<Bool>, isEnabled: Bool = true) -> some View {
+    func trackingPress(_ state: GestureState<Bool>, isEnabled: Bool = true, onChanged: @escaping () -> Void, onEnded: @escaping () -> Void) -> some View {
         gesture(
-            DragGesture(minimumDistance: 0).updating(state) { _, isPressed, _ in isPressed = true },
+            DragGesture(minimumDistance: 0)
+                .updating(state) { _, isPressed, _ in isPressed = true }
+                .onChanged { _ in onChanged() }
+                .onEnded { _ in onEnded() },
             isEnabled: isEnabled
         )
     }

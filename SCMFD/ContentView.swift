@@ -87,11 +87,15 @@ struct ContentView: View {
                 deck.connectionLost()
             }
         }
-        // Only a join switches the theme; ClearDriver, reconnects and manual Deck enable never do (FIX-04).
+        // State joins are a fallback for older servers; channel activity owns join/leave themes.
         // Writing the picker's own storage means a manual pick wins until the next join.
         .onChange(of: deck.lastShipJoin) { _, join in
-            guard let join else { return }
+            guard let join, !activity.hasChannelThemeEvidence else { return }
             appTheme = AppTheme.afterJoin(join, current: appTheme, autoTheme: autoTheme)
+        }
+        .onChange(of: activity.channelThemeChange) { _, change in
+            guard autoTheme, let change else { return }
+            appTheme = change.theme
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

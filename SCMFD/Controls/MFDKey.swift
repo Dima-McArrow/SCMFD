@@ -14,6 +14,7 @@ struct MFDKey: View {
     var detail: Text?
 
     @GestureState private var isPressed = false
+    @State private var inputPress = KeyPressTracker()
     @State private var pressCount = 0
     @State private var showsPressFeedback = false
     @State private var hold = TimedHoldController()
@@ -144,9 +145,13 @@ struct MFDKey: View {
                 isPressed: isPressed || showsPressFeedback
             )
         )
-        .trackingPress($isPressed)
+        .trackingPress($isPressed, onChanged: {
+            if inputPress.begin() { handlePress(true) }
+        }, onEnded: {
+            if inputPress.end() { handlePress(false) }
+        })
         .onChange(of: isPressed) { _, pressed in
-            handlePress(pressed)
+            if !pressed { cancelPress() }
         }
         .task(id: pressCount) {
             guard pressCount > 0 else { return }
@@ -161,9 +166,7 @@ struct MFDKey: View {
         .onDisappear {
             showsPressFeedback = false
             hold.cancel(action, link: link)
-            if isPressed && holdSeconds == nil {
-                link.send(KeyEvent(action: action, phase: .up))
-            }
+            cancelPress()
         }
         .sensoryFeedback(.impact(weight: .light), trigger: pressCount)
         .sensoryFeedback(.success, trigger: hold.completions)
@@ -176,6 +179,12 @@ struct MFDKey: View {
             handlePress(true)
             handlePress(false)
         }
+    }
+
+    private func cancelPress() {
+        guard inputPress.end() else { return }
+        // Cancelling a timed-hold touch must never activate the hold.
+        if holdSeconds == nil { handlePress(false) }
     }
 
     private func handlePress(_ pressed: Bool) {

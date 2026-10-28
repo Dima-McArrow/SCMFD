@@ -2,7 +2,7 @@
 
 Date: 2026-10-27
 
-Status: corrected user requirement and implementation proposal; no runtime behavior changed by this document.
+Status (2026-10-28): runtime join/leave handling implemented in FE source using BE channel activity. Mac build/tests and live verification remain pending. The sections below preserve the original design and evidence.
 The user explicitly clarified that the default theme is triggered by leaving the ship channel, NOT by leaving
 the pilot seat. This distinction is required behavior.
 

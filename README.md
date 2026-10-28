@@ -102,7 +102,7 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
 | Merged server state drives the Deck: ship context, ClearDriver, manual override ([FIX-02](FIX-02-server-state-drives-the-deck.md)) | Implemented and unit-tested; not yet verified against the real server |
 | QT readout and ATC status mirrored from state ([FIX-03](FIX-03-quantum-target-and-atc-from-state.md)) | Implemented and unit-tested; not yet verified against the real server |
-| Auto theme from the ship's manufacturer on a channel join ([FIX-04](FIX-04-auto-theme-from-manufacturer.md)) | Implemented and unit-tested; not yet verified against the real server. Back to SCMFD on channel leave waits for the server ([`DEFAULT-THEME-DESIGN.md`](DEFAULT-THEME-DESIGN.md)) |
+| Auto theme from the ship's manufacturer on a channel join ([FIX-04](FIX-04-auto-theme-from-manufacturer.md)) | Join/leave activity wired in source (2026-10-28); matching channel leave restores SCMFD, while ClearDriver retains the theme. Replay deduplicates channel events. Mac build/tests and live verification pending ([`DEFAULT-THEME-DESIGN.md`](DEFAULT-THEME-DESIGN.md)) |
 
 ## Keeping the emote list in sync
 
@@ -113,3 +113,8 @@ python3 tools/gen-emotes-md.py SCMFD-emotes.md
 ```
 
 and copy its `emotes.txt` block to `%LocalAppData%\CSMFD\emotes.txt` on the PC.
+
+## Session reliability follow-up (2026-10-28)
+
+See [SESSION-RELIABILITY-FIXES.md](SESSION-RELIABILITY-FIXES.md) for the observed failures, source fixes,
+verification results and the remaining Mac/game checks.

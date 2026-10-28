@@ -13,6 +13,7 @@ struct MFDHoldKey: View {
     var caption: LocalizedStringResource = "Tap to engage"
 
     @GestureState private var isPressed = false
+    @State private var inputPress = KeyPressTracker()
     @State private var hold = TimedHoldController()
 
     private var seconds: Double {
@@ -52,20 +53,24 @@ struct MFDHoldKey: View {
                 isEnabled: isEnabled
             )
         )
-        .trackingPress($isPressed, isEnabled: isEnabled)
+        .trackingPress($isPressed, isEnabled: isEnabled, onChanged: {
+            guard isEnabled, inputPress.begin() else { return }
+            if !hold.isRunning { InterfaceAudio.shared.play(for: action) }
+        }, onEnded: {
+            guard inputPress.end(), isEnabled else { return }
+            hold.toggle(action, seconds: seconds, link: link)
+        })
         .onChange(of: isPressed) { _, pressed in
-            guard isEnabled else { return }
-            // Audio responds on touch; the timed command still starts on release.
-            if pressed {
-                if !hold.isRunning { InterfaceAudio.shared.play(for: action) }
-            } else {
-                hold.toggle(action, seconds: seconds, link: link)
-            }
+            if !pressed { _ = inputPress.end() }
         }
         .onChange(of: isEnabled) { _, enabled in
-            if !enabled { hold.cancel(action, link: link) }
+            if !enabled {
+                _ = inputPress.end()
+                hold.cancel(action, link: link)
+            }
         }
         .onDisappear {
+            _ = inputPress.end()
             hold.cancel(action, link: link)
         }
         .sensoryFeedback(.impact(weight: .medium), trigger: hold.isRunning) { _, running in running }

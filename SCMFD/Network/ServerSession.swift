@@ -14,6 +14,7 @@ nonisolated struct SessionConfiguration: Sendable {
     var pairingTimeout: Duration = .seconds(120)
     /// Commands awaiting an ack; the server queues at most 32.
     var maxPendingCommands = 32
+    var acknowledgementTimeout: Duration = .seconds(15)
 }
 
 nonisolated enum SessionPhase: Equatable, Sendable {
@@ -29,6 +30,7 @@ nonisolated enum SessionPhase: Equatable, Sendable {
 }
 
 nonisolated enum SessionCloseReason: Equatable, Sendable {
+    case acknowledgementTimeout
     case livenessTimeout
     case handshakeTimeout
     case pairingTimeout
@@ -46,7 +48,7 @@ nonisolated enum SessionCloseReason: Equatable, Sendable {
     /// authentication (4003) and revocation (4006) need the user, not a retry loop.
     var allowsReconnect: Bool {
         switch self {
-        case .livenessTimeout, .handshakeTimeout:
+        case .acknowledgementTimeout, .livenessTimeout, .handshakeTimeout:
             true
         case .closedByServer(let code):
             ![4001, 4002, 4003, 4006].contains(code)
@@ -116,7 +118,7 @@ nonisolated struct ServerSession: Sendable {
     private var pingCounter = 0
     /// Every state of this connection merged so far; its `seq` is the last one applied.
     private var snapshot: ServerState?
-    private var pending: Set<UUID> = []
+    private var pending: [UUID: Instant] = [:]
 
     init(configuration: SessionConfiguration, serverId: UUID?, token: String?) {
         self.configuration = configuration
@@ -142,12 +144,12 @@ nonisolated struct ServerSession: Sendable {
     }
 
     /// Commands are only sent on a ready session; nothing is queued for a later connection.
-    mutating func send(_ command: SessionCommand, id: UUID) -> [SessionEffect] {
+    mutating func send(_ command: SessionCommand, id: UUID, at now: Instant) -> [SessionEffect] {
         guard case .ready = phase else { return [.commandFinished(id, .notSent(.notConnected))] }
         guard pending.count < configuration.maxPendingCommands else {
             return [.commandFinished(id, .notSent(.tooManyPending))]
         }
-        pending.insert(id)
+        pending[id] = now
         switch command {
         case .key(let event): return [.send(.key(id: id, event))]
         case .chat(let text): return [.send(.chat(id: id, text: text))]
@@ -207,7 +209,7 @@ nonisolated struct ServerSession: Sendable {
         case .ack(let ack):
             guard case .ready = phase else { return violation("ack before welcome") }
             // Late or unknown ids (e.g. after the client gave up) are ignored.
-            guard pending.remove(ack.id) != nil else { return [] }
+            guard pending.removeValue(forKey: ack.id) != nil else { return [] }
             let outcome: CommandOutcome = switch ack.status {
             case .sent: .sent
             case .ignored: .ignored
@@ -245,6 +247,9 @@ nonisolated struct ServerSession: Sendable {
         case .ready:
             if let lastReceivedAt, now - lastReceivedAt >= configuration.livenessTimeout {
                 return close(.livenessTimeout)
+            }
+            if pending.values.contains(where: { now - $0 >= configuration.acknowledgementTimeout }) {
+                return close(.acknowledgementTimeout)
             }
             guard let lastPingSentAt, now - lastPingSentAt >= configuration.pingInterval else { return [] }
             pingCounter += 1
@@ -317,7 +322,7 @@ nonisolated struct ServerSession: Sendable {
     /// Pending commands end as unknown: an ack may have been lost, not the input.
     private mutating func finish(_ reason: SessionCloseReason) -> [SessionEffect] {
         phase = .closed(reason)
-        let unresolved = pending.sorted { $0.uuidString < $1.uuidString }
+        let unresolved = pending.keys.sorted { $0.uuidString < $1.uuidString }
         pending.removeAll()
         return unresolved.map { .commandFinished($0, .unknown) }
     }
