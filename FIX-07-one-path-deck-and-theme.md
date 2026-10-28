@@ -1,0 +1,84 @@
+# FIX-07 · One path for the Deck and the theme: the ship channel
+
+| | |
+|---|---|
+| Size | M |
+| Depends on | nothing; replaces the theme parts of FIX-02 / FIX-04 and the channel part of 41.22 |
+| Decision | owner, 2026-10-28 (see "Why") |
+| Server side | done: SCMFDBE `ffff70f` (channelLeft, ClearDriver no transition), `9064f12` (vehicleDestroyed), `cc0cd1c` (no channel events in activity) |
+
+## Why
+
+The theme stayed on default in the 2026-10-28 game test although the server sent `shipContext.reason:
+channelJoined` with `manufacturerPrefix: "ANVL"` / `"DRAK"`. Two paths fed the theme: `shipContext` (state) and
+`shipChannelJoined/Left` (activity), and `hasChannelThemeEvidence` let the activity path silence the state path.
+The activity events were never produced from real logs, and `sessionEnded` counted as evidence, so the theme
+was stuck. Decision: **one path, the `state` message**. Activity is only for rewards and contracts again.
+
+## Behaviour
+
+The ship context is `(sessionId, shipContext.revision)`; a new pair is a transition. Theme changes happen only
+with **Auto theme** on; with it off the user's pick is never touched.
+
+| `shipContext` | Deck | Theme (Auto theme on) | Keys (lit state) |
+|---|---|---|---|
+| App start, not connected yet | off | SCMFD (standard) | defaults: **landing gear lit**, all others off |
+| `channelJoined` | **on** | manufacturer of `manufacturerPrefix` (unknown prefix: unchanged) | **kept**, also for a different ship |
+| `channelLeft`, `gameEnded`, `logReset` | **off** | SCMFD | **kept** |
+| `vehicleDestroyed` | **off** | SCMFD | **reset to defaults** (landing gear lit, self-destruct disarmed) |
+| `clearDriver` (only from an older server) | ignored | ignored | ignored |
+| `startup` / status `unknown` on connect | off | unchanged | unchanged |
+| Same revision again (delta, reconnect, enrichment) | from `status`, or the manual enable | unchanged | unchanged |
+| Transport lost | unchanged | unchanged | unchanged |
+| Unknown future reason | from `status` (`assumed` on, otherwise off) | unchanged | unchanged |
+
+- **Enable Deck** button directly on the off screen (`DisconnectedDeckView`, where "No ship connection" is),
+  one tap. It sends nothing to the game. It lasts until the next transition (new revision or sessionId) and is
+  never persisted. Remove "Enable Deck manually" from Settings (`ThemePickerView`).
+- **Reset Deck** as a small icon in the top bar / menu: keys back to defaults (landing gear lit), self-destruct
+  disarmed. Local only, sends nothing to the game.
+- Why the Deck goes off outside a ship channel: on foot `mouse1` fires the weapon in hand and a held `Backspace`
+  kills the character, so the ship keys must not be one accidental touch away.
+
+## Changes
+
+1. **Decoding** (`Network/ProtocolV2.swift`): `ShipContextStatus.Reason` must not fail on an unknown value (today
+   a new reason would be a decoding error, i.e. a protocol violation and a reconnect loop). Add `vehicleDestroyed`
+   and an `unknown` fallback (e.g. `init(from:)` mapping unrecognised strings to `.unknown`).
+2. **`Deck/ShipContextTracker.swift`**: replace `DeckUpdate.join: ShipJoin?` with a theme instruction for the
+   transition, e.g. `theme: ThemeChange?` = `.manufacturer(m)` on `channelJoined`, `.standard` on `channelLeft` /
+   `gameEnded` / `logReset` / `vehicleDestroyed`, `nil` otherwise; tag it with `(sessionId, revision)` so
+   SwiftUI's `onChange` fires once per transition. Replace `resetLocalState` with `resetKeys`, true only for
+   `vehicleDestroyed`. `clearDriver` is a transition the tracker swallows (no Deck, theme or key change).
+   Manual enable: valid while `(sessionId, revision)` is unchanged.
+3. **`Deck/DeckState.swift`**: default `lit = [.landingGear]`; `resetLights()` resets to that default (it is also
+   the Reset Deck action). `apply` no longer resets keys except on `resetKeys`.
+4. **`ContentView.swift`**: one `onChange` for the tracker's theme instruction (guarded by `autoTheme`). Remove
+   the `activity.channelThemeChange` handler and the `!activity.hasChannelThemeEvidence` guard.
+5. **Delete** `Theme/ShipChannelThemeTracker.swift` and its tests; remove `channelThemeChange`,
+   `hasChannelThemeEvidence` and the tracker from `Activity/SessionActivityStore.swift`. Keep decoding an optional
+   `channelId` and the `shipChannel*` kinds in saved history so old history files stay readable; they are ignored.
+6. **Strings**: "Enable Deck", "Reset Deck" (accessibility label of the icon) with fr / ru.
+
+## Tests (Swift Testing)
+
+Use the server fixtures `server-state-full.json`, `server-state-delta-clear-driver.json` and the new
+`server-state-delta-vehicle-destroyed.json` (SCMFDBE `tests/Csmfd.Tests/Fixtures/Protocol`).
+
+| Input | Expected |
+|---|---|
+| Fresh `DeckState` | landing gear lit, nothing else |
+| `channelJoined` `DRAK`, Auto theme on / off | Deck on; theme Drake / unchanged |
+| `channelJoined` while keys are lit | keys kept |
+| `channelJoined` of another ship (`ANVL`) after `channelLeft` | Anvil theme, keys kept |
+| `channelLeft` | Deck off, theme SCMFD, keys kept |
+| `vehicleDestroyed` fixture | Deck off, theme SCMFD, keys reset (landing gear lit) |
+| `clearDriver` fixture (older server) | nothing changes |
+| Manual enable → same-revision delta | stays on; next transition decides again |
+| Reason `"somethingNew"` | decodes; Deck from `status`; theme and keys unchanged |
+| Reset Deck | landing gear lit, others off, self-destruct disarmed |
+
+## Out of scope
+
+Ship stored at a terminal / in the hangar: no verified Game.log line yet. It will become another reason after a
+controlled in-game test (store the ship, note the time). Until then only `vehicleDestroyed` resets the keys.
