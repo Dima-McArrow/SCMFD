@@ -38,6 +38,8 @@ nonisolated enum SessionCloseReason: Equatable, Sendable {
     case pairingUnavailable
     /// `paired` or `welcome` came from a different server id than the pinned one.
     case serverIdentityMismatch
+    /// The presented certificate does not match the stored pin; requires explicit re-pairing.
+    case pinRejected
     case protocolViolation(String)
     case serverError(code: String)
     /// The WebSocket closed with this code; nil when it dropped without one.
@@ -52,7 +54,7 @@ nonisolated enum SessionCloseReason: Equatable, Sendable {
             true
         case .closedByServer(let code):
             ![4001, 4002, 4003, 4006].contains(code)
-        case .pairingTimeout, .pairingUnavailable, .serverIdentityMismatch, .protocolViolation, .serverError, .cancelled:
+        case .pairingTimeout, .pairingUnavailable, .serverIdentityMismatch, .pinRejected, .protocolViolation, .serverError, .cancelled:
             false
         }
     }
@@ -262,6 +264,11 @@ nonisolated struct ServerSession: Sendable {
             let unixMilliseconds = Int64((wallClock.timeIntervalSince1970 * 1000).rounded())
             return [.send(.ping(id: id, unixMilliseconds: unixMilliseconds))]
         }
+    }
+
+    /// The TLS delegate rejected the certificate fingerprint before allowing any queued sends.
+    mutating func pinRejected() -> [SessionEffect] {
+        close(.pinRejected)
     }
 
     /// The WebSocket closed or failed underneath the session.

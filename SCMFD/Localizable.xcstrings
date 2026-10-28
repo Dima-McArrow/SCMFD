@@ -2753,6 +2753,29 @@
         }
       }
     },
+    "The server certificate could not be verified. Pair again to connect." : {
+      "comment" : "Shown after certificate pin rejection. Ask the user to pair again without claiming the certificate changed.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "The server certificate could not be verified. Pair again to connect."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Impossible de vérifier le certificat du serveur. Effectuez à nouveau l’association pour vous connecter."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Не удалось проверить сертификат сервера. Выполните привязку заново, чтобы подключиться."
+          }
+        }
+      }
+    },
     "Theme" : {
       "localizations" : {
         "fr" : {

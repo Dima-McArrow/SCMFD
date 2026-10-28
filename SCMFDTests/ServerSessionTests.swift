@@ -277,8 +277,46 @@ struct ServerSessionTests {
         #expect(SessionCloseReason.closedByServer(code: code).allowsReconnect == allowsReconnect)
     }
 
+    @Test func fingerprintMismatchThroughCurrentDriverPathDoesNotReconnect() {
+        var session = ServerSession(configuration: Self.configuration, serverId: Self.serverId, token: "token")
+        // open() queues hello before TLS completes; URLSession holds the send until TLS succeeds.
+        _ = session.transportOpened(at: t0)
+        #expect(session.phase == .awaitingWelcome)
+
+        // The TLS delegate awaits pinFailed(.fingerprintMismatch) before cancelling authentication.
+        #expect(session.pinRejected() == [.close(.pinRejected)])
+        guard case .closed(let reason) = session.phase else {
+            Issue.record("Expected the failed TLS transport to close the session")
+            return
+        }
+        #expect(reason == .pinRejected)
+        #expect(!reason.allowsReconnect, "A rejected certificate fingerprint must require re-pairing, not automatic reconnect")
+    }
+
+    @Test(arguments: [nil, 1000, 1006, 4006] as [Int?])
+    func socketCallbacksAfterPinRejectionPreserveReason(code: Int?) {
+        var session = ServerSession(configuration: Self.configuration, serverId: Self.serverId, token: "token")
+        _ = session.transportOpened(at: t0)
+        _ = session.pinRejected()
+
+        // Send/receive errors map to nil; a later close may carry a code.
+        // Repeated callbacks must neither replace the reason nor emit effects (including forgetPairing).
+        for _ in 0..<2 {
+            #expect(session.transportClosed(code: code).isEmpty)
+            #expect(session.phase == .closed(.pinRejected))
+            guard case .closed(let reason) = session.phase else { return }
+            #expect(!reason.allowsReconnect)
+        }
+        #expect(session.pinRejected().isEmpty)
+        #expect(session.tick(at: at(60), wallClock: wallClock).isEmpty)
+    }
+
     @Test func droppedConnectionWithoutCodeAllowsReconnect() {
-        #expect(SessionCloseReason.closedByServer(code: nil).allowsReconnect)
+        var session = readySession()
+        #expect(session.transportClosed(code: nil).isEmpty)
+        #expect(session.phase == .closed(.closedByServer(code: nil)))
+        guard case .closed(let reason) = session.phase else { return }
+        #expect(reason.allowsReconnect)
     }
 
     @Test func missingAckClosesEvenWhileServerMessagesKeepArriving() {

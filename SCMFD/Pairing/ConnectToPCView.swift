@@ -47,8 +47,13 @@ struct ConnectToPCView: View {
                 Text(statusTitle)
                     .font(.headline)
             }
-            // The latest log line explains failures such as a fingerprint mismatch.
-            if let last = connection.entries.last, !isReady {
+            // Keep the recovery guidance visible even when later log entries change.
+            if connection.phase == .closed(.pinRejected) {
+                Text("The server certificate could not be verified. Pair again to connect.",
+                     comment: "Shown after certificate pin rejection. Ask the user to pair again without claiming the certificate changed.")
+                    .font(.callout)
+                    .foregroundStyle(theme.palette.red)
+            } else if let last = connection.entries.last, !isReady {
                 Text(verbatim: last.message)
                     .font(.callout)
                     .foregroundStyle(theme.palette.dim)

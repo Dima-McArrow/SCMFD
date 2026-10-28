@@ -56,12 +56,12 @@ nonisolated final class PinnedTLSDelegate: NSObject, URLSessionDelegate, Sendabl
 
     private let mode: Mode
     private let onFingerprint: @Sendable (Data) -> Void
-    private let onFailure: @Sendable (CertificatePin.Failure) -> Void
+    private let onFailure: @Sendable (CertificatePin.Failure) async -> Void
 
     init(
         mode: Mode,
         onFingerprint: @escaping @Sendable (Data) -> Void = { _ in },
-        onFailure: @escaping @Sendable (CertificatePin.Failure) -> Void = { _ in }
+        onFailure: @escaping @Sendable (CertificatePin.Failure) async -> Void = { _ in }
     ) {
         self.mode = mode
         self.onFingerprint = onFingerprint
@@ -83,7 +83,7 @@ nonisolated final class PinnedTLSDelegate: NSObject, URLSessionDelegate, Sendabl
             if let leaf = CertificatePin.leafCertificate(of: trust) {
                 onFingerprint(CertificatePin.fingerprint(of: leaf))
             } else {
-                onFailure(.noCertificate)
+                await onFailure(.noCertificate)
             }
             return (.cancelAuthenticationChallenge, nil)
         case .pinned(let expected):
@@ -91,7 +91,8 @@ nonisolated final class PinnedTLSDelegate: NSObject, URLSessionDelegate, Sendabl
                 try CertificatePin.verify(trust, expectedFingerprint: expected)
                 return (.useCredential, URLCredential(trust: trust))
             } catch {
-                onFailure(error)
+                // Finish failure delivery before cancellation can fail the socket's send/receive.
+                await onFailure(error)
                 return (.cancelAuthenticationChallenge, nil)
             }
         }

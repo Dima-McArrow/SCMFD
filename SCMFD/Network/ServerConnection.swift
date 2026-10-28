@@ -129,7 +129,7 @@ final class ServerConnection {
             },
             onFailure: { [weak self] failure in
                 let connection = self
-                Task { @MainActor in connection?.pinFailed(failure, attempt: attempt) }
+                await MainActor.run { connection?.pinFailed(failure, attempt: attempt) }
             }
         )
         guard let task = makeTask(host: host, port: port, delegate: delegate) else { return }
@@ -209,7 +209,7 @@ final class ServerConnection {
 
         let delegate = PinnedTLSDelegate(mode: .pinned(target.fingerprint), onFailure: { [weak self] failure in
             let connection = self
-            Task { @MainActor in connection?.pinFailed(failure, attempt: attempt) }
+            await MainActor.run { connection?.pinFailed(failure, attempt: attempt) }
         })
         guard let task = makeTask(host: target.host, port: target.port, delegate: delegate) else { return }
 
@@ -322,6 +322,7 @@ final class ServerConnection {
         switch failure {
         case .fingerprintMismatch:
             record("Certificate fingerprint does NOT match the paired server. Nothing was sent.")
+            update { $0.pinRejected() }
         case .noCertificate:
             record("The server presented no certificate.")
         case .untrusted(let description):
