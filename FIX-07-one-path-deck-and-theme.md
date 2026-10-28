@@ -10,8 +10,10 @@
 
 ### Implementation notes (iPad)
 
-- `ShipContextStatus.reason` stays the raw string (Debug shows what the server sent); `knownReason` maps it,
-  unknown values to `.unknown` (same pattern as `ServerAck.reason` / `rejectReason`).
+- `ShipContextStatus.reason` is a `Reason` that follows `LenientWireEnum` like every other server enum (one pattern
+  for all of them, see below): an unknown reason decodes as `.unrecognized(word)`, Debug prints its `wireValue`
+  (what the server sent), and `known` includes `clearDriver` because an older server may still send it. Until the
+  follow-up after `1f90925` it was a raw `String` plus a computed `knownReason`.
 - `ShipContextTracker` emits `DeckUpdate.theme: ThemeChange?` tagged with `(sessionId, revision)` and
   `resetKeys` (only `vehicleDestroyed`). `ContentView` has one `onChange(of: deck.lastThemeChange)`.
 - `clearDriver` from an older server still bumps the revision; the tracker keeps the Deck as it was and moves a

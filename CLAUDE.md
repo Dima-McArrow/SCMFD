@@ -48,7 +48,7 @@ features, layout and status.
 
 | File | Role |
 |---|---|
-| `ProtocolV2.swift` | Wire DTOs. `hello` always encodes `"token"` (explicit `null`); UUIDs go lowercase; a state delta distinguishes a missing key (`.absent`) from `"ship": null` (`.value(nil)`) |
+| `ProtocolV2.swift` | Wire DTOs. `hello` always encodes `"token"` (explicit `null`); UUIDs go lowercase; a state delta distinguishes a missing key (`.absent`) from `"ship": null` (`.value(nil)`). Every server enum conforms to `LenientWireEnum` with `.unrecognized(String)`, never plain `String, Decodable`: a strict enum throws on a new value, which becomes a protocol violation that never reconnects |
 | `PairingPayload.swift` | Strict `csmfd://pair?…` parser (duplicates rejected), `PrivateIPv4` check |
 | `ServerTrustStore.swift` | One Keychain item (`WhenUnlockedThisDeviceOnly`, not synchronizable) with host, port, fingerprint, token |
 | `PinnedTLSDelegate.swift` | Accepts only the pinned certificate (SHA-256 of DER), validity and serverAuth via `SecTrust` anchored to itself, no host name check |

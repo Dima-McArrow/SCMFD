@@ -13,7 +13,6 @@ struct ShipContextTrackerTests {
     private func snapshot(
         revision: Int,
         reason: ShipContextStatus.Reason,
-        rawReason: String? = nil,
         status: ShipContextStatus.Status? = nil,
         ship: String?,
         model: String? = nil,
@@ -26,7 +25,7 @@ struct ShipContextTrackerTests {
     ) -> ServerState {
         let statusForReason: ShipContextStatus.Status = switch reason {
         case .channelJoined: .assumed
-        case .startup, .unknown: .unknown
+        case .startup, .unrecognized: .unknown
         case .clearDriver, .channelLeft, .vehicleDestroyed, .gameEnded, .logReset: .noShip
         }
         let status = status ?? statusForReason
@@ -39,7 +38,7 @@ struct ShipContextTrackerTests {
                            confidence: .assumed, observedAt: observedAt)
             }),
             shipContext: .value(ShipContextStatus(revision: revision, status: status,
-                                                  reason: rawReason ?? reason.rawValue, contextId: nil,
+                                                  reason: reason, contextId: nil,
                                                   manufacturerPrefix: contextPrefix, observedAt: nil)),
             qtTarget: .value(qtTarget),
             hangarRequest: .value(HangarRequestState(status: hangar, commandId: nil, contextId: nil,
@@ -270,7 +269,7 @@ struct ShipContextTrackerTests {
     @Test(arguments: [(ShipContextStatus.Status.assumed, true), (.noShip, false), (.unknown, false)])
     func unknownReasonFollowsTheStatusAndKeepsThemeAndKeys(status: ShipContextStatus.Status, enabled: Bool) {
         var tracker = joined()
-        let update = tracker.receive(snapshot(revision: 6, reason: .unknown, rawReason: "somethingNew",
+        let update = tracker.receive(snapshot(revision: 6, reason: .unrecognized("somethingNew"),
                                               status: status, ship: nil))
         #expect(update == DeckUpdate(enabled: enabled, shipName: nil, resetKeys: false, hangarRequest: .idle))
     }

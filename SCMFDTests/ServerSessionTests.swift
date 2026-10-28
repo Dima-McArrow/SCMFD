@@ -28,7 +28,7 @@ struct ServerSessionTests {
             log: partial ? .absent : .value(LogStatus(status: .ready, generation: UUID(), observedAt: nil)),
             ship: partial ? .absent : .value(nil),
             shipContext: partial ? .absent : .value(ShipContextStatus(
-                revision: 0, status: .unknown, reason: "startup", contextId: nil, manufacturerPrefix: nil, observedAt: nil)),
+                revision: 0, status: .unknown, reason: .startup, contextId: nil, manufacturerPrefix: nil, observedAt: nil)),
             qtTarget: partial ? .absent : .value(QuantumTargetStatus(
                 mode: .unknown, internalName: nil, displayName: nil, confidence: .stale, observedAt: nil)),
             hangarRequest: partial ? .absent : .value(HangarRequestState(
@@ -223,7 +223,7 @@ struct ServerSessionTests {
             Issue.record("Expected one merged state, got \(effects)")
             return
         }
-        #expect(context.knownReason == .vehicleDestroyed)
+        #expect(context.reason == .vehicleDestroyed)
         #expect(session.phase == .ready(welcome()))
     }
 

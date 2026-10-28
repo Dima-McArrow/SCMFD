@@ -77,7 +77,7 @@ nonisolated struct ShipContextTracker: Sendable {
             if case .unrecognized = request.status { hangarRequest = nil } else { hangarRequest = request.status }
         }
 
-        let reason = context.knownReason
+        let reason = context.reason
         if reason == .clearDriver {
             // Servers before 41.23 still bump the revision when the pilot leaves the seat. That is not a
             // transition any more: the Deck keeps its state, and a manual enable moves to the new revision.
@@ -109,7 +109,7 @@ nonisolated struct ShipContextTracker: Sendable {
             return .manufacturer(manufacturer)
         case .channelLeft, .vehicleDestroyed, .gameEnded, .logReset:
             return .standard
-        case .startup, .clearDriver, .unknown:
+        case .startup, .clearDriver, .unrecognized:
             return nil
         }
     }

@@ -178,7 +178,7 @@ struct ProtocolV2Tests {
             return
         }
         #expect(context.revision == 3)
-        #expect(context.knownReason == .channelJoined)
+        #expect(context.reason == .channelJoined)
     }
 
     @Test func clearDriverDeltaSeparatesNullFromAbsent() throws {
@@ -214,7 +214,7 @@ struct ProtocolV2Tests {
         }
         #expect(context.revision == 5)
         #expect(context.status == .noShip)
-        #expect(context.knownReason == .vehicleDestroyed)
+        #expect(context.reason == .vehicleDestroyed)
     }
 
     @Test func unknownShipContextReasonKeepsItsRawString() throws {
@@ -223,9 +223,9 @@ struct ProtocolV2Tests {
             Issue.record("Expected a ship context")
             return
         }
-        #expect(context.knownReason == .unknown)
+        #expect(context.reason == .unrecognized("somethingNew"))
         // Debug shows what the server actually sent.
-        #expect(context.reason == "somethingNew")
+        #expect(context.reason.wireValue == "somethingNew")
         // The rest of the context still counts: the Deck follows `status`.
         #expect(context.status == .assumed)
         #expect(context.revision == 6)
@@ -255,7 +255,7 @@ struct ProtocolV2Tests {
         #expect(context.status.wireValue == "parked")
         // The server's own "unknown" stays a separate, known case.
         #expect(try self.state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":8,"partial":true,"shipContext":{"revision":8,"status":"unknown","reason":"startup","contextId":null,"manufacturerPrefix":null,"observedAt":null}}"#).shipContext
-                == .value(ShipContextStatus(revision: 8, status: .unknown, reason: "startup", contextId: nil,
+                == .value(ShipContextStatus(revision: 8, status: .unknown, reason: .startup, contextId: nil,
                                             manufacturerPrefix: nil, observedAt: nil)))
     }
 

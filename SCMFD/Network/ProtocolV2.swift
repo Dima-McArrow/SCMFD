@@ -311,25 +311,39 @@ nonisolated struct ShipContextStatus: Decodable, Sendable, Equatable {
         }
     }
 
-    nonisolated enum Reason: String, Sendable {
-        /// `clearDriver` comes only from servers older than 41.23.
+    nonisolated enum Reason: LenientWireEnum {
+        /// `clearDriver` comes only from servers older than 41.23; the tracker ignores it.
         case startup, channelJoined, clearDriver, channelLeft, vehicleDestroyed, gameEnded, logReset
-        /// A reason this build does not know; a newer server may add one (41.23).
-        case unknown
+        /// A reason this build does not know (a newer server may add one, 41.23). The Deck follows `status`;
+        /// the theme and the keys stay as they are.
+        case unrecognized(String)
+
+        static let known: [Self] = [.startup, .channelJoined, .clearDriver, .channelLeft, .vehicleDestroyed,
+                                    .gameEnded, .logReset]
+
+        var wireValue: String {
+            switch self {
+            case .startup: "startup"
+            case .channelJoined: "channelJoined"
+            case .clearDriver: "clearDriver"
+            case .channelLeft: "channelLeft"
+            case .vehicleDestroyed: "vehicleDestroyed"
+            case .gameEnded: "gameEnded"
+            case .logReset: "logReset"
+            case .unrecognized(let raw): raw
+            }
+        }
     }
 
     /// Grows on every ship-context transition (41.23).
     let revision: Int
     let status: Status
-    /// Raw reason, as the server sent it. Kept as a string so a new server reason is not a decoding
-    /// error (a protocol violation, which never reconnects); use `knownReason` for the known ones.
-    let reason: String
+    /// Why the context changed. A new server reason decodes as `.unrecognized(word)`, not a decoding error.
+    let reason: Reason
     let contextId: UUID?
     /// Last recognized manufacturer; may outlive the ship after a leave or destruction (theme only, not control).
     let manufacturerPrefix: String?
     let observedAt: Date?
-
-    var knownReason: Reason { Reason(rawValue: reason) ?? .unknown }
 }
 
 nonisolated struct QuantumTargetStatus: Decodable, Sendable, Equatable {
