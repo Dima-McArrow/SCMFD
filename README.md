@@ -84,25 +84,24 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | `SCMFD/Network` | Protocol v2 DTOs, pairing link parser, Keychain store, TLS pinning, session state machine, WebSocket driver |
 | `SCMFD/Pairing` | Connect to PC sheet (tap the link status in the top bar) and the AVFoundation QR scanner |
 | `SCMFD/Theme` | SCMFD and manufacturer themes (`AppTheme` is the stored choice), fonts, key shapes, HUD primitives |
-| `SCMFD/Settings` | Theme picker and deck settings |
+| `SCMFD/Settings` | Settings sheet: sounds, Auto theme, theme picker (Reset Deck is the top-bar icon) |
 | `SCMFD/Debug` | Connection test screens (Debug builds) |
 | `SCMFD/Sounds`, `SCMFD/Fonts` | Interface sounds; bundled OFL fonts (licenses in `Fonts/Licenses`) |
-| `SCMFDTests` | Swift Testing suites for the network layer |
+| `SCMFDTests` | Swift Testing suites: network layer, ship-context tracker, Deck state, themes, session history |
 | `tools` | `gen-emotes-md.py`: emote list and server `emotes.txt` from `Emote.swift` |
 
 ## Status
 
 | Part | State |
 |---|---|
-| UI: Deck, Emotes, themes, sounds | Working; without a pairing the keys go to `ConsoleCommandLink` (Xcode console) |
+| UI: Deck, Emotes, themes, sounds | Working; the Deck starts off, and without a pairing Enable Deck turns it on and the keys go to `ConsoleCommandLink` (Xcode console) |
 | Localization en/fr/ru ([FIX-06](FIX-06-missing-translations.md)) | Every catalog string has fr and ru; `Pair window` / `Pair iPad…` stay in English to match the PC app |
 | Protocol v2, pairing link, Keychain, TLS pinning, session logic | Implemented and unit-tested |
 | Connect to PC (in-app QR scanner, 6-digit code, manual fallback), WebSocket driver, auto-reconnect | Implemented; not yet verified against the real server |
 | Keys and emotes over the network: rejection feedback with a label for every cancel/reject reason, hold stops on `input_cancelled` | Implemented; not yet verified in game |
 | Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
-| Merged server state drives the Deck: ship context, ClearDriver, manual override ([FIX-02](FIX-02-server-state-drives-the-deck.md)) | Implemented and unit-tested; not yet verified against the real server |
+| One path for the Deck, the theme and the keys: `state.shipContext` only ([FIX-07](FIX-07-one-path-deck-and-theme.md), spec 41.23; replaces the channel-activity theme of FIX-04 and the ClearDriver rules of FIX-02). Deck off at app start, on after `channelJoined`, off after a leave / `vehicleDestroyed` / game end / log reset; Auto theme follows the same transitions; keys reset only on `vehicleDestroyed` or Reset Deck; one-tap Enable Deck on the off screen | Implemented and unit-tested on the simulator (2026-10-28); not yet verified against the real server or in game |
 | QT readout and ATC status mirrored from state ([FIX-03](FIX-03-quantum-target-and-atc-from-state.md)) | Implemented and unit-tested; not yet verified against the real server |
-| Auto theme from the ship's manufacturer on a channel join ([FIX-04](FIX-04-auto-theme-from-manufacturer.md)) | Join/leave activity wired in source (2026-10-28); matching channel leave restores SCMFD, while ClearDriver retains the theme. Replay deduplicates channel events. Mac build/tests and live verification pending ([`DEFAULT-THEME-DESIGN.md`](DEFAULT-THEME-DESIGN.md)) |
 
 ## Keeping the emote list in sync
 

@@ -72,7 +72,7 @@ struct SecureConnectionDebugSection: View {
             rows.append(("Ship", ship.map { "\($0.name) · \($0.confidence.rawValue)" } ?? "none"))
         }
         if case .value(let context) = state.shipContext {
-            rows.append(("Context", "r\(context.revision) \(context.status.rawValue) · \(context.reason.rawValue)"))
+            rows.append(("Context", "r\(context.revision) \(context.status.rawValue) · \(context.reason)"))
         }
         if case .value(let target) = state.qtTarget {
             rows.append(("QT target", target.displayName ?? target.internalName ?? target.mode.rawValue))

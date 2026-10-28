@@ -1,5 +1,7 @@
 # Landing-gear tracking: FE ownership and ship lifecycle
 
+> **Note ([FIX-07](FIX-07-one-path-deck-and-theme.md), spec 41.23, 2026-10-28):** ClearDriver no longer disables the Deck; the Deck turns off on `channelLeft` / `vehicleDestroyed` / `gameEnded` / `logReset`, and keys start and reset with the landing gear lit. Rows below that assume a ClearDriver Deck transition need revisiting before implementation.
+
 Date: 2026-10-27
 
 Status: agreed architectural direction and proposed behavior; not implemented by this document.

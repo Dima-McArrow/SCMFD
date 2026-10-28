@@ -137,12 +137,12 @@ nonisolated enum AppTheme: Hashable, Identifiable, Sendable, RawRepresentable {
     case standard
     case manufacturer(Manufacturer)
 
-    /// `@AppStorage` key of the Auto theme setting (on by default): a ship-channel join picks its manufacturer.
+    /// `@AppStorage` key of the Auto theme setting (on by default): ship-context transitions pick the theme.
     static let autoThemeKey = "autoTheme"
 
-    /// The theme after a ship-channel join: the ship's manufacturer with Auto theme on, otherwise unchanged.
-    static func afterJoin(_ join: ShipJoin, current: AppTheme, autoTheme: Bool) -> AppTheme {
-        autoTheme ? .manufacturer(join.manufacturer) : current
+    /// The theme after a ship-context transition: the requested one with Auto theme on, otherwise unchanged.
+    static func after(_ change: ThemeChange, current: AppTheme, autoTheme: Bool) -> AppTheme {
+        autoTheme ? change.theme : current
     }
 
     /// Picker order: SCMFD first, then every manufacturer.
@@ -233,7 +233,9 @@ nonisolated struct ManufacturerTheme: Sendable {
     var shortName: String { manufacturer?.shortName ?? "SCMFD" }
     var displayName: String { manufacturer?.displayName ?? "Star Citizen MFD" }
 
-    func label(_ text: String) -> String {
+    /// Applies the letter case to text that is already final (names, localized strings). A literal goes through
+    /// `label(_: LocalizedStringResource)` instead; an unlabeled `String` overload would win and skip localization.
+    func label(verbatim text: String) -> String {
         typography.labelUppercased ? text.uppercased() : text
     }
 

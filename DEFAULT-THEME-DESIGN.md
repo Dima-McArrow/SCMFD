@@ -1,5 +1,7 @@
 # Default theme outside a ship channel
 
+> **Superseded by [FIX-07](FIX-07-one-path-deck-and-theme.md) (spec 41.23, 2026-10-28):** the SCMFD theme is now chosen from `state.shipContext` transitions (`channelLeft`, `vehicleDestroyed`, `gameEnded`, `logReset`); channel activity events are no longer used. The log evidence below remains valid.
+
 Date: 2026-10-27
 
 Status (2026-10-28): runtime join/leave handling implemented in FE source using BE channel activity. Mac build/tests and live verification remain pending. The sections below preserve the original design and evidence.

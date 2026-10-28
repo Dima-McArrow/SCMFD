@@ -14,7 +14,7 @@ enum MFDPage: String, CaseIterable, Identifiable {
         }
     }
 
-    var shortTitle: String {
+    var shortTitle: LocalizedStringResource {
         switch self {
         case .mission: "Missions"
         case .credits: "Finances"

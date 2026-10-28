@@ -1,5 +1,7 @@
 # FIX-02 · Server state drives the Deck (ship context, ClearDriver, manual override)
 
+> **Superseded in part by [FIX-07](FIX-07-one-path-deck-and-theme.md) (spec 41.23, 2026-10-28):** ClearDriver is no longer a Deck transition, keys are no longer reset on every transition (only on `vehicleDestroyed` or Reset Deck), and the manual enable is tied to `(sessionId, revision)` only, so it survives a reconnect. The rest (merged snapshots, transport loss is not a transition) still holds.
+
 | | |
 |---|---|
 | Size | L — the biggest open FE item |

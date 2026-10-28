@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Settings sheet: pick the SCMFD or a manufacturer skin and reset the button lights.
+/// Settings sheet: interface sounds, Auto theme and the SCMFD or a manufacturer skin.
+/// Reset Deck lives in the top bar (FIX-07).
 struct ThemePickerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.manufacturerTheme) private var theme
@@ -10,19 +11,11 @@ struct ThemePickerView: View {
     @AppStorage(AppTheme.autoThemeKey) private var autoTheme = true
 
     @Binding var selection: AppTheme
-    let onResetLights: () -> Void
-    let isDeckDisconnected: Bool
-    let onEnableDeck: () -> Void
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    DeckRecoverySettings(isDisconnected: isDeckDisconnected) {
-                        onEnableDeck()
-                        dismiss()
-                    }
-
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle("Interface sounds", isOn: $soundsEnabled)
                             .onChange(of: soundsEnabled) { _, _ in
@@ -51,7 +44,7 @@ struct ThemePickerView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Toggle("Auto theme", isOn: $autoTheme)
                             .foregroundStyle(theme.palette.text)
-                        Text("Switches to the ship's manufacturer when you join its channel. A manual pick stays until the next ship.")
+                        Text("Switches to the ship's manufacturer when you join its channel and back to SCMFD when you leave the ship. A manual pick stays until the next change.")
                             .font(theme.typography.body.font(size: 13))
                             .foregroundStyle(theme.palette.dim)
                     }
@@ -68,16 +61,6 @@ struct ThemePickerView: View {
                             .accessibilityAddTraits(appTheme == selection ? .isSelected : [])
                         }
                     }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Button("Reset button lights", systemImage: "lightbulb.slash") {
-                            onResetLights()
-                        }
-                        .buttonStyle(.bordered)
-                        Text("Button lights follow your taps, not the game.")
-                            .font(theme.typography.body.font(size: 13))
-                            .foregroundStyle(theme.palette.dim)
-                    }
                 }
                 .padding(24)
             }
@@ -90,26 +73,6 @@ struct ThemePickerView: View {
             }
         }
         .tint(theme.palette.accent)
-    }
-}
-
-private struct DeckRecoverySettings: View {
-    @Environment(\.manufacturerTheme) private var theme
-
-    let isDisconnected: Bool
-    let onEnable: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button("Enable Deck manually", systemImage: "power", action: onEnable)
-                .buttonStyle(.bordered)
-                .disabled(!isDisconnected)
-            Text(isDisconnected
-                 ? "Back in the pilot seat? Enable the controls here. This does not power on your ship."
-                 : "Deck is already enabled.")
-                .font(theme.typography.body.font(size: 13))
-                .foregroundStyle(theme.palette.dim)
-        }
     }
 }
 
@@ -162,16 +125,6 @@ private struct ThemeCard: View {
 
 #Preview("Settings / picker", traits: .fixedLayout(width: 834, height: 1000)) {
     @Previewable @State var selection = AppTheme.standard
-    @Previewable @State var deck: DeckState = {
-        let deck = DeckState()
-        deck.apply(DeckUpdate(enabled: false, shipName: nil, resetLocalState: true))
-        return deck
-    }()
-    ThemePickerView(
-        selection: $selection,
-        onResetLights: deck.resetLights,
-        isDeckDisconnected: deck.isShipDisconnected,
-        onEnableDeck: deck.enableManually
-    )
+    ThemePickerView(selection: $selection)
         .manufacturerTheme(selection.theme)
 }

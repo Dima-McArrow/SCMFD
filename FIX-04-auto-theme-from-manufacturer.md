@@ -1,5 +1,7 @@
 # FIX-04 · Auto theme from the ship's manufacturer
 
+> **Superseded in part by [FIX-07](FIX-07-one-path-deck-and-theme.md) (spec 41.23, 2026-10-28):** the theme now also returns to SCMFD on `channelLeft` / `vehicleDestroyed` / `gameEnded` / `logReset`, and `state.shipContext` is the only source (the channel-activity path and `ShipChannelThemeTracker` were removed).
+
 | | |
 |---|---|
 | Size | S/M |

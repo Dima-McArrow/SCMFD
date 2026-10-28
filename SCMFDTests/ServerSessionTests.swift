@@ -28,7 +28,7 @@ struct ServerSessionTests {
             log: partial ? .absent : .value(LogStatus(status: .ready, generation: UUID(), observedAt: nil)),
             ship: partial ? .absent : .value(nil),
             shipContext: partial ? .absent : .value(ShipContextStatus(
-                revision: 0, status: .unknown, reason: .startup, contextId: nil, manufacturerPrefix: nil, observedAt: nil)),
+                revision: 0, status: .unknown, reason: "startup", contextId: nil, manufacturerPrefix: nil, observedAt: nil)),
             qtTarget: partial ? .absent : .value(QuantumTargetStatus(
                 mode: .unknown, internalName: nil, displayName: nil, confidence: .stale, observedAt: nil)),
             hangarRequest: partial ? .absent : .value(HangarRequestState(
@@ -212,6 +212,21 @@ struct ServerSessionTests {
         #expect(session.receive(.state(foreign), at: t0) == [.close(.protocolViolation("state from another session"))])
     }
 
+    /// A destroyed ship once failed to decode and closed the session for good (41.23, FIX-07 step 1).
+    @Test func vehicleDestroyedDeltaKeepsTheSessionReady() throws {
+        var session = readySession()
+        _ = session.receive(.state(state(seq: 1, partial: false)), at: t0)
+        let message = try ProtocolV2.decode(Data(ProtocolV2Tests.vehicleDestroyedDelta.utf8))
+        let effects = session.receive(message, at: t0)
+        guard case .state(let merged) = effects.first, effects.count == 1,
+              case .value(let context) = merged.shipContext else {
+            Issue.record("Expected one merged state, got \(effects)")
+            return
+        }
+        #expect(context.knownReason == .vehicleDestroyed)
+        #expect(session.phase == .ready(welcome()))
+    }
+
     // MARK: - Commands
 
     @Test func commandBeforeReadyIsNotSentOrQueued() {
@@ -265,13 +280,7 @@ struct ServerSessionTests {
     @Test func droppedConnectionWithoutCodeAllowsReconnect() {
         #expect(SessionCloseReason.closedByServer(code: nil).allowsReconnect)
     }
-}
 
-struct ReconnectBackoffTests {
-    @Test func delayDoublesThenCapsAtThirtySeconds() {
-        let delays = (0..<8).map(ServerConnection.reconnectDelay(afterFailures:))
-        #expect(delays == [1, 2, 4, 8, 16, 30, 30, 30])
-    }
     @Test func missingAckClosesEvenWhileServerMessagesKeepArriving() {
         var session = readySession()
         let id = UUID()
@@ -290,5 +299,11 @@ struct ReconnectBackoffTests {
         _ = session.receive(.unknown(type: "future"), at: at(14))
         #expect(!session.tick(at: at(15), wallClock: wallClock).contains(.close(.acknowledgementTimeout)))
     }
+}
 
+struct ReconnectBackoffTests {
+    @Test func delayDoublesThenCapsAtThirtySeconds() {
+        let delays = (0..<8).map(ServerConnection.reconnectDelay(afterFailures:))
+        #expect(delays == [1, 2, 4, 8, 16, 30, 30, 30])
+    }
 }

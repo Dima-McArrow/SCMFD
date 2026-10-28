@@ -4,20 +4,20 @@ import Foundation
 nonisolated struct DeckUpdate: Equatable, Sendable {
     let enabled: Bool
     let shipName: String?
-    /// Turn lights off and disarm self-destruct.
-    let resetLocalState: Bool
+    /// Keys back to their defaults and self-destruct disarmed; only after `vehicleDestroyed` (FIX-07).
+    let resetKeys: Bool
     /// Mirrored from the server; the FE never sets these on its own (41.8, 41.13).
     var quantumTarget: QuantumTarget = .unknown
     /// nil means no server data yet, not `idle`.
     var hangarRequest: HangarRequestStatus? = nil
-    /// Set only on a `channelJoined` transition with a known manufacturer; drives the auto theme (FIX-04).
-    var join: ShipJoin? = nil
+    /// Set only on a transition that moves the auto theme (FIX-07).
+    var theme: ThemeChange? = nil
 }
 
-/// The player joined a ship channel. Unique per context, so joining the same manufacturer twice is two events
-/// (a manual theme pick in between must be overridden by the second join).
-nonisolated struct ShipJoin: Equatable, Sendable {
-    let manufacturer: Manufacturer
+/// The auto theme for one ship-context transition. Tagged with the context, so two joins of the same
+/// manufacturer (or two leaves) are two changes: a manual theme pick in between must be overridden.
+nonisolated struct ThemeChange: Equatable, Sendable {
+    let theme: AppTheme
     let sessionId: UUID
     let revision: Int
 }
@@ -41,84 +41,97 @@ nonisolated extension QuantumTarget {
     }
 }
 
-/// Decides how merged server snapshots drive the Deck (41.9, 41.17). Pure, so every rule is unit-tested.
+/// Decides how merged server snapshots drive the Deck, the auto theme and the keys (41.23, FIX-07).
+/// Pure, so every rule is unit-tested.
 ///
-/// A ship context is `(sessionId, shipContext.revision)`. A new pair is a transition (join, ClearDriver,
-/// game end, server restart); the same pair only refreshes the ship label. The manual override belongs to
-/// one context on one connection and is never persisted.
+/// A ship context is `(sessionId, shipContext.revision)`. A new pair is a transition (join, leave, destroyed
+/// vehicle, game end, log reset, server restart); the same pair (a delta, a reconnect, an enrichment) only
+/// refreshes the mirrored readouts. The manual enable lasts until the next transition and is never persisted.
 nonisolated struct ShipContextTracker: Sendable {
     private struct ContextKey: Equatable, Sendable {
         let sessionId: UUID
         let revision: Int
     }
 
-    private struct Override: Equatable, Sendable {
-        let context: ContextKey
-        let connectionId: UUID
-    }
-
     private var applied: ContextKey?
-    private var connectionId: UUID?
-    private var override: Override?
+    /// The context the manual enable belongs to.
+    private var override: ContextKey?
     private var status: ShipContextStatus.Status?
     private var shipName: String?
     private var quantumTarget: QuantumTarget = .unknown
     private var hangarRequest: HangarRequestStatus?
 
     /// `state` must be a merged snapshot (see `ServerState.merged(with:)`).
-    mutating func receive(_ state: ServerState, connectionId: UUID) -> DeckUpdate? {
+    mutating func receive(_ state: ServerState) -> DeckUpdate? {
         guard case .value(let context) = state.shipContext else { return nil }
         let key = ContextKey(sessionId: state.sessionId, revision: context.revision)
-        let isTransition = key != applied
+        let previous = applied
+        let isTransition = key != previous
         applied = key
-        self.connectionId = connectionId
-        status = context.status
         if case .value(let ship) = state.ship { shipName = ship?.name }
         // The server resets both on a new context, so the FE only mirrors them.
         if case .value(let target) = state.qtTarget { quantumTarget = QuantumTarget(target) }
         if case .value(let request) = state.hangarRequest { hangarRequest = request.status }
-        // A transition, a reconnect or a server restart all end the override.
-        if let override, override != Override(context: key, connectionId: connectionId) {
-            self.override = nil
+
+        let reason = context.knownReason
+        if reason == .clearDriver {
+            // Servers before 41.23 still bump the revision when the pilot leaves the seat. That is not a
+            // transition any more: the Deck keeps its state, and a manual enable moves to the new revision.
+            if let override, override == previous { self.override = key }
+        } else {
+            status = context.status
         }
-        var result = update(enabled: isEnabled, resetLocalState: isTransition)
-        if isTransition, context.reason == .channelJoined {
-            result.join = Self.join(context: context, state: state)
+        // A transition (or a server restart) ends the manual enable; a reconnect to the same context does not.
+        if override != key { override = nil }
+
+        guard isTransition else { return update(resetKeys: false) }
+        var result = update(resetKeys: reason == .vehicleDestroyed)
+        if let theme = Self.theme(for: reason, context: context, state: state) {
+            result.theme = ThemeChange(theme: theme, sessionId: state.sessionId, revision: context.revision)
         }
         return result
     }
 
-    /// The context prefix first, then the ship's (41.9). Unknown prefixes keep the current theme.
-    private static func join(context: ShipContextStatus, state: ServerState) -> ShipJoin? {
-        var shipPrefix: String?
-        if case .value(let ship) = state.ship { shipPrefix = ship?.manufacturerPrefix }
-        guard let prefix = context.manufacturerPrefix ?? shipPrefix,
-              let manufacturer = Manufacturer(logPrefix: prefix) else { return nil }
-        return ShipJoin(manufacturer: manufacturer, sessionId: state.sessionId, revision: context.revision)
+    /// The auto theme a transition asks for; nil keeps the current theme.
+    private static func theme(for reason: ShipContextStatus.Reason, context: ShipContextStatus,
+                              state: ServerState) -> AppTheme? {
+        switch reason {
+        case .channelJoined:
+            // The context prefix first, then the ship's (41.9). Unknown prefixes keep the current theme.
+            var shipPrefix: String?
+            if case .value(let ship) = state.ship { shipPrefix = ship?.manufacturerPrefix }
+            guard let prefix = context.manufacturerPrefix ?? shipPrefix,
+                  let manufacturer = Manufacturer(logPrefix: prefix) else { return nil }
+            return .manufacturer(manufacturer)
+        case .channelLeft, .vehicleDestroyed, .gameEnded, .logReset:
+            return .standard
+        case .startup, .clearDriver, .unknown:
+            return nil
+        }
     }
 
-    /// Ties "Enable Deck manually" to the current context and connection. Sends nothing to the game.
+    /// Enable Deck: valid until the next transition, survives a reconnect. Sends nothing to the game.
     /// nil when no server context is known yet; the caller then enables the Deck locally.
     mutating func enableManually() -> DeckUpdate? {
-        guard let applied, let connectionId else { return nil }
-        override = Override(context: applied, connectionId: connectionId)
-        return update(enabled: true, resetLocalState: true)
+        guard let applied else { return nil }
+        override = applied
+        return update(resetKeys: false)
     }
 
-    /// The link is down: readouts become "no data". The Deck stays as it is (transport loss is not ClearDriver),
+    /// The link is down: readouts become "no data". The Deck, the theme and the keys stay as they are,
     /// and the next connection's full snapshot restores everything.
     mutating func connectionLost() {
         quantumTarget = .unknown
         hangarRequest = nil
     }
 
-    private func update(enabled: Bool, resetLocalState: Bool) -> DeckUpdate {
-        DeckUpdate(enabled: enabled, shipName: shipName, resetLocalState: resetLocalState,
+    private func update(resetKeys: Bool) -> DeckUpdate {
+        DeckUpdate(enabled: isEnabled, shipName: shipName, resetKeys: resetKeys,
                    quantumTarget: quantumTarget, hangarRequest: hangarRequest)
     }
 
     private var isEnabled: Bool {
-        // `unknown` (server started mid-flight) and `noShip` both need the manual override.
+        // `unknown` (server started mid-flight) and `noShip` both need the manual enable.
         status == .assumed || override != nil
     }
 }

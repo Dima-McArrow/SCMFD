@@ -46,7 +46,7 @@ struct ContentView: View {
         let activity = SessionActivityStore()
         let deck = DeckState()
         server.onActivity = { page in activity.receive(page) }
-        server.onState = { state, connectionId in deck.receive(state, connectionId: connectionId) }
+        server.onState = { state in deck.receive(state) }
         _activity = State(initialValue: activity)
         _deck = State(initialValue: deck)
         _server = State(initialValue: server)
@@ -87,15 +87,11 @@ struct ContentView: View {
                 deck.connectionLost()
             }
         }
-        // State joins are a fallback for older servers; channel activity owns join/leave themes.
-        // Writing the picker's own storage means a manual pick wins until the next join.
-        .onChange(of: deck.lastShipJoin) { _, join in
-            guard let join, !activity.hasChannelThemeEvidence else { return }
-            appTheme = AppTheme.afterJoin(join, current: appTheme, autoTheme: autoTheme)
-        }
-        .onChange(of: activity.channelThemeChange) { _, change in
-            guard autoTheme, let change else { return }
-            appTheme = change.theme
+        // The only theme path: ship-context transitions from `state` (41.23, FIX-07).
+        // Writing the picker's own storage means a manual pick wins until the next transition.
+        .onChange(of: deck.lastThemeChange) { _, change in
+            guard let change else { return }
+            appTheme = AppTheme.after(change, current: appTheme, autoTheme: autoTheme)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -110,15 +106,7 @@ struct ContentView: View {
                 .manufacturerTheme(theme)
         }
         .sheet(isPresented: $showsSettings) {
-            ThemePickerView(
-                selection: $appTheme,
-                onResetLights: deck.resetLights,
-                isDeckDisconnected: deck.isShipDisconnected,
-                onEnableDeck: {
-                    deck.enableManually()
-                    screen = .deck
-                }
-            )
+            ThemePickerView(selection: $appTheme)
                 .manufacturerTheme(theme)
         }
     }
@@ -166,6 +154,7 @@ struct ContentView: View {
                     screenSwitcher
                     Spacer(minLength: 8)
                     linkStatus
+                    resetDeckButton
                     settingsButton
                 }
                 VStack(spacing: 8) {
@@ -173,6 +162,7 @@ struct ContentView: View {
                         brand
                         Spacer(minLength: 8)
                         linkStatus
+                        resetDeckButton
                         settingsButton
                     }
                     screenSwitcher
@@ -275,11 +265,19 @@ struct ContentView: View {
         }
     }
 
+    /// Reset Deck: keys back to their defaults (landing gear lit), self-destruct disarmed. Local only.
+    private var resetDeckButton: some View {
+        topBarIcon("arrow.counterclockwise", label: "Reset Deck") { deck.resetDeck() }
+    }
+
     private var settingsButton: some View {
-        Button {
-            showsSettings = true
-        } label: {
-            Image(systemName: "gearshape")
+        topBarIcon("gearshape", label: "Settings") { showsSettings = true }
+    }
+
+    private func topBarIcon(_ systemName: String, label: LocalizedStringResource,
+                            action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
                 .font(.system(size: 17, weight: theme.icons.weight))
                 .foregroundStyle(theme.palette.accent)
                 .frame(width: 38, height: 38)
@@ -290,7 +288,7 @@ struct ContentView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(Text("Settings"))
+        .accessibilityLabel(Text(label))
     }
 }
 

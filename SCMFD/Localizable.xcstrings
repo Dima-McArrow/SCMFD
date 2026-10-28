@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%@ aUEC" : {
       "localizations" : {
         "fr" : {
@@ -260,22 +257,6 @@
         }
       }
     },
-    "Back in the pilot seat? Enable the controls here. This does not power on your ship." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De retour aux commandes ? Activez le pupitre ici. Cela ne démarre pas votre vaisseau."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Снова в кресле пилота? Включите пульт здесь. Корабль при этом не запускается."
-          }
-        }
-      }
-    },
     "Busy" : {
       "localizations" : {
         "fr" : {
@@ -288,22 +269,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Занято"
-          }
-        }
-      }
-    },
-    "Button lights follow your taps, not the game." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les voyants suivent vos appuis, pas le jeu."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подсветка кнопок следует за твоими нажатиями, а не за игрой."
           }
         }
       }
@@ -804,6 +769,22 @@
         }
       }
     },
+    "Debug" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Débogage"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Отладка"
+          }
+        }
+      }
+    },
     "Deck" : {
       "localizations" : {
         "fr" : {
@@ -816,22 +797,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пульт"
-          }
-        }
-      }
-    },
-    "Deck is already enabled." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le pupitre est déjà activé."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пульт уже включён."
           }
         }
       }
@@ -932,18 +897,18 @@
         }
       }
     },
-    "Enable Deck manually" : {
+    "Enable Deck" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer le pupitre manuellement"
+            "state" : "machine_translated",
+            "value" : "Activer le pupitre"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Включить пульт вручную"
+            "state" : "machine_translated",
+            "value" : "Включить пульт"
           }
         }
       }
@@ -1072,6 +1037,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Провален"
+          }
+        }
+      }
+    },
+    "Finances" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Finances"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Финансы"
           }
         }
       }
@@ -1424,6 +1405,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Совпадает с ПК — привязать"
+          }
+        }
+      }
+    },
+    "Missions" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Missions"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Миссии"
           }
         }
       }
@@ -2148,18 +2145,18 @@
         }
       }
     },
-    "Reset button lights" : {
+    "Reset Deck" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réinitialiser les voyants"
+            "state" : "machine_translated",
+            "value" : "Réinitialiser le pupitre"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сбросить подсветку кнопок"
+            "state" : "machine_translated",
+            "value" : "Сбросить пульт"
           }
         }
       }
@@ -2612,18 +2609,18 @@
         }
       }
     },
-    "Switches to the ship's manufacturer when you join its channel. A manual pick stays until the next ship." : {
+    "Switches to the ship's manufacturer when you join its channel and back to SCMFD when you leave the ship. A manual pick stays until the next change." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passe au thème du constructeur quand vous rejoignez le canal d’un vaisseau. Un choix manuel reste jusqu’au prochain vaisseau."
+            "state" : "machine_translated",
+            "value" : "Passe au thème du constructeur quand vous rejoignez le canal d’un vaisseau, puis revient à SCMFD quand vous quittez le vaisseau. Un choix manuel reste jusqu’au prochain changement."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "При входе в канал корабля включает тему его производителя. Тема, выбранная вручную, остаётся до следующего корабля."
+            "state" : "machine_translated",
+            "value" : "При входе в канал корабля включает тему его производителя, при выходе из корабля возвращает SCMFD. Тема, выбранная вручную, остаётся до следующей смены."
           }
         }
       }

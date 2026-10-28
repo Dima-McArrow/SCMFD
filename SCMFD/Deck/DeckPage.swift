@@ -121,6 +121,7 @@ struct DeckPageContent: View {
 #Preview("Flight / ATC pending", traits: .fixedLayout(width: 550, height: 650)) {
     @Previewable @State var state: DeckState = {
         let state = DeckState()
+        state.enableManually()
         state.shipName = "Drake Cutter Rambler"
         state.hangarRequest = .pending
         return state
@@ -134,6 +135,7 @@ struct DeckPageContent: View {
 #Preview("Flight / ATC answered", traits: .fixedLayout(width: 550, height: 650)) {
     @Previewable @State var state: DeckState = {
         let state = DeckState()
+        state.enableManually()
         state.shipName = "Drake Cutter Rambler"
         state.hangarRequest = .answered
         return state

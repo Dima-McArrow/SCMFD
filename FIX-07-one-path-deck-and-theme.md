@@ -6,6 +6,43 @@
 | Depends on | nothing; replaces the theme parts of FIX-02 / FIX-04 and the channel part of 41.22 |
 | Decision | owner, 2026-10-28 (see "Why") |
 | Server side | done: SCMFDBE `ffff70f` (channelLeft, ClearDriver no transition), `9064f12` (vehicleDestroyed), `cc0cd1c` (no channel events in activity) |
+| iPad side | implemented 2026-10-28, steps 1-6. Last full run 2026-10-28 on iPad Pro 13-inch (M5) simulator: 144 tests, 239 runs (parameterized arguments counted separately), all passed. Live test against SCMFDBE and in game pending |
+
+### Implementation notes (iPad)
+
+- `ShipContextStatus.reason` stays the raw string (Debug shows what the server sent); `knownReason` maps it,
+  unknown values to `.unknown` (same pattern as `ServerAck.reason` / `rejectReason`).
+- `ShipContextTracker` emits `DeckUpdate.theme: ThemeChange?` tagged with `(sessionId, revision)` and
+  `resetKeys` (only `vehicleDestroyed`). `ContentView` has one `onChange(of: deck.lastThemeChange)`.
+- `clearDriver` from an older server still bumps the revision; the tracker keeps the Deck as it was and moves a
+  manual enable to the new revision, so it does not count as a transition. Mirrored readouts (ship name, QT, ATC)
+  still follow the server.
+- The manual enable is tied to `(sessionId, revision)` only, not to the connection, so it survives a reconnect.
+- Reset Deck is the `arrow.counterclockwise` icon next to Settings; `DeckState.defaultLit = [.landingGear]`.
+  `resetLights()` was renamed `resetDeck()`; the Settings "Reset button lights" button was removed (one reset).
+- The Deck starts off in every mode, the unpaired console link included (table, first row):
+  `DeckState.isShipDisconnected` starts `true`, taps on the off Deck are ignored, and Enable Deck without a server
+  context uses the local fallback in `DeckState.enableManually()` (keys kept). Previews that show keys enable it.
+- `ManufacturerTheme.label(_: String)` became `label(verbatim:)`. With both an unlabeled `String` and a
+  `LocalizedStringResource` overload, a string literal picked the `String` one, so `theme.label("Deck")`, the key
+  states (On/Off, Ready, Engaged…), the QT readout and the tab titles were never localized; Missions / Finances /
+  Debug (`MFDPage.shortTitle`, a plain `String`) had no catalog entry at all. Now a literal always localizes and
+  already-final text must say `verbatim:`.
+- Tests: `ShipContextTrackerTests`, `DeckStateTests`, `AppThemeTests`, `ProtocolV2Tests` (fixtures compacted
+  from SCMFDBE, same JSON values; client fixtures compared as JSON objects, a missing `mods` counts as `[]` per the
+  spec), `LegacyShipChannelEventTests` (old history stays readable).
+- Test target fixes needed to build at all (the target did not compile at `68b7bbc`): the ack-deadline tests
+  (`missingAckClosesEvenWhileServerMessagesKeepArriving`, `acknowledgedCommandDoesNotLeaveADeadlineBehind`) moved
+  out of `ReconnectBackoffTests` into `ServerSessionTests`, where their helpers live; `InputReliabilityTests` no
+  longer wraps mutating `KeyPressTracker` calls in `#expect` (the macro captures the receiver immutably).
+
+### Server follow-up (SCMFDBE, not done here)
+
+After `ffff70f` the server never produces `ShipContextReason.ClearDriver`: in `src/` it only appears in the enum
+(`Csmfd.Protocol/StateModel.cs`) and in `ServerMessageWriter.ToWire` (`=> "clearDriver"`). The fixture
+`server-state-delta-clear-driver.json` (written by `ServerMessageWriterTests.WritesClearDriverDeltaFixture`)
+therefore describes a message the current server cannot send. Owner to decide: keep it as an "older server"
+reference (the iPad tests use it that way) or remove the value and the fixture server side.
 
 ## Why
 

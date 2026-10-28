@@ -115,6 +115,6 @@ extension View {
 extension ManufacturerTheme {
     /// Localizes, then applies the manufacturer letter case.
     func label(_ resource: LocalizedStringResource) -> String {
-        label(String(localized: resource))
+        label(verbatim: String(localized: resource))
     }
 }

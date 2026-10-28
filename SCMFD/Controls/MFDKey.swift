@@ -172,7 +172,8 @@ struct MFDKey: View {
         .sensoryFeedback(.success, trigger: hold.completions)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(title ?? action.title))
-        .accessibilityHint(detail ?? Text(""))
+        // Verbatim: an empty localized literal would become an empty String Catalog key.
+        .accessibilityHint(detail ?? Text(verbatim: ""))
         .accessibilityValue(Text(isToggle ? status : action.defaultChord.description))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction {

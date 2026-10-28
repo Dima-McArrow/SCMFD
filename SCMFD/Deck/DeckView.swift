@@ -6,7 +6,7 @@ struct DeckView: View {
 
     var body: some View {
         if state.isShipDisconnected {
-            DisconnectedDeckView()
+            DisconnectedDeckView { state.enableManually() }
         } else {
             GeometryReader { geometry in
                 let layout = geometry.size.width >= geometry.size.height
@@ -22,7 +22,12 @@ struct DeckView: View {
 }
 
 #Preview("Deck / landscape", traits: .fixedLayout(width: 1194, height: 834)) {
-    @Previewable @State var state = DeckState()
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        // The Deck starts off (FIX-07); show the keys.
+        state.enableManually()
+        return state
+    }()
     DeckView(state: state)
         .padding(20)
         .background { ThemeBackdropView() }
@@ -30,7 +35,12 @@ struct DeckView: View {
 }
 
 #Preview("Deck / portrait", traits: .fixedLayout(width: 834, height: 1194)) {
-    @Previewable @State var state = DeckState()
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        // The Deck starts off (FIX-07); show the keys.
+        state.enableManually()
+        return state
+    }()
     DeckView(state: state)
         .padding(20)
         .background { ThemeBackdropView() }

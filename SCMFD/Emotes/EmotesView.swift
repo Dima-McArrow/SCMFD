@@ -73,7 +73,7 @@ private struct EmoteTile: View {
             send(group.command)
         } label: {
             VStack(alignment: .leading, spacing: 6) {
-                Text(theme.label(group.title))
+                Text(theme.label(verbatim: group.title))
                     .mfdLabelStyle(theme, size: 13)
                     .foregroundStyle(theme.palette.text)
                     .lineLimit(1)

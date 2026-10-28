@@ -54,9 +54,15 @@ struct AppThemeTests {
     }
 
     @Test func joinSwitchesTheThemeOnlyWithAutoThemeOn() {
-        let join = ShipJoin(manufacturer: .aegis, sessionId: UUID(), revision: 3)
-        #expect(AppTheme.afterJoin(join, current: .standard, autoTheme: true) == .manufacturer(.aegis))
-        #expect(AppTheme.afterJoin(join, current: .standard, autoTheme: false) == .standard)
+        let join = ThemeChange(theme: .manufacturer(.aegis), sessionId: UUID(), revision: 3)
+        #expect(AppTheme.after(join, current: .standard, autoTheme: true) == .manufacturer(.aegis))
+        #expect(AppTheme.after(join, current: .standard, autoTheme: false) == .standard)
+    }
+
+    @Test func leaveRestoresTheStandardThemeOnlyWithAutoThemeOn() {
+        let leave = ThemeChange(theme: .standard, sessionId: UUID(), revision: 4)
+        #expect(AppTheme.after(leave, current: .manufacturer(.drake), autoTheme: true) == .standard)
+        #expect(AppTheme.after(leave, current: .manufacturer(.drake), autoTheme: false) == .manufacturer(.drake))
     }
 
     @Test func manufacturerThemesKeepTheirNames() {

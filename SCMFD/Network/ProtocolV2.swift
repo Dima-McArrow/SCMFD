@@ -231,18 +231,25 @@ nonisolated struct ShipContextStatus: Decodable, Sendable, Equatable {
         case unknown, assumed, noShip
     }
 
-    nonisolated enum Reason: String, Decodable, Sendable {
-        case startup, channelJoined, clearDriver, channelLeft, gameEnded, logReset
+    nonisolated enum Reason: String, Sendable {
+        /// `clearDriver` comes only from servers older than 41.23.
+        case startup, channelJoined, clearDriver, channelLeft, vehicleDestroyed, gameEnded, logReset
+        /// A reason this build does not know; a newer server may add one (41.23).
+        case unknown
     }
 
-    /// Grows on every processed ship-context transition, including a repeated ClearDriver.
+    /// Grows on every ship-context transition (41.23).
     let revision: Int
     let status: Status
-    let reason: Reason
+    /// Raw reason, as the server sent it. Kept as a string so a new server reason is not a decoding
+    /// error (a protocol violation, which never reconnects); use `knownReason` for the known ones.
+    let reason: String
     let contextId: UUID?
-    /// Last recognized manufacturer; may outlive the ship after ClearDriver (theme only, not control).
+    /// Last recognized manufacturer; may outlive the ship after a leave or destruction (theme only, not control).
     let manufacturerPrefix: String?
     let observedAt: Date?
+
+    var knownReason: Reason { Reason(rawValue: reason) ?? .unknown }
 }
 
 nonisolated struct QuantumTargetStatus: Decodable, Sendable, Equatable {

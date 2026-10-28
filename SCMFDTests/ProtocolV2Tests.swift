@@ -8,14 +8,34 @@ struct ProtocolV2Tests {
 
     static let sessionId = "7a42291e-21db-4ac5-a3e1-ea278bb54900"
     static let generation = "982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1"
-    static let shipContext = #"{"revision":4,"status":"noShip","reason":"clearDriver","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:01:00.708Z"}"#
+    /// The 41 spec example; its `.708` fraction proves milliseconds survive. Not a server fixture.
+    static let millisecondShipContext = #"{"revision":4,"status":"noShip","reason":"clearDriver","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:01:00.708Z"}"#
 
+    // SCMFDBE `tests/Csmfd.Tests/Fixtures/Protocol`: the same JSON values, compacted.
+
+    /// `server-state-full.json`.
     static let fullState = #"""
     {"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":12,"partial":false,
     "game":{"running":true,"focused":true,"build":null},
-    "log":{"status":"ready","generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":"2026-10-27T00:00:00Z"},
-    "ship":{"name":"Drake Cutter Rambler","model":"DRAK_Cutter_Rambler","entityId":"903627021939","manufacturerPrefix":"DRAK","confidence":"assumed","observedAt":"2026-10-27T00:00:00Z"},
-    "shipContext":{"revision":3,"status":"assumed","reason":"channelJoined","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:00:00Z"},
+    "log":{"status":"ready","generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":"2026-10-27T00:00:00.000Z"},
+    "ship":{"name":"Drake Cutter Rambler","model":"DRAK_Cutter_Rambler","entityId":"903627021939","manufacturerPrefix":"DRAK","confidence":"assumed","observedAt":"2026-10-27T00:00:00.000Z"},
+    "shipContext":{"revision":3,"status":"assumed","reason":"channelJoined","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:00:00.000Z"},
+    "qtTarget":{"mode":"unknown","internalName":null,"displayName":null,"confidence":"stale","observedAt":null},
+    "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
+    """#
+
+    /// `server-state-delta-clear-driver.json` (sent only by servers older than 41.23).
+    static let clearDriverDelta = #"""
+    {"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":13,"partial":true,"ship":null,
+    "shipContext":{"revision":4,"status":"noShip","reason":"clearDriver","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:01:00.000Z"},
+    "qtTarget":{"mode":"unknown","internalName":null,"displayName":null,"confidence":"stale","observedAt":null},
+    "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
+    """#
+
+    /// `server-state-delta-vehicle-destroyed.json` (41.23).
+    static let vehicleDestroyedDelta = #"""
+    {"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":14,"partial":true,"ship":null,
+    "shipContext":{"revision":5,"status":"noShip","reason":"vehicleDestroyed","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:02:00.000Z"},
     "qtTarget":{"mode":"unknown","internalName":null,"displayName":null,"confidence":"stale","observedAt":null},
     "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
     """#
@@ -73,6 +93,55 @@ struct ProtocolV2Tests {
         #expect(String(decoding: data, as: UTF8.self).contains(#""text":"/asl_thanks2""#))
     }
 
+    // MARK: - SCMFDBE client fixtures
+
+    /// Each client message next to its SCMFDBE fixture (same JSON values, compacted).
+    nonisolated static let clientFixtures: [(ClientMessage, String)] = [
+        (.hello(ClientHello(appVersion: "0.1.0", deviceName: "Dima iPad", token: nil)),
+         #"{"v":2,"type":"hello","client":"CSMFD-iPad","appVersion":"0.1.0","deviceName":"Dima iPad","token":null}"#),
+        (.pair(code: "482913"),
+         #"{"v":2,"type":"pair","code":"482913"}"#),
+        (.ping(id: "p-123", unixMilliseconds: 1_793_040_000_000),
+         #"{"v":2,"type":"ping","id":"p-123","t":1793040000000}"#),
+        (.key(id: UUID(uuidString: "4d88b2ad-d306-443a-8524-155575227708")!,
+              KeyEvent(action: .requestLanding, phase: .down)),
+         #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"requestLanding","phase":"down","key":"n","mods":["alt"]}"#),
+        (.key(id: UUID(uuidString: "9b33e72e-4b86-455c-95c6-e3c2d782f172")!,
+              KeyEvent(action: .quantumEngage, phase: .hold(milliseconds: 1500))),
+         #"{"v":2,"type":"key","id":"9b33e72e-4b86-455c-95c6-e3c2d782f172","action":"quantumEngage","phase":"hold","key":"mouse1","ms":1500}"#),
+        (.chat(id: UUID(uuidString: "c41d0b6e-2f7a-4c55-9a43-8f0e7e1b2a10")!, text: "/dance3"),
+         #"{"v":2,"type":"chat","id":"c41d0b6e-2f7a-4c55-9a43-8f0e7e1b2a10","text":"/dance3"}"#),
+        (.releaseAll(id: UUID(uuidString: "e0f1a2b3-c4d5-4e6f-8a9b-0c1d2e3f4a5b")!),
+         #"{"v":2,"type":"releaseAll","id":"e0f1a2b3-c4d5-4e6f-8a9b-0c1d2e3f4a5b"}"#),
+    ]
+
+    /// Compared as JSON objects: key order and whitespace do not matter, an extra or missing key does.
+    @Test(arguments: clientFixtures)
+    func clientMessageMatchesServerFixture(message: ClientMessage, fixture: String) throws {
+        let encoded = try #require(JSONSerialization.jsonObject(with: ProtocolV2.encode(message)) as? NSDictionary)
+        let expected = try #require(JSONSerialization.jsonObject(with: Data(fixture.utf8)) as? [String: Any])
+        var normalized = expected
+        // `mods` is optional with a default of `[]` (40, key fields). The iPad always sends it; the server's hold
+        // fixture omits it. Both mean the same, so a missing `mods` counts as `[]`.
+        if normalized["type"] as? String == "key", normalized["mods"] == nil {
+            normalized["mods"] = [String]()
+        }
+        #expect(encoded == normalized as NSDictionary)
+    }
+
+    /// `server-ack-sent.json`.
+    @Test func ackSentFixtureDecodes() throws {
+        let message = try decode(#"{"v":2,"type":"ack","id":"4d88b2ad-d306-443a-8524-155575227708","status":"sent"}"#)
+        let id = try #require(UUID(uuidString: "4d88b2ad-d306-443a-8524-155575227708"))
+        #expect(message == .ack(ServerAck(id: id, status: .sent, reason: nil)))
+    }
+
+    /// `server-pong.json`: echoes the ping fixture's id and time.
+    @Test func pongFixtureDecodes() throws {
+        let message = try decode(#"{"v":2,"type":"pong","id":"p-123","t":1793040000000}"#)
+        #expect(message == .pong(ServerPong(id: "p-123", t: 1_793_040_000_000)))
+    }
+
     // MARK: - Server → iPad
 
     @Test func fullSnapshotDecodes() throws {
@@ -91,14 +160,14 @@ struct ProtocolV2Tests {
             return
         }
         #expect(context.revision == 3)
-        #expect(context.reason == .channelJoined)
+        #expect(context.knownReason == .channelJoined)
     }
 
     @Test func clearDriverDeltaSeparatesNullFromAbsent() throws {
-        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":13,"partial":true,"ship":null,"shipContext":\#(Self.shipContext)}"#)
+        let state = try state(Self.clearDriverDelta)
         #expect(state.ship == .value(nil))
         #expect(state.game == .absent)
-        #expect(state.qtTarget == .absent)
+        #expect(state.log == .absent)
     }
 
     @Test func deltaWithoutShipLeavesShipAbsent() throws {
@@ -108,7 +177,7 @@ struct ProtocolV2Tests {
     }
 
     @Test func datesKeepMilliseconds() throws {
-        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":15,"partial":true,"shipContext":\#(Self.shipContext)}"#)
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":15,"partial":true,"shipContext":\#(Self.millisecondShipContext)}"#)
         guard case .value(let context) = state.shipContext else {
             Issue.record("Expected a ship context")
             return
@@ -116,6 +185,32 @@ struct ProtocolV2Tests {
         let seconds = try #require(context.observedAt?.timeIntervalSince1970)
         // Double cannot hold .708 exactly; a tolerance well below 1 ms still proves the fraction survived.
         #expect(abs(seconds - 1_793_059_260.708) < 0.000_5)
+    }
+
+    @Test func vehicleDestroyedDeltaDecodes() throws {
+        let state = try state(Self.vehicleDestroyedDelta)
+        #expect(state.ship == .value(nil))
+        guard case .value(let context) = state.shipContext else {
+            Issue.record("Expected a ship context")
+            return
+        }
+        #expect(context.revision == 5)
+        #expect(context.status == .noShip)
+        #expect(context.knownReason == .vehicleDestroyed)
+    }
+
+    @Test func unknownShipContextReasonKeepsItsRawString() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":16,"partial":true,"shipContext":{"revision":6,"status":"assumed","reason":"somethingNew","contextId":null,"manufacturerPrefix":null,"observedAt":null}}"#)
+        guard case .value(let context) = state.shipContext else {
+            Issue.record("Expected a ship context")
+            return
+        }
+        #expect(context.knownReason == .unknown)
+        // Debug shows what the server actually sent.
+        #expect(context.reason == "somethingNew")
+        // The rest of the context still counts: the Deck follows `status`.
+        #expect(context.status == .assumed)
+        #expect(context.revision == 6)
     }
 
     @Test func ackKeepsUnknownReasonAsRawString() throws {

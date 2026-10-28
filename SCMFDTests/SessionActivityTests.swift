@@ -172,3 +172,41 @@ struct SessionActivityTests {
         #expect(wrongEffects.contains { if case .close = $0 { true } else { false } })
     }
 }
+
+/// Old saved history may hold `shipChannelJoined/Left` events with a `channelId` (41.22). Since 41.23 they are only
+/// decoded and kept readable; they never move the theme or the ledger.
+struct LegacyShipChannelEventTests {
+    let stream = UUID()
+    let session = UUID()
+    let at = Date(timeIntervalSince1970: 1_800_000_000)
+    let aurora = String(repeating: "a", count: 64)
+
+    private func event(_ seq: Int64, _ kind: String, _ name: String, _ channel: String?) -> SessionActivityEvent {
+        SessionActivityEvent(seq: seq, kind: kind, at: at, text: name, missionId: nil,
+                             objectiveId: nil, amount: nil, currency: nil, channelId: channel)
+    }
+
+    @Test func channelEventsDoNotMarkFinanceHistoryIncomplete() {
+        let store = SessionActivityStore(fileURL: nil)
+        store.receive(ServerActivityPage(sessionId: session, streamId: stream, startedAt: at, firstSeq: 1, latestSeq: 1,
+                                         ended: false, events: [event(1, "shipChannelJoined", "RSI Aurora Mk I LN", aurora)]))
+        #expect(!store.sessions[0].incomplete)
+        #expect(store.sessions[0].rewardCount == 0)
+    }
+
+    @Test func invalidChannelIdentityIsRejected() {
+        #expect(!event(1, "shipChannelJoined", "Drake Cutter", "bad").isValid)
+    }
+
+    @Test func oldSavedChannelEventsWithoutIdentityRemainReadable() {
+        #expect(event(1, "shipChannelJoined", "Drake Cutter", nil).isValid)
+    }
+
+    @Test func channelIdentitySurvivesDecodingAndHistoryEncoding() throws {
+        let original = event(1, "shipChannelJoined", "Drake Cutter", aurora)
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(SessionActivityEvent.self, from: encoded)
+        #expect(decoded.channelId == aurora)
+        #expect(decoded == original)
+    }
+}

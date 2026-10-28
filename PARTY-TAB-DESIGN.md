@@ -1,5 +1,7 @@
 # Party tab: observed events, FE ownership, and BE requirements
 
+> **Note ([FIX-07](FIX-07-one-path-deck-and-theme.md), spec 41.23, 2026-10-28):** ClearDriver no longer disables the Deck; read "when ClearDriver disables the Deck" below as "when the Deck is off outside a ship channel".
+
 Date: 2026-10-27
 
 Status: design proposal based on inspected logs; no party functionality is implemented by this document.

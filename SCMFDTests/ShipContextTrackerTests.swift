@@ -2,18 +2,19 @@ import Foundation
 import Testing
 @testable import SCMFD
 
-/// FIX-02 acceptance rows (41.9, 41.17): how merged server snapshots drive the Deck.
+/// FIX-07 table (41.23): how merged server snapshots drive the Deck, the auto theme and the keys.
 struct ShipContextTrackerTests {
     static let sessionId = UUID(uuidString: "7a42291e-21db-4ac5-a3e1-ea278bb54900")!
-    static let connectionId = UUID(uuidString: "a42a3cd9-a193-457b-b2dd-a973e3d9b35a")!
     static let rambler = "Drake Cutter Rambler"
 
     private let observedAt = Date(timeIntervalSince1970: 1_800_000_000)
 
-    /// A merged snapshot, as `ServerSession` emits it.
+    /// A merged snapshot, as `ServerSession` emits it. `status` follows `reason` unless given.
     private func snapshot(
         revision: Int,
-        status: ShipContextStatus.Status,
+        reason: ShipContextStatus.Reason,
+        rawReason: String? = nil,
+        status: ShipContextStatus.Status? = nil,
         ship: String?,
         model: String? = nil,
         sessionId: UUID = sessionId,
@@ -23,11 +24,12 @@ struct ShipContextTrackerTests {
         contextPrefix: String? = "DRAK",
         shipPrefix: String? = "DRAK"
     ) -> ServerState {
-        let reason: ShipContextStatus.Reason = switch status {
-        case .assumed: .channelJoined
-        case .noShip: .clearDriver
-        case .unknown: .startup
+        let statusForReason: ShipContextStatus.Status = switch reason {
+        case .channelJoined: .assumed
+        case .startup, .unknown: .unknown
+        case .clearDriver, .channelLeft, .vehicleDestroyed, .gameEnded, .logReset: .noShip
         }
+        let status = status ?? statusForReason
         return ServerState(
             sessionId: sessionId, seq: revision + 1, partial: false,
             game: .value(GameStatus(running: true, focused: true, build: nil)),
@@ -36,105 +38,241 @@ struct ShipContextTrackerTests {
                 ShipStatus(name: $0, model: model, entityId: nil, manufacturerPrefix: shipPrefix,
                            confidence: .assumed, observedAt: observedAt)
             }),
-            shipContext: .value(ShipContextStatus(revision: revision, status: status, reason: reason,
-                                                  contextId: nil, manufacturerPrefix: contextPrefix,
-                                                  observedAt: nil)),
+            shipContext: .value(ShipContextStatus(revision: revision, status: status,
+                                                  reason: rawReason ?? reason.rawValue, contextId: nil,
+                                                  manufacturerPrefix: contextPrefix, observedAt: nil)),
             qtTarget: .value(qtTarget),
             hangarRequest: .value(HangarRequestState(status: hangar, commandId: nil, contextId: nil,
                                                      since: nil, updatedAt: nil))
         )
     }
 
-    /// A tracker that has applied a joined ship at revision 3.
+    private func delta(_ json: String) throws -> ServerState {
+        guard case .state(let state) = try ProtocolV2.decode(Data(json.utf8)) else {
+            Issue.record("Expected a state message")
+            throw CancellationError()
+        }
+        return state
+    }
+
+    private func theme(_ theme: AppTheme, revision: Int, sessionId: UUID = sessionId) -> ThemeChange {
+        ThemeChange(theme: theme, sessionId: sessionId, revision: revision)
+    }
+
+    /// A tracker that has applied a joined Drake at revision 3.
     private func joined() -> ShipContextTracker {
         var tracker = ShipContextTracker()
-        _ = tracker.receive(snapshot(revision: 3, status: .assumed, ship: Self.rambler), connectionId: Self.connectionId)
+        _ = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler))
         return tracker
     }
 
-    /// A tracker after ClearDriver at revision 4, with the Deck enabled manually.
-    private func clearedAndEnabledManually() -> ShipContextTracker {
+    /// A tracker after a channel leave at revision 4, with the Deck enabled manually.
+    private func leftAndEnabledManually() -> ShipContextTracker {
         var tracker = joined()
-        _ = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
         _ = tracker.enableManually()
         return tracker
     }
 
-    @Test func fullAssumedStateEnablesTheDeckAndResetsOnce() {
+    // MARK: - channelJoined
+
+    /// `server-state-full.json`: channelJoined DRAK.
+    @Test func fullJoinedSnapshotEnablesTheDeckWithTheManufacturerTheme() throws {
         var tracker = ShipContextTracker()
-        let state = snapshot(revision: 3, status: .assumed, ship: Self.rambler)
-        let first = tracker.receive(state, connectionId: Self.connectionId)
-        #expect(first == DeckUpdate(enabled: true, shipName: Self.rambler, resetLocalState: true, hangarRequest: .idle,
-                                    join: ShipJoin(manufacturer: .drake, sessionId: Self.sessionId, revision: 3)))
-        #expect(tracker.receive(state, connectionId: Self.connectionId)?.resetLocalState == false)
+        let state = try delta(ProtocolV2Tests.fullState)
+        #expect(tracker.receive(state) == DeckUpdate(enabled: true, shipName: Self.rambler, resetKeys: false,
+                                                     hangarRequest: .idle, theme: theme(.manufacturer(.drake), revision: 3)))
+        // The same snapshot again is not a transition.
+        #expect(tracker.receive(state) == DeckUpdate(enabled: true, shipName: Self.rambler, resetKeys: false,
+                                                     hangarRequest: .idle))
     }
 
-    @Test func unrelatedDeltaKeepsTheLights() {
+    @Test func unrelatedDeltaChangesNothing() {
         var tracker = joined()
         // A qtTarget-only delta merges into a snapshot with the same ship context.
-        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: Self.rambler),
-                                     connectionId: Self.connectionId)
-        #expect(update == DeckUpdate(enabled: true, shipName: Self.rambler, resetLocalState: false, hangarRequest: .idle))
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler))
+        #expect(update == DeckUpdate(enabled: true, shipName: Self.rambler, resetKeys: false, hangarRequest: .idle))
     }
 
-    @Test func enrichedShipUpdatesTheLabelWithoutReset() {
+    @Test func enrichedShipUpdatesOnlyTheLabel() {
         var tracker = joined()
-        let enriched = snapshot(revision: 3, status: .assumed, ship: "Drake Cutter Rambler (enriched)",
+        let enriched = snapshot(revision: 3, reason: .channelJoined, ship: "Drake Cutter Rambler (enriched)",
                                 model: "DRAK_Cutter_Rambler")
-        let update = tracker.receive(enriched, connectionId: Self.connectionId)
-        #expect(update == DeckUpdate(enabled: true, shipName: "Drake Cutter Rambler (enriched)",
-                                     resetLocalState: false, hangarRequest: .idle))
+        #expect(tracker.receive(enriched) == DeckUpdate(enabled: true, shipName: "Drake Cutter Rambler (enriched)",
+                                                        resetKeys: false, hangarRequest: .idle))
     }
 
-    @Test func clearDriverDisablesTheDeckAndResetsLocalState() {
+    @Test func channelJoinUsesTheContextPrefix() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: "Aegis Gladius",
+                                              contextPrefix: "AEGS", shipPrefix: "AEGS"))
+        #expect(update?.theme == theme(.manufacturer(.aegis), revision: 3))
+    }
+
+    @Test func shipPrefixIsTheFallback() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: "Aegis Gladius",
+                                              contextPrefix: nil, shipPrefix: "AEGS"))
+        #expect(update?.theme?.theme == .manufacturer(.aegis))
+    }
+
+    @Test func unknownPrefixEnablesTheDeckButKeepsTheTheme() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: "Mystery",
+                                              contextPrefix: "FOO", shipPrefix: "FOO"))
+        #expect(update == DeckUpdate(enabled: true, shipName: "Mystery", resetKeys: false, hangarRequest: .idle))
+    }
+
+    @Test func sameRevisionWithAnotherPrefixIsNotAThemeChange() {
         var tracker = joined()
-        let update = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetLocalState: true, hangarRequest: .idle))
+        let enriched = snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler, contextPrefix: "AEGS",
+                                shipPrefix: "AEGS")
+        #expect(tracker.receive(enriched)?.theme == nil)
     }
 
-    @Test func manualEnableSurvivesAnIdenticalSnapshot() {
-        var tracker = clearedAndEnabledManually()
-        let update = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        #expect(update?.enabled == true)
-        #expect(update?.resetLocalState == false)
-    }
-
-    @Test func newClearDriverDropsTheManualEnable() {
-        var tracker = clearedAndEnabledManually()
-        let update = tracker.receive(snapshot(revision: 5, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetLocalState: true, hangarRequest: .idle))
-    }
-
-    @Test func reconnectDropsTheManualEnableWithoutReset() {
-        var tracker = clearedAndEnabledManually()
-        let update = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: UUID())
-        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetLocalState: false, hangarRequest: .idle))
-    }
-
-    @Test func newServerSessionWithTheSameRevisionIsATransition() {
+    @Test func joinOfAnotherShipAfterALeaveSwitchesTheThemeAndKeepsTheKeys() {
         var tracker = joined()
-        let restarted = snapshot(revision: 3, status: .assumed, ship: Self.rambler, sessionId: UUID())
-        #expect(tracker.receive(restarted, connectionId: Self.connectionId)?.resetLocalState == true)
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        let update = tracker.receive(snapshot(revision: 5, reason: .channelJoined, ship: "Anvil C8R Pisces Rescue",
+                                              contextPrefix: "ANVL", shipPrefix: "ANVL"))
+        #expect(update == DeckUpdate(enabled: true, shipName: "Anvil C8R Pisces Rescue", resetKeys: false,
+                                     hangarRequest: .idle, theme: theme(.manufacturer(.anvil), revision: 5)))
     }
 
-    @Test func clearDriverWhileTheChannelStaysActiveKeepsTheDeckOff() {
+    /// A manual pick between two Drake joins must be overridden by the second one.
+    @Test func twoJoinsOfTheSameManufacturerAreTwoThemeChanges() {
         var tracker = joined()
-        _ = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        // Later deltas without a new join keep revision 4.
-        let later = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        #expect(later == DeckUpdate(enabled: false, shipName: nil, resetLocalState: false, hangarRequest: .idle))
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        let second = tracker.receive(snapshot(revision: 5, reason: .channelJoined, ship: Self.rambler))
+        #expect(second?.theme == theme(.manufacturer(.drake), revision: 5))
+        #expect(second?.theme != theme(.manufacturer(.drake), revision: 3))
+    }
+
+    // MARK: - Leaving the ship
+
+    @Test(arguments: [ShipContextStatus.Reason.channelLeft, .gameEnded, .logReset])
+    func leavingDisablesTheDeckWithTheStandardThemeAndKeepsTheKeys(reason: ShipContextStatus.Reason) {
+        var tracker = joined()
+        let update = tracker.receive(snapshot(revision: 4, reason: reason, ship: nil))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle,
+                                     theme: theme(.standard, revision: 4)))
+    }
+
+    @Test func laterDeltasAfterALeaveKeepTheDeckOff() {
+        var tracker = joined()
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        let later = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        #expect(later == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle))
+    }
+
+    /// `server-state-delta-vehicle-destroyed.json`, merged onto a joined snapshot with a target and a pending request.
+    @Test func vehicleDestroyedFixtureDisablesTheDeckAndResetsTheKeys() throws {
+        let before = snapshot(revision: 4, reason: .channelJoined, ship: Self.rambler,
+                              qtTarget: QuantumTargetStatus(mode: .destination, internalName: "OOC_Stanton_1_Hurston",
+                                                            displayName: nil, confidence: .confirmed, observedAt: nil),
+                              hangar: .pending)
+        var tracker = ShipContextTracker()
+        _ = tracker.receive(before)
+        let update = tracker.receive(before.merged(with: try delta(ProtocolV2Tests.vehicleDestroyedDelta)))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: true, quantumTarget: .unknown,
+                                     hangarRequest: .idle, theme: theme(.standard, revision: 5)))
+    }
+
+    // MARK: - clearDriver (servers before 41.23)
+
+    /// The Deck, the theme and the keys ignore it; the readouts still mirror the server.
+    @Test func clearDriverFixtureChangesNothing() throws {
+        let before = snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler,
+                              qtTarget: QuantumTargetStatus(mode: .destination, internalName: "OOC_Stanton_1_Hurston",
+                                                            displayName: nil, confidence: .confirmed, observedAt: nil),
+                              hangar: .pending)
+        var tracker = ShipContextTracker()
+        _ = tracker.receive(before)
+        let update = tracker.receive(before.merged(with: try delta(ProtocolV2Tests.clearDriverDelta)))
+        #expect(update == DeckUpdate(enabled: true, shipName: nil, resetKeys: false, quantumTarget: .unknown,
+                                     hangarRequest: .idle))
+    }
+
+    @Test func clearDriverKeepsTheDeckOff() {
+        var tracker = joined()
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        let update = tracker.receive(snapshot(revision: 5, reason: .clearDriver, ship: nil))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle))
+    }
+
+    @Test func clearDriverKeepsAManualEnable() {
+        var tracker = leftAndEnabledManually()
+        #expect(tracker.receive(snapshot(revision: 5, reason: .clearDriver, ship: nil))?.enabled == true)
+        // Still on for the same revision, and the next real transition decides again.
+        #expect(tracker.receive(snapshot(revision: 5, reason: .clearDriver, ship: nil))?.enabled == true)
+        #expect(tracker.receive(snapshot(revision: 6, reason: .gameEnded, ship: nil))?.enabled == false)
+    }
+
+    @Test func clearDriverAsTheFirstContextLeavesTheDeckOff() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 4, reason: .clearDriver, ship: nil))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle))
+    }
+
+    // MARK: - Manual enable
+
+    @Test func manualEnableSurvivesASameRevisionDelta() {
+        var tracker = leftAndEnabledManually()
+        let update = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        #expect(update == DeckUpdate(enabled: true, shipName: nil, resetKeys: false, hangarRequest: .idle))
+    }
+
+    /// Was `reconnectDropsTheManualEnableWithoutReset`: FIX-07 keeps the enable across a reconnect, because the
+    /// new connection's full snapshot carries the same context.
+    @Test func manualEnableSurvivesAReconnect() {
+        var tracker = leftAndEnabledManually()
+        tracker.connectionLost()
+        let update = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        #expect(update == DeckUpdate(enabled: true, shipName: nil, resetKeys: false, hangarRequest: .idle))
+    }
+
+    @Test func nextTransitionEndsTheManualEnable() {
+        var tracker = leftAndEnabledManually()
+        let update = tracker.receive(snapshot(revision: 5, reason: .gameEnded, ship: nil))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle,
+                                     theme: theme(.standard, revision: 5)))
+    }
+
+    @Test func newServerSessionWithTheSameRevisionEndsTheManualEnable() {
+        var tracker = leftAndEnabledManually()
+        let restarted = UUID()
+        let update = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil, sessionId: restarted))
+        #expect(update?.enabled == false)
+        #expect(update?.theme == theme(.standard, revision: 4, sessionId: restarted))
+    }
+
+    @Test func manualEnableKeepsTheKeysAndTheTheme() {
+        var tracker = joined()
+        _ = tracker.receive(snapshot(revision: 4, reason: .channelLeft, ship: nil))
+        #expect(tracker.enableManually() == DeckUpdate(enabled: true, shipName: nil, resetKeys: false,
+                                                       hangarRequest: .idle))
     }
 
     @Test func serverStartedMidFlightNeedsAManualEnable() {
         var tracker = ShipContextTracker()
-        let update = tracker.receive(snapshot(revision: 0, status: .unknown, ship: nil), connectionId: Self.connectionId)
-        #expect(update?.enabled == false)
+        let update = tracker.receive(snapshot(revision: 0, reason: .startup, ship: nil))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false, hangarRequest: .idle))
         #expect(tracker.enableManually()?.enabled == true)
     }
 
     @Test func manualEnableWithoutServerContextIsLeftToTheCaller() {
         var tracker = ShipContextTracker()
         #expect(tracker.enableManually() == nil)
+    }
+
+    // MARK: - Unknown future reason
+
+    @Test(arguments: [(ShipContextStatus.Status.assumed, true), (.noShip, false), (.unknown, false)])
+    func unknownReasonFollowsTheStatusAndKeepsThemeAndKeys(status: ShipContextStatus.Status, enabled: Bool) {
+        var tracker = joined()
+        let update = tracker.receive(snapshot(revision: 6, reason: .unknown, rawReason: "somethingNew",
+                                              status: status, ship: nil))
+        #expect(update == DeckUpdate(enabled: enabled, shipName: nil, resetKeys: false, hangarRequest: .idle))
     }
 
     // MARK: - FIX-03: QT readout and ATC mirrored from state
@@ -166,12 +304,12 @@ struct ShipContextTrackerTests {
     @Test(arguments: [HangarRequestStatus.idle, .pending, .answered, .timeout])
     func hangarStatusIsMirrored(status: HangarRequestStatus) {
         var tracker = ShipContextTracker()
-        let state = snapshot(revision: 3, status: .assumed, ship: Self.rambler, hangar: status)
-        #expect(tracker.receive(state, connectionId: Self.connectionId)?.hangarRequest == status)
+        let state = snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler, hangar: status)
+        #expect(tracker.receive(state)?.hangarRequest == status)
     }
 
     @Test func noSnapshotMeansNoServerData() {
-        #expect(DeckUpdate(enabled: true, shipName: nil, resetLocalState: false).hangarRequest == nil)
+        #expect(DeckUpdate(enabled: true, shipName: nil, resetKeys: false).hangarRequest == nil)
         var tracker = ShipContextTracker()
         #expect(tracker.enableManually() == nil)
     }
@@ -179,68 +317,18 @@ struct ShipContextTrackerTests {
     @Test func manualEnableKeepsTheMirroredReadouts() {
         var tracker = ShipContextTracker()
         let hurston = target(.destination, internal: "OOC_Stanton_1_Hurston", display: nil)
-        _ = tracker.receive(snapshot(revision: 0, status: .unknown, ship: nil, qtTarget: hurston, hangar: .pending),
-                            connectionId: Self.connectionId)
+        _ = tracker.receive(snapshot(revision: 0, reason: .startup, ship: nil, qtTarget: hurston, hangar: .pending))
         let update = tracker.enableManually()
         #expect(update?.quantumTarget == .destination("OOC_Stanton_1_Hurston"))
         #expect(update?.hangarRequest == .pending)
     }
 
-    // MARK: - FIX-04: ship-channel join drives the auto theme
-
-    @Test func channelJoinReportsTheManufacturer() {
-        var tracker = ShipContextTracker()
-        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Aegis Gladius",
-                                              contextPrefix: "AEGS", shipPrefix: "AEGS"),
-                                     connectionId: Self.connectionId)
-        #expect(update?.join == ShipJoin(manufacturer: .aegis, sessionId: Self.sessionId, revision: 3))
-    }
-
-    @Test func shipPrefixIsTheFallback() {
-        var tracker = ShipContextTracker()
-        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Aegis Gladius",
-                                              contextPrefix: nil, shipPrefix: "AEGS"),
-                                     connectionId: Self.connectionId)
-        #expect(update?.join?.manufacturer == .aegis)
-    }
-
-    @Test func clearDriverIsNotAJoin() {
-        var tracker = joined()
-        let update = tracker.receive(snapshot(revision: 4, status: .noShip, ship: nil), connectionId: Self.connectionId)
-        #expect(update?.join == nil)
-    }
-
-    @Test func sameRevisionWithAnotherPrefixIsNotAJoin() {
-        var tracker = joined()
-        let enriched = snapshot(revision: 3, status: .assumed, ship: Self.rambler, contextPrefix: "AEGS",
-                                shipPrefix: "AEGS")
-        #expect(tracker.receive(enriched, connectionId: Self.connectionId)?.join == nil)
-    }
-
-    @Test func reconnectIsNotAJoin() {
-        var tracker = joined()
-        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: Self.rambler), connectionId: UUID())
-        #expect(update?.join == nil)
-    }
-
-    @Test func unknownPrefixKeepsTheTheme() {
-        var tracker = ShipContextTracker()
-        let update = tracker.receive(snapshot(revision: 3, status: .assumed, ship: "Mystery",
-                                              contextPrefix: "FOO", shipPrefix: "FOO"),
-                                     connectionId: Self.connectionId)
-        #expect(update?.join == nil)
-    }
-
-    @Test func manualDeckEnableIsNotAJoin() {
-        var tracker = clearedAndEnabledManually()
-        #expect(tracker.enableManually()?.join == nil)
-    }
+    // MARK: - Transport lost
 
     @Test func lostConnectionClearsReadoutsButKeepsTheDeck() {
         var tracker = ShipContextTracker()
         let hurston = target(.destination, internal: "OOC_Stanton_1_Hurston", display: nil)
-        _ = tracker.receive(snapshot(revision: 0, status: .unknown, ship: nil, qtTarget: hurston, hangar: .pending),
-                            connectionId: Self.connectionId)
+        _ = tracker.receive(snapshot(revision: 0, reason: .startup, ship: nil, qtTarget: hurston, hangar: .pending))
         tracker.connectionLost()
         let update = tracker.enableManually()
         #expect(update?.enabled == true)
@@ -248,25 +336,10 @@ struct ShipContextTrackerTests {
         #expect(update?.hangarRequest == nil)
     }
 
-    /// `server-state-delta-clear-driver.json` from SCMFDBE, merged onto a snapshot with a target and a pending request.
-    @Test func clearDriverFixtureResetsQuantumTargetAndATC() throws {
-        let fixture = #"""
-        {"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":13,"partial":true,"ship":null,
-        "shipContext":{"revision":4,"status":"noShip","reason":"clearDriver","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:01:00.000Z"},
-        "qtTarget":{"mode":"unknown","internalName":null,"displayName":null,"confidence":"stale","observedAt":null},
-        "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
-        """#
-        guard case .state(let delta) = try ProtocolV2.decode(Data(fixture.utf8)) else {
-            Issue.record("Expected a state message")
-            return
-        }
-        let before = snapshot(revision: 3, status: .assumed, ship: Self.rambler,
-                              qtTarget: target(.destination, internal: "OOC_Stanton_1_Hurston", display: nil),
-                              hangar: .pending)
-        var tracker = ShipContextTracker()
-        _ = tracker.receive(before, connectionId: Self.connectionId)
-        let update = tracker.receive(before.merged(with: delta), connectionId: Self.connectionId)
-        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetLocalState: true,
-                                     quantumTarget: .unknown, hangarRequest: .idle))
+    @Test func reconnectToTheSameContextIsNotAThemeChange() {
+        var tracker = joined()
+        tracker.connectionLost()
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler))
+        #expect(update == DeckUpdate(enabled: true, shipName: Self.rambler, resetKeys: false, hangarRequest: .idle))
     }
 }

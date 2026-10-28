@@ -41,8 +41,8 @@ final class ServerConnection {
     }
 
     @ObservationIgnored var onActivity: ((ServerActivityPage) -> Void)?
-    /// Merged snapshot plus the `connectionId` of the welcome it arrived on.
-    @ObservationIgnored var onState: ((ServerState, UUID) -> Void)?
+    /// Merged snapshot. The ship context is keyed by `(sessionId, revision)`, not by connection (FIX-07).
+    @ObservationIgnored var onState: ((ServerState) -> Void)?
     @ObservationIgnored var onCommandFinished: ((UUID, CommandOutcome) -> Void)?
     @ObservationIgnored var onInputEnded: ((UUID, String?) -> Void)?
 
@@ -413,7 +413,7 @@ final class ServerConnection {
                 latestState = state
                 record("← state seq \(state.seq)\(incomingStateIsDelta ? " (delta)" : " (full)")")
                 // ServerSession emits states only while ready.
-                if case .ready(let welcome) = phase { onState?(state, welcome.connectionId) }
+                if case .ready = phase { onState?(state) }
             case .activity(let page):
                 onActivity?(page)
             case .commandFinished(let id, let outcome):

@@ -29,14 +29,18 @@ nonisolated enum HangarRequestStatus: String, Sendable {
 /// whether the Deck is enabled and supplies the ship name, QT target and ATC status (`ShipContextTracker`).
 @Observable
 final class DeckState {
-    private(set) var lit: Set<ShipAction> = []
-    /// The console playground stays usable until an explicit ship-context update arrives.
-    private(set) var isShipDisconnected = false
+    /// Keys at app start and after a reset: a parked ship has its landing gear down (FIX-07).
+    static let defaultLit: Set<ShipAction> = [.landingGear]
+
+    private(set) var lit: Set<ShipAction> = DeckState.defaultLit
+    /// Off at app start in every mode, the console link included (FIX-07, first row): the first `channelJoined`
+    /// or Enable Deck turns it on. Transport loss never changes it.
+    private(set) var isShipDisconnected = true
     @ObservationIgnored private var shipContext = ShipContextTracker()
 
     /// A merged snapshot from the server. Transport loss never calls this, so it does not disable the Deck.
-    func receive(_ state: ServerState, connectionId: UUID) {
-        guard let update = shipContext.receive(state, connectionId: connectionId) else { return }
+    func receive(_ state: ServerState) {
+        guard let update = shipContext.receive(state) else { return }
         apply(update)
     }
 
@@ -48,16 +52,16 @@ final class DeckState {
     }
 
     func apply(_ update: DeckUpdate) {
-        if update.resetLocalState { resetLights() }
+        if update.resetKeys { resetDeck() }
         shipName = update.shipName
         quantumTarget = update.quantumTarget
         hangarRequest = update.hangarRequest
         isShipDisconnected = !update.enabled
-        if let join = update.join { lastShipJoin = join }
+        if let theme = update.theme { lastThemeChange = theme }
     }
 
-    /// The latest ship-channel join; the app switches the auto theme when it changes.
-    private(set) var lastShipJoin: ShipJoin?
+    /// The latest transition's theme; the app switches the auto theme when it changes.
+    private(set) var lastThemeChange: ThemeChange?
     var selfDestructArmed = false
     /// Mirrored from the server state; nil means no server data. The ship name survives a dropped link,
     /// the ATC status does not.
@@ -90,16 +94,17 @@ final class DeckState {
     }
 
     /// Local override only: does not infer ship identity or send any game input.
-    /// It lasts until the next ship-context transition or reconnect.
+    /// It lasts until the next ship-context transition; a reconnect to the same context keeps it.
     func enableManually() {
         guard isShipDisconnected else { return }
         apply(shipContext.enableManually()
-              ?? DeckUpdate(enabled: true, shipName: shipName, resetLocalState: true))
+              ?? DeckUpdate(enabled: true, shipName: shipName, resetKeys: false))
     }
 
-    /// For when the lights drift from the game, e.g. after a respawn.
-    func resetLights() {
-        lit.removeAll()
+    /// Reset Deck, also applied after `vehicleDestroyed`: keys back to their defaults, self-destruct disarmed.
+    /// Local only; sends nothing to the game.
+    func resetDeck() {
+        lit = Self.defaultLit
         selfDestructArmed = false
     }
 }
