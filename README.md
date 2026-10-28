@@ -94,6 +94,7 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 
 | Part | State |
 |---|---|
+| Observed Party tab (41.24) | Implemented in source: iPad-owned partial member list, last known leader, bounded transient history and stale/gap labels. Requires updated BE; Mac build/Swift tests and game validation pending |
 | UI: Deck, Emotes, themes, sounds | Working; the Deck starts off, and without a pairing Enable Deck turns it on and the keys go to `ConsoleCommandLink` (Xcode console) |
 | Localization en/fr/ru ([FIX-06](FIX-06-missing-translations.md)) | Every catalog string has fr and ru; `Pair window` / `Pair iPad…` stay in English to match the PC app |
 | Protocol v2, pairing link, Keychain, TLS pinning, session logic | Implemented and unit-tested; an unknown value in a server enum decodes to a safe fallback instead of ending the link, and every SCMFDBE protocol fixture is pinned in `ProtocolV2Tests` (156 tests, 251 runs on the simulator, 2026-10-28) |
@@ -119,3 +120,21 @@ and copy its `emotes.txt` block to `%LocalAppData%\CSMFD\emotes.txt` on the PC.
 
 See [SESSION-RELIABILITY-FIXES.md](SESSION-RELIABILITY-FIXES.md) for the observed failures, source fixes,
 verification results and the remaining Mac/game checks.
+
+## Observed Party MVP (2026-10-28)
+
+The Party tab is independent of Deck/seat/theme and makes no game commands. Names are exact observed
+display names, not online status or a complete roster. Party history is transient (128 events / 64 names);
+finance session resets do not reset it. No old financial history is treated as current membership.
+
+No authoritative roster, local PU leave/kick, alias mapping or shard continuity is established.
+Invites, marker stream-out and launch acceptances do not update membership. Update both sides together;
+older activity clients may label new kinds as incomplete finance history. The running server is not replaced
+automatically. See protocol section 41.24 in the iPad repository for the wire contract and test scenario.
+
+Party validation on Windows: Release build passed with zero warnings; all 399 BE tests passed,
+including mixed Party/reward WSS paging, reconnect replay and denial to unpaired clients. Formatting check
+passed. A read-only replay of 37 real logs (2,621,104 lines) produced 43 Party facts, matching the independent
+source scan: 1 creation, 6 local joins, 7 member joins, 16 member leaves, 10 leader changes and 3 disbands.
+Swift tests are added but cannot run on this Windows machine. Before in-game testing, build/test the iPad
+app on Mac and use the matching updated BE build. Check the Party tab in portrait/landscape and en/fr/ru.

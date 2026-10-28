@@ -1765,3 +1765,64 @@ Reset Deck icon. Reason: on foot the Deck keys do other things (`mouse1` fires t
 
 Reference fixture: `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-state-delta-vehicle-destroyed.json`.
 Server commits: `ffff70f`, `9064f12`, `cc0cd1c`.
+
+### 41.24. Observed Party MVP (2026-10-28)
+
+Owner requirement: keep BE light; all roster, leader, history and uncertainty calculations live on the iPad.
+This additive v2 extension reuses the single log reader, notification assembly (8 lines / 4096 code units),
+512-entry source deduplication cache, existing 256-event journal, four-event activity pages and authenticated
+send/replay loop. There is no second reader, BE party state, snapshot, roster, timer, polling or disk history.
+Party shares the bounded journal with rewards/contracts; retention gaps remain explicit through firstSeq/seq.
+
+Only complete SHUDEvent_OnNotification Added notification records are observations. Queue reprints,
+UpdateNotificationItem, invitation acceptance actions, markers and lobby Leave group records are excluded.
+The body, including continuations, must match these validated forms (trailing notification colon omitted):
+
+| Body | activity kind | text |
+|---|---|---|
+| You have created / party | partyCreated | Empty string |
+| You have joined / party | partyJoined | Empty string |
+| New Member Joined / NAME has joined the party. | partyMemberJoined | NAME |
+| Member Left / NAME has left the party. | partyMemberLeft | NAME |
+| New Party Leader / NAME is now party leader. | partyLeaderChanged | NAME |
+| Party Disbanded / The party has been disbanded. | partyDisbanded | Empty string |
+
+Slash denotes an assembled line break, not a literal slash. Matching is ordinal and case-sensitive.
+Names are preserved exactly, 1-96 Unicode scalars, no control/format characters, replacement character U+FFFD
+or leading/trailing whitespace. Invalid or overlong names are skipped, never repaired or truncated.
+Party events carry no missionId, objectiveId, amount, currency, channelId or invented group identity.
+All existing envelope, frame, sessionId, streamId, seq and replay rules in 41.21 still apply.
+Reference fixture: SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-activity-party.json.
+The identical fixture is pinned in SCMFDTests/PartyStateTests.swift.
+
+The FE consumes every activity sequence (including non-Party kinds) to detect gaps and suppress replay.
+It derives observed membership, up to 64 distinct exact display names, a last known leader and up to 128
+Party history entries. Exact names are opaque; aliases and GEIDs are not merged. A named leader is also
+an observed member. A member-left event removes that exact name and clears a matching leader; an empty
+observed list does not establish no party. Creation/join starts another observed group with no inferred names
+or leader; disband clears them and records only that disbanding was observed.
+
+The list is always labeled potentially incomplete and is never a live online-status display. Disconnect,
+catch-up, missing/unreadable log, game end and sequence gaps mark observations stale. A missing/unreadable
+source or replay gap invalidates the inferred roster/leader; history remains separate. Reconnect can restore
+observation continuity only after all replay pages have arrived without a gap. New server session/log
+generation/activity stream clears Party observations; they are not restored from saved finance history.
+The 64-name limit marks continuity incomplete rather than growing without bound. Financial tracking-session
+boundaries, seat state, ship-channel transitions, Deck reset and theme changes do not reset Party.
+Recognized Party events advance the finance cursor but do not enter its recent list or mark rewards incomplete.
+Malformed Party-specific text/optional-field combinations are ignored by the Party reducer and invalidate its
+inferences; generic malformed protocol envelopes still follow existing connection-validation rules.
+
+Old servers do not emit Party facts; the tab stays unknown. There is no Party capability handshake, so an empty
+feed cannot distinguish unsupported from no observed events. Old activity-aware clients tolerate new string
+kinds but may mark their financial history incomplete; update both sides for this MVP. Do not deploy/restart
+the running PC server automatically. No Party input commands are introduced.
+
+Evidence limits: no authoritative roster, reliable local PU leave/kick, alias mapping, online state or shard
+identity is available. Shard changes without a log/stream reset cannot be detected reliably. Party/social facts
+can also be observed in the frontend; the MVP does not claim every event occurred inside PU. Invites and launch
+events are omitted. Test in PU with an existing two-person group: join as a third player, transfer leadership,
+have a member leave, then leave locally. Note times and actual roster to compare with observed results.
+
+Windows validation covers BE build/tests and formatting. iPad simulator build, Swift tests and visual layout
+must be checked on Mac; in-game behavior and frametime are unverified until the controlled run.

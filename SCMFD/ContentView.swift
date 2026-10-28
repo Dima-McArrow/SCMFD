@@ -4,11 +4,12 @@ import SwiftUI
 nonisolated enum AppScreen: Hashable, Identifiable, Sendable {
     case deck
     case emotes
+    case party
     case debug
     case info(MFDPage)
 
     static let all: [AppScreen] = {
-        var screens: [AppScreen] = [.deck, .emotes, .info(.mission), .info(.credits)]
+        var screens: [AppScreen] = [.deck, .emotes, .party, .info(.mission), .info(.credits)]
         #if DEBUG
         screens.append(.debug)
         #endif
@@ -19,6 +20,7 @@ nonisolated enum AppScreen: Hashable, Identifiable, Sendable {
         switch self {
         case .deck: "deck"
         case .emotes: "emotes"
+        case .party: "party"
         case .debug: "debug"
         case .info(let page): page.rawValue
         }
@@ -32,6 +34,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var screen: AppScreen = .deck
     @State private var deck: DeckState
+    @State private var party: PartyStore
     @State private var activity: SessionActivityStore
     @State private var showsSettings = false
     @State private var showsConnect = false
@@ -45,8 +48,16 @@ struct ContentView: View {
         let server = ServerConnection()
         let activity = SessionActivityStore()
         let deck = DeckState()
-        server.onActivity = { page in activity.receive(page) }
-        server.onState = { state in deck.receive(state) }
+        let party = PartyStore()
+        server.onActivity = { page in
+            activity.receive(page)
+            party.receive(page)
+        }
+        server.onState = { state in
+            deck.receive(state)
+            party.receiveState(state)
+        }
+        _party = State(initialValue: party)
         _activity = State(initialValue: activity)
         _deck = State(initialValue: deck)
         _server = State(initialValue: server)
@@ -82,8 +93,10 @@ struct ContentView: View {
         .onChange(of: server.phase) { _, phase in
             if case .ready = phase {
                 activity.setConnected(true)
+                party.setConnected(true)
             } else {
                 activity.setConnected(false)
+                party.setConnected(false)
                 deck.connectionLost()
             }
         }
@@ -119,6 +132,9 @@ struct ContentView: View {
                 .transition(.opacity)
         case .emotes:
             EmotesView()
+                .transition(.opacity)
+        case .party:
+            PartyView(store: party)
                 .transition(.opacity)
         case .debug:
             ConnectionDebugView(server: server)
@@ -165,7 +181,9 @@ struct ContentView: View {
                         resetDeckButton
                         settingsButton
                     }
-                    screenSwitcher
+                    ScrollView(.horizontal) { screenSwitcher }
+                        .scrollIndicators(.hidden)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             TickRuler(color: theme.palette.lineHighlight, spacing: 8, majorEvery: 10)
@@ -224,6 +242,7 @@ struct ContentView: View {
         switch item {
         case .deck: theme.label("Deck")
         case .emotes: theme.label("Emotes")
+        case .party: theme.label("Party")
         case .debug: theme.label("Debug")
         case .info(let page): theme.label(page.shortTitle)
         }

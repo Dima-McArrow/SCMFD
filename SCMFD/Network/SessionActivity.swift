@@ -1,6 +1,6 @@
 import Foundation
 
-/// Bounded replay page from the PC's existing log reader. This is not wallet telemetry.
+/// Bounded replay page from the PC's existing log reader: rewards, contracts and Party facts (41.24).
 nonisolated struct ServerActivityPage: Decodable, Sendable, Equatable {
     let sessionId: UUID
     let streamId: UUID
@@ -28,6 +28,8 @@ nonisolated struct SessionActivityEvent: Codable, Sendable, Equatable, Identifia
     let seq: Int64
     let kind: String
     let at: Date
+    /// For Party (41.24), an exact bounded display name or an empty string for local join/create/disband.
+    /// Group membership and completeness are derived only by the iPad's PartyState.
     let text: String
     let missionId: UUID?
     let objectiveId: String?

@@ -31,6 +31,7 @@ nonisolated struct RecordedSession: Codable, Sendable, Equatable, Identifiable {
         guard event.seq > lastSeq else { return }
         if event.seq != lastSeq + 1 { incomplete = true }
         lastSeq = event.seq
+        if event.partyKind != nil { return }
         recentEvents.insert(event, at: 0)
         recentEvents = Array(recentEvents.prefix(128))
         if event.kind == "reward", let amount = event.amount, let currency = event.currency {

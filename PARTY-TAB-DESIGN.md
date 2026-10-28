@@ -4,7 +4,8 @@
 
 Date: 2026-10-27
 
-Status: design proposal based on inspected logs; no party functionality is implemented by this document.
+Status: original design proposal; the observed Party MVP is now implemented in source (2026-10-28), spec 41.24.
+Mac simulator build/tests and in-game verification are pending. The evidence and limitations below remain design context.
 This note records the requested Party tab. It is not an instruction to make runtime changes automatically.
 Protocol v2 section 41 of `Claude outputs/CSMFD-discussion.md` remains the current wire contract.
 
@@ -73,8 +74,8 @@ DirectMessage groups and building/lobby asset names are unrelated to party membe
 
 ## FE / BE split and readiness
 
-The BE is not ready to drive this tab yet: its current GameLogParser, published state and iPad DTOs do not
-implement these party observations. The existing reader and authenticated transport are suitable foundations.
+The MVP now emits six bounded Party facts through ActivityJournal and the existing authenticated activity
+transport (41.24). No Party roster or summary is computed on the BE. The FE owns PartyState and PartyView.
 
 BE additions should remain small: parse a selected set of normalized facts through the existing reader, assemble
 multiline notifications, suppress display reprints, and publish bounded observations or a specified state summary.

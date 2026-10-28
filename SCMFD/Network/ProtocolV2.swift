@@ -2,7 +2,7 @@ import Foundation
 
 /// Wire format of CSMFD protocol v2 (section 41 of CSMFD-discussion.md).
 /// Pure data: no networking and no UI state. The transport encodes `ClientMessage`
-/// and decodes `ServerMessage`; mapping into `DeckState` happens elsewhere.
+/// and decodes `ServerMessage`; mapping into `DeckState` and observed `PartyState` happens elsewhere.
 nonisolated enum ProtocolV2 {
     static let version = 2
 
