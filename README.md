@@ -81,6 +81,23 @@ experiences in the 'verse.
   iPad camera, type the 6-digit code. Manual address entry with a fingerprint check is the fallback.
 - **Debug tab** (Debug builds only): LAN reachability check and live feedback from the server connection.
 
+## Screenshots
+
+Captured from the app's SwiftUI previews with sample interface states. These illustrate the layouts and themes;
+the quantum destination is preview data, not a live game observation. Click an image to view it at full size.
+
+| Deck · landscape | Deck · portrait |
+|:---:|:---:|
+| [<img src="screenshots/deck-landscape.png" alt="Landscape Deck preview with flight and quantum controls in the Drake theme" width="420">](screenshots/deck-landscape.png) | [<img src="screenshots/deck-portrait.png" alt="Portrait Deck preview with stacked flight and quantum controls in the Aegis theme" width="420">](screenshots/deck-portrait.png) |
+
+| Quantum controls | Emotes |
+|:---:|:---:|
+| [<img src="screenshots/quantum-controls.png" alt="Quantum controls preview with sample CRU-L4 destination above Engage" width="420">](screenshots/quantum-controls.png) | [<img src="screenshots/emotes.png" alt="Emote board preview with greetings, gestures and reactions" width="420">](screenshots/emotes.png) |
+
+| Theme picker | Deck off · manual enable |
+|:---:|:---:|
+| [<img src="screenshots/theme-picker.png" alt="Settings preview with Auto theme and manufacturer theme choices" width="420">](screenshots/theme-picker.png) | [<img src="screenshots/no-ship-connection.png" alt="Deck preview showing No ship connection and the Enable Deck button" width="420">](screenshots/no-ship-connection.png) |
+
 ## Security model
 
 The PC accepts input only from one paired iPad. In short:
