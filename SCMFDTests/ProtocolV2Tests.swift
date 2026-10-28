@@ -24,7 +24,8 @@ struct ProtocolV2Tests {
     "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
     """#
 
-    /// `server-state-delta-clear-driver.json` (sent only by servers older than 41.23).
+    /// Inline "older server" sample: a ClearDriver delta as servers before 41.23 sent it. The SCMFDBE fixture
+    /// `server-state-delta-clear-driver.json` it was copied from no longer exists (removed server side).
     static let clearDriverDelta = #"""
     {"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":13,"partial":true,"ship":null,
     "shipContext":{"revision":4,"status":"noShip","reason":"clearDriver","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:01:00.000Z"},
@@ -38,6 +39,23 @@ struct ProtocolV2Tests {
     "shipContext":{"revision":5,"status":"noShip","reason":"vehicleDestroyed","contextId":"e21848e3-803a-4257-8706-53df116bf9ce","manufacturerPrefix":"DRAK","observedAt":"2026-10-27T00:02:00.000Z"},
     "qtTarget":{"mode":"unknown","internalName":null,"displayName":null,"confidence":"stale","observedAt":null},
     "hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}
+    """#
+
+    /// `server-welcome.json`.
+    static let welcomeFixture = #"{"v":2,"type":"welcome","server":"CSMFD-Server","serverVersion":"0.1.0","serverId":"366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","connectionId":"a42a3cd9-a193-457b-b2dd-a973e3d9b35a","chatKey":"enter"}"#
+    /// `server-paired.json`.
+    static let pairedFixture = #"{"v":2,"type":"paired","serverId":"366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1","token":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}"#
+    /// `server-pair-required.json`.
+    static let pairRequiredFixture = #"{"v":2,"type":"pairRequired"}"#
+    /// `server-error-input-cancelled.json`.
+    static let inputCancelledFixture = #"{"v":2,"type":"error","code":"input_cancelled","commandId":"4d88b2ad-d306-443a-8524-155575227708","reason":"focus_lost","message":"Input cancelled"}"#
+    /// `server-ack-rejected-game-not-focused.json`.
+    static let ackRejectedFixture = #"{"v":2,"type":"ack","id":"9b38e72e-4b86-455c-95c6-e3c2d782f172","status":"rejected","reason":"game_not_focused"}"#
+    /// `server-activity-rewards.json`.
+    static let activityRewardsFixture = #"""
+    {"v":2,"type":"activity","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","streamId":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1",
+    "startedAt":"2026-10-27T12:00:00.000Z","firstSeq":1,"latestSeq":1,"ended":false,
+    "events":[{"seq":1,"kind":"reward","at":"2026-10-27T12:00:01.000Z","text":"Awarded 500 aUEC:","amount":500,"currency":"aUEC"}]}
     """#
 
     private func decode(_ json: String) throws -> ServerMessage {
@@ -213,6 +231,75 @@ struct ProtocolV2Tests {
         #expect(context.revision == 6)
     }
 
+    // MARK: - Unknown values in server enums (LenientWireEnum): kept as `.unrecognized(word)`
+
+    /// Was the "Unknown enum value in a strictly typed field" malformed case: a new value must not end the link.
+    @Test func unknownLogStatusKeepsTheServerWord() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":3,"partial":true,"log":{"status":"exploded","generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":null}}"#)
+        guard case .value(let log) = state.log else {
+            Issue.record("Expected a log status")
+            return
+        }
+        #expect(log.status == .unrecognized("exploded"))
+        // The Debug screen prints `wireValue`: the word the server sent.
+        #expect(log.status.wireValue == "exploded")
+    }
+
+    @Test func unknownShipContextStatusKeepsTheServerWord() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":4,"partial":true,"shipContext":{"revision":7,"status":"parked","reason":"startup","contextId":null,"manufacturerPrefix":null,"observedAt":null}}"#)
+        guard case .value(let context) = state.shipContext else {
+            Issue.record("Expected a ship context")
+            return
+        }
+        #expect(context.status == .unrecognized("parked"))
+        #expect(context.status.wireValue == "parked")
+        // The server's own "unknown" stays a separate, known case.
+        #expect(try self.state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":8,"partial":true,"shipContext":{"revision":8,"status":"unknown","reason":"startup","contextId":null,"manufacturerPrefix":null,"observedAt":null}}"#).shipContext
+                == .value(ShipContextStatus(revision: 8, status: .unknown, reason: "startup", contextId: nil,
+                                            manufacturerPrefix: nil, observedAt: nil)))
+    }
+
+    @Test func unknownConfidenceKeepsTheServerWord() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":5,"partial":true,"ship":{"name":"Drake Cutter Rambler","model":null,"entityId":null,"manufacturerPrefix":"DRAK","confidence":"probable","observedAt":"2026-10-27T00:00:00.000Z"}}"#)
+        guard case .value(let ship?) = state.ship else {
+            Issue.record("Expected a ship")
+            return
+        }
+        #expect(ship.confidence == .unrecognized("probable"))
+        #expect(ship.confidence.wireValue == "probable")
+    }
+
+    @Test func unknownQuantumTargetModeKeepsTheServerWord() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":6,"partial":true,"qtTarget":{"mode":"jumping","internalName":"OOC_Stanton_1_Hurston","displayName":null,"confidence":"confirmed","observedAt":null}}"#)
+        guard case .value(let target) = state.qtTarget else {
+            Issue.record("Expected a QT target")
+            return
+        }
+        #expect(target.mode == .unrecognized("jumping"))
+        #expect(target.mode.wireValue == "jumping")
+        // The readout does not invent a target from the name.
+        #expect(QuantumTarget(target) == .unknown)
+    }
+
+    @Test func unknownHangarRequestStatusKeepsTheServerWord() throws {
+        let state = try state(#"{"v":2,"type":"state","sessionId":"\#(Self.sessionId)","seq":7,"partial":true,"hangarRequest":{"status":"queued","commandId":null,"contextId":null,"since":null,"updatedAt":null}}"#)
+        guard case .value(let request) = state.hangarRequest else {
+            Issue.record("Expected a hangar request")
+            return
+        }
+        #expect(request.status == .unrecognized("queued"))
+        #expect(request.status.wireValue == "queued")
+    }
+
+    @Test func unknownAckStatusKeepsTheServerWord() throws {
+        guard case .ack(let ack) = try decode(#"{"v":2,"type":"ack","id":"4d88b2ad-d306-443a-8524-155575227708","status":"deferred"}"#) else {
+            Issue.record("Expected an ack")
+            return
+        }
+        #expect(ack.status == .unrecognized("deferred"))
+        #expect(ack.status.wireValue == "deferred")
+    }
+
     @Test func ackKeepsUnknownReasonAsRawString() throws {
         let message = try decode(#"{"v":2,"type":"ack","id":"9b38e72e-4b86-455c-95c6-e3c2d782f172","status":"rejected","reason":"not_armed"}"#)
         guard case .ack(let ack) = message else {
@@ -224,38 +311,56 @@ struct ProtocolV2Tests {
         #expect(ack.rejectReason == nil)
     }
 
-    @Test func ackMapsKnownReason() throws {
-        let message = try decode(#"{"v":2,"type":"ack","id":"9b38e72e-4b86-455c-95c6-e3c2d782f172","status":"rejected","reason":"game_not_focused"}"#)
-        guard case .ack(let ack) = message else {
-            Issue.record("Expected an ack")
-            return
-        }
+    // MARK: - SCMFDBE server fixtures: every field (one `==` on the whole decoded message)
+
+    @Test func ackRejectedFixtureDecodes() throws {
+        let id = try #require(UUID(uuidString: "9b38e72e-4b86-455c-95c6-e3c2d782f172"))
+        let message = try decode(Self.ackRejectedFixture)
+        #expect(message == .ack(ServerAck(id: id, status: .rejected, reason: "game_not_focused")))
+        guard case .ack(let ack) = message else { return }
         #expect(ack.rejectReason == .gameNotFocused)
     }
 
-    @Test func inputCancelledCarriesCommandId() throws {
-        let message = try decode(#"{"v":2,"type":"error","code":"input_cancelled","commandId":"4d88b2ad-d306-443a-8524-155575227708","reason":"focus_lost","message":"Input cancelled"}"#)
-        guard case .error(let error) = message else {
-            Issue.record("Expected an error")
-            return
-        }
-        #expect(error.code == "input_cancelled")
-        #expect(error.commandId == UUID(uuidString: "4d88b2ad-d306-443a-8524-155575227708"))
-        #expect(error.reason == "focus_lost")
+    @Test func inputCancelledFixtureDecodes() throws {
+        let commandId = try #require(UUID(uuidString: "4d88b2ad-d306-443a-8524-155575227708"))
+        #expect(try decode(Self.inputCancelledFixture) == .error(ServerError(
+            code: "input_cancelled", message: "Input cancelled", commandId: commandId, reason: "focus_lost")))
     }
 
-    @Test func handshakeMessagesDecode() throws {
-        #expect(try decode(#"{"v":2,"type":"pairRequired"}"#) == .pairRequired)
-        guard case .welcome(let welcome) = try decode(#"{"v":2,"type":"welcome","server":"CSMFD-Server","serverVersion":"0.1.0","serverId":"366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","connectionId":"a42a3cd9-a193-457b-b2dd-a973e3d9b35a","chatKey":"enter"}"#) else {
-            Issue.record("Expected welcome")
-            return
-        }
-        #expect(welcome.chatKey == "enter")
-        guard case .paired(let paired) = try decode(#"{"v":2,"type":"paired","serverId":"366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1","token":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}"#) else {
-            Issue.record("Expected paired")
-            return
-        }
-        #expect(paired.token.count == 43)
+    @Test func pairRequiredFixtureDecodes() throws {
+        #expect(try decode(Self.pairRequiredFixture) == .pairRequired)
+    }
+
+    @Test func welcomeFixtureDecodes() throws {
+        let expected = ServerWelcome(
+            server: "CSMFD-Server", serverVersion: "0.1.0",
+            serverId: try #require(UUID(uuidString: "366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1")),
+            sessionId: try #require(UUID(uuidString: Self.sessionId)),
+            connectionId: try #require(UUID(uuidString: "a42a3cd9-a193-457b-b2dd-a973e3d9b35a")),
+            chatKey: "enter")
+        #expect(try decode(Self.welcomeFixture) == .welcome(expected))
+    }
+
+    @Test func pairedFixtureDecodes() throws {
+        let serverId = try #require(UUID(uuidString: "366b189f-9bb1-4aeb-bf8b-235a5cdcf9e1"))
+        #expect(try decode(Self.pairedFixture) == .paired(ServerPaired(
+            serverId: serverId, token: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")))
+    }
+
+    @Test func activityRewardsFixtureDecodesAndIsValid() throws {
+        // 2026-10-27T12:00:00Z
+        let startedAt = Date(timeIntervalSince1970: 1_793_102_400)
+        let expected = ServerActivityPage(
+            sessionId: try #require(UUID(uuidString: Self.sessionId)),
+            streamId: try #require(UUID(uuidString: "982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1")),
+            startedAt: startedAt, firstSeq: 1, latestSeq: 1, ended: false,
+            events: [SessionActivityEvent(seq: 1, kind: "reward", at: startedAt.addingTimeInterval(1),
+                                          text: "Awarded 500 aUEC:", missionId: nil, objectiveId: nil,
+                                          amount: 500, currency: "aUEC")])
+        let message = try decode(Self.activityRewardsFixture)
+        #expect(message == .activity(expected))
+        guard case .activity(let page) = message else { return }
+        #expect(page.isValid)
     }
 
     @Test func unknownTypeIsIgnoredNotFatal() throws {
@@ -273,8 +378,8 @@ struct ProtocolV2Tests {
         #"{"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":1,"partial":false,"game":{"running":false,"focused":false,"build":null},"log":{"status":"ready","generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":null},"ship":null,"shipContext":{"revision":0,"status":"unknown","reason":"startup","contextId":null,"manufacturerPrefix":null,"observedAt":null},"hangarRequest":{"status":"idle","commandId":null,"contextId":null,"since":null,"updatedAt":null}}"#,
         // null is only allowed for ship.
         #"{"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":2,"partial":true,"game":null}"#,
-        // Unknown enum value in a strictly typed field.
-        #"{"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":3,"partial":true,"log":{"status":"exploded","generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":null}}"#,
+        // Wrong JSON type for an enum field: a new value is tolerated, a number is still malformed.
+        #"{"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":3,"partial":true,"log":{"status":7,"generation":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","observedAt":null}}"#,
         // Date without a time zone.
         #"{"v":2,"type":"state","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900","seq":4,"partial":true,"shipContext":{"revision":1,"status":"noShip","reason":"clearDriver","contextId":null,"manufacturerPrefix":null,"observedAt":"2026-10-27 00:01"}}"#,
         // Missing required seq.

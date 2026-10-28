@@ -291,6 +291,21 @@ struct ServerSessionTests {
         #expect(session.transportClosed(code: nil).isEmpty)
     }
 
+    /// A status this build does not know settles the command as unknown: never `sent`, never resent.
+    @Test func unknownAckStatusSettlesTheCommandAsUnknownWithoutRetry() {
+        var session = readySession()
+        let id = UUID()
+        _ = session.send(.chat("/wave"), id: id, at: t0)
+        let effects = session.receive(.ack(ServerAck(id: id, status: .unrecognized("deferred"), reason: nil)), at: at(1))
+        #expect(effects == [.commandFinished(id, .unknown)])
+        #expect(session.phase == .ready(welcome()))
+        // The command is settled: no deadline, no second send later.
+        _ = session.receive(.unknown(type: "future"), at: at(14))
+        let later = session.tick(at: at(15), wallClock: wallClock)
+        #expect(!later.contains(.close(.acknowledgementTimeout)))
+        #expect(!later.contains { if case .send(.chat) = $0 { true } else { false } })
+    }
+
     @Test func acknowledgedCommandDoesNotLeaveADeadlineBehind() {
         var session = readySession()
         let id = UUID()

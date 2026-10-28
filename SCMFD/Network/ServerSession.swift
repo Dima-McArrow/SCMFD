@@ -214,6 +214,9 @@ nonisolated struct ServerSession: Sendable {
             case .sent: .sent
             case .ignored: .ignored
             case .rejected: .rejected(ack.reason)
+            // A status this build does not know: the input may or may not have reached the game. Never `sent`,
+            // never retried.
+            case .unrecognized: .unknown
             }
             return [.commandFinished(ack.id, outcome)]
 

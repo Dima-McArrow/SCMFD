@@ -135,8 +135,22 @@ nonisolated struct ServerPong: Decodable, Sendable, Equatable {
 }
 
 nonisolated struct ServerAck: Decodable, Sendable, Equatable {
-    nonisolated enum Status: String, Decodable, Sendable {
+    nonisolated enum Status: LenientWireEnum {
         case sent, ignored, rejected
+        /// A status this build does not know. It settles the command as `CommandOutcome.unknown`: never `sent`
+        /// (a toggle must not flip on it) and never retried, because the input may or may not have reached the game.
+        case unrecognized(String)
+
+        static let known: [Self] = [.sent, .ignored, .rejected]
+
+        var wireValue: String {
+            switch self {
+            case .sent: "sent"
+            case .ignored: "ignored"
+            case .rejected: "rejected"
+            case .unrecognized(let raw): raw
+            }
+        }
     }
 
     let id: UUID
@@ -188,6 +202,29 @@ nonisolated struct ServerError: Decodable, Sendable, Equatable {
     let reason: String?
 }
 
+/// A server enum that decodes a value this build does not know into `.unrecognized(word)` instead of failing.
+///
+/// A plain `String, Decodable` enum throws on a new value; `ServerConnection` turns that into
+/// `.protocolViolation`, which never reconnects, so one new word from a newer server would end the link for good.
+/// The word is kept, so the Debug screen shows what the server actually sent, and the case is typed, so every
+/// `switch` must decide what an unrecognized value means (each conforming type documents its safe reading).
+/// A wrong JSON type (a number instead of a string) still fails: that is a malformed message, not a new value.
+nonisolated protocol LenientWireEnum: Decodable, Sendable, Equatable {
+    /// Every case this build knows, i.e. all except `unrecognized`.
+    static var known: [Self] { get }
+    /// A value this build does not know, with the word the server sent.
+    static func unrecognized(_ wireValue: String) -> Self
+    /// The value as it travels on the wire.
+    var wireValue: String { get }
+}
+
+nonisolated extension LenientWireEnum {
+    init(from decoder: any Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = Self.known.first { $0.wireValue == raw } ?? .unrecognized(raw)
+    }
+}
+
 /// A top-level key of a state message. Distinguishes "not sent" from a sent value,
 /// because a missing key in a delta means "unchanged".
 nonisolated enum StateField<Value: Sendable>: Sendable {
@@ -197,8 +234,22 @@ nonisolated enum StateField<Value: Sendable>: Sendable {
 
 nonisolated extension StateField: Equatable where Value: Equatable {}
 
-nonisolated enum Confidence: String, Decodable, Sendable {
+nonisolated enum Confidence: LenientWireEnum {
     case confirmed, assumed, stale
+    /// A confidence this build does not know. Read it like `.stale`, the weakest one, so nothing counts as
+    /// confirmed by accident (today only the Debug screen shows confidence).
+    case unrecognized(String)
+
+    static let known: [Self] = [.confirmed, .assumed, .stale]
+
+    var wireValue: String {
+        switch self {
+        case .confirmed: "confirmed"
+        case .assumed: "assumed"
+        case .stale: "stale"
+        case .unrecognized(let raw): raw
+        }
+    }
 }
 
 nonisolated struct GameStatus: Decodable, Sendable, Equatable {
@@ -208,8 +259,23 @@ nonisolated struct GameStatus: Decodable, Sendable, Equatable {
 }
 
 nonisolated struct LogStatus: Decodable, Sendable, Equatable {
-    nonisolated enum Status: String, Decodable, Sendable {
+    nonisolated enum Status: LenientWireEnum {
         case ready, missing, unreadable, catchingUp
+        /// A log status this build does not know. Only the Debug screen shows the log status and no rule depends
+        /// on it, so showing the word is safe.
+        case unrecognized(String)
+
+        static let known: [Self] = [.ready, .missing, .unreadable, .catchingUp]
+
+        var wireValue: String {
+            switch self {
+            case .ready: "ready"
+            case .missing: "missing"
+            case .unreadable: "unreadable"
+            case .catchingUp: "catchingUp"
+            case .unrecognized(let raw): raw
+            }
+        }
     }
 
     let status: Status
@@ -227,8 +293,22 @@ nonisolated struct ShipStatus: Decodable, Sendable, Equatable {
 }
 
 nonisolated struct ShipContextStatus: Decodable, Sendable, Equatable {
-    nonisolated enum Status: String, Decodable, Sendable {
+    nonisolated enum Status: LenientWireEnum {
         case unknown, assumed, noShip
+        /// A status this build does not know. Only `assumed` enables the Deck, so it stays off unless the user
+        /// enables it manually.
+        case unrecognized(String)
+
+        static let known: [Self] = [.unknown, .assumed, .noShip]
+
+        var wireValue: String {
+            switch self {
+            case .unknown: "unknown"
+            case .assumed: "assumed"
+            case .noShip: "noShip"
+            case .unrecognized(let raw): raw
+            }
+        }
     }
 
     nonisolated enum Reason: String, Sendable {
@@ -253,8 +333,22 @@ nonisolated struct ShipContextStatus: Decodable, Sendable, Equatable {
 }
 
 nonisolated struct QuantumTargetStatus: Decodable, Sendable, Equatable {
-    nonisolated enum Mode: String, Decodable, Sendable {
+    nonisolated enum Mode: LenientWireEnum {
         case unknown, freeMode, destination
+        /// A mode this build does not know. The readout shows it like `.unknown` ("Waiting for Game.log"); no target
+        /// is invented from the names.
+        case unrecognized(String)
+
+        static let known: [Self] = [.unknown, .freeMode, .destination]
+
+        var wireValue: String {
+            switch self {
+            case .unknown: "unknown"
+            case .freeMode: "freeMode"
+            case .destination: "destination"
+            case .unrecognized(let raw): raw
+            }
+        }
     }
 
     let mode: Mode
@@ -273,7 +367,19 @@ nonisolated struct HangarRequestState: Decodable, Sendable, Equatable {
     let updatedAt: Date?
 }
 
-nonisolated extension HangarRequestStatus: Decodable {}
+nonisolated extension HangarRequestStatus: LenientWireEnum {
+    static let known: [Self] = [.idle, .pending, .answered, .timeout]
+
+    var wireValue: String {
+        switch self {
+        case .idle: "idle"
+        case .pending: "pending"
+        case .answered: "answered"
+        case .timeout: "timeout"
+        case .unrecognized(let raw): raw
+        }
+    }
+}
 
 nonisolated struct ServerState: Sendable, Equatable {
     let sessionId: UUID

@@ -59,6 +59,9 @@ Each row is one test; build states inline or decode the server fixtures
 `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-state-full.json` and `server-state-delta-clear-driver.json`
 (copy them into `SCMFDTests` if useful).
 
+> **Note (2026-10-28):** `server-state-delta-clear-driver.json` was removed on the server (41.23: `clearDriver` is no
+> longer sent). The iPad keeps it as the inline "older server" sample `ProtocolV2Tests.clearDriverDelta`.
+
 | Input | Expected |
 |---|---|
 | Full state, `assumed`, ship *Drake Cutter Rambler* | Enabled, label set, reset once |

@@ -1274,6 +1274,9 @@ FE применяет связанные поля в одной транзакц
 
 ### 41.9. Корабль, тема, ClearDriver и ручное управление
 
+> **Superseded in part by 41.23 (2026-10-28):** the ClearDriver rows and the manual-override rules tied to
+> ClearDriver no longer apply. The original decision is kept below.
+
 Принятое пользователем временное допущение: **новое событие входа в распознанный корабельный канал разрешает Deck**, хотя не доказывает посадку в кресло. Это всегда assumed. Обычный публичный канал, название похожего NPC-корабля или отдельное диагностическое упоминание модели не активируют управление.
 
 | Событие | BE | FE |
@@ -1652,7 +1655,7 @@ The existing 16 KiB frame limit and send deadlines apply. No unpaired client rec
 - Event kinds: `reward`, `contractAccepted`, `contractComplete`, `contractWithdrawn`, `contractFailed`,
   `newObjective`, `objectiveComplete`, `sessionEnded`.
 - `text` is a sanitized, bounded log-derived description (maximum 160 Unicode scalar values). It is not localized
-  by the BE. `objectiveId`, when present, has a maximum of 96 Unicode scalar values. Control characters are excluded.
+  by the BE. `objectiveId`, when present, has a maximum of 96 Unicode scalar values. Control (Cc) and format (Cf) characters are excluded.
 - Contract/objective events carry a nonzero `missionId`. Objective identity is included when present in the source.
   Objective text is an observed notification, not cargo telemetry or guaranteed complete progress.
 - Only `reward` carries `amount` and `currency`: positive integer amount up to 1,000,000,000, currency `aUEC` or
@@ -1705,6 +1708,10 @@ observed income; wallet balance, all spending and overall session profit remain 
 
 ### 41.22. Session reliability corrections (2026-10-28)
 
+> **Superseded in part by 41.23 (2026-10-28):** the ship-channel activity events (channel join/leave, theme
+> association) and the ClearDriver note no longer apply; the ship context travels only in `state.shipContext`.
+> The original decision is kept below.
+
 No wire version change. Decode optional `activity.events[].channelId` (64 lowercase hexadecimal
 characters, opaque identity scoped to streamId). Channel join/leave events have no mission/objective IDs,
 amount or currency; text is the bounded channel ship name without its owner. Missing channelId in older
@@ -1744,6 +1751,7 @@ Rules:
   zone being in a destroyed vehicle` for the current ship, or for the ship whose channel was just left (real logs
   write leave and destruction in either order, sometimes without a leave). Seen only with the player aboard.
 - ClearDriver (leaving the seat) is never a transition. The server still releases held input on it.
+- `clearDriver` is no longer sent as a shipContext reason; the iPad ignores it if an older server sends it.
 - Storing the ship at a terminal has no verified line yet; a controlled in-game test is needed before it can
   become a reason.
 - An unknown future `reason` must not be a decoding error on the iPad.

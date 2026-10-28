@@ -32,7 +32,7 @@ struct DeckPageContent: View {
         switch state.hangarRequest {
         case .pending, .timeout: .amber
         case .answered: .green
-        case .idle, nil: .accent
+        case .idle, .unrecognized, nil: .accent
         }
     }
 

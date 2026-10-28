@@ -6,7 +6,7 @@
 | Depends on | nothing; replaces the theme parts of FIX-02 / FIX-04 and the channel part of 41.22 |
 | Decision | owner, 2026-10-28 (see "Why") |
 | Server side | done: SCMFDBE `ffff70f` (channelLeft, ClearDriver no transition), `9064f12` (vehicleDestroyed), `cc0cd1c` (no channel events in activity) |
-| iPad side | implemented 2026-10-28, steps 1-6. Last full run 2026-10-28 on iPad Pro 13-inch (M5) simulator: 144 tests, 239 runs (parameterized arguments counted separately), all passed. Live test against SCMFDBE and in game pending |
+| iPad side | implemented 2026-10-28, steps 1-6 (commit `ee5f97f`); follow-up 2026-10-28: tolerant server enums and every SCMFDBE fixture pinned in `ProtocolV2Tests`. Last full run 2026-10-28 on iPad Pro 13-inch (M5) simulator: 156 tests, 251 runs (parameterized arguments counted separately), all passed. Live test against SCMFDBE and in game pending |
 
 ### Implementation notes (iPad)
 
@@ -31,6 +31,14 @@
 - Tests: `ShipContextTrackerTests`, `DeckStateTests`, `AppThemeTests`, `ProtocolV2Tests` (fixtures compacted
   from SCMFDBE, same JSON values; client fixtures compared as JSON objects, a missing `mods` counts as `[]` per the
   spec), `LegacyShipChannelEventTests` (old history stays readable).
+- Server enums decode an unknown value into `.unrecognized(word)` (`LenientWireEnum` in `ProtocolV2.swift`), the
+  same bug class as `shipContext.reason` before this fix: a strict enum threw, `ServerConnection` reported
+  `.protocolViolation`, and that never reconnects. The word is kept (Debug prints `wireValue`, i.e. what the server
+  sent) and the case is typed, so every `switch` must handle it. Readings: `ShipContextStatus.Status` → Deck stays
+  off unless enabled manually (only `assumed` enables it; the server's own `"unknown"` stays a separate case),
+  `Confidence` → read like `.stale`, `QuantumTargetStatus.Mode` → shown like `.unknown`, `HangarRequestStatus` →
+  "no data" (`ShipContextTracker` makes it nil, never `idle` or an answer), `LogStatus.Status` → Debug only,
+  `ServerAck.Status` → `CommandOutcome.unknown` (never `sent`, never retried). A wrong JSON type is still malformed.
 - Test target fixes needed to build at all (the target did not compile at `68b7bbc`): the ack-deadline tests
   (`missingAckClosesEvenWhileServerMessagesKeepArriving`, `acknowledgedCommandDoesNotLeaveADeadlineBehind`) moved
   out of `ReconnectBackoffTests` into `ServerSessionTests`, where their helpers live; `InputReliabilityTests` no
@@ -38,11 +46,14 @@
 
 ### Server follow-up (SCMFDBE, not done here)
 
-After `ffff70f` the server never produces `ShipContextReason.ClearDriver`: in `src/` it only appears in the enum
-(`Csmfd.Protocol/StateModel.cs`) and in `ServerMessageWriter.ToWire` (`=> "clearDriver"`). The fixture
+After `ffff70f` the server never produces `ShipContextReason.ClearDriver`: in `src/` it only appeared in the enum
+(`Csmfd.Protocol/StateModel.cs`) and in `ServerMessageWriter.ToWire` (`=> "clearDriver"`), and the fixture
 `server-state-delta-clear-driver.json` (written by `ServerMessageWriterTests.WritesClearDriverDeltaFixture`)
-therefore describes a message the current server cannot send. Owner to decide: keep it as an "older server"
-reference (the iPad tests use it that way) or remove the value and the fixture server side.
+described a message the current server cannot send.
+
+Owner decision: the server removes `ShipContextReason.ClearDriver`, its `ToWire` arm, the writer test and
+`server-state-delta-clear-driver.json`. The iPad keeps ignoring `"clearDriver"` (an older server may still send
+it), and `ProtocolV2Tests.clearDriverDelta` stays as an inline "older server" sample.
 
 ## Why
 
@@ -101,6 +112,9 @@ with **Auto theme** on; with it off the user's pick is never touched.
 
 Use the server fixtures `server-state-full.json`, `server-state-delta-clear-driver.json` and the new
 `server-state-delta-vehicle-destroyed.json` (SCMFDBE `tests/Csmfd.Tests/Fixtures/Protocol`).
+
+> **Note (2026-10-28):** `server-state-delta-clear-driver.json` was removed on the server (41.23: `clearDriver` is no
+> longer sent). The iPad keeps it as the inline "older server" sample `ProtocolV2Tests.clearDriverDelta`.
 
 | Input | Expected |
 |---|---|

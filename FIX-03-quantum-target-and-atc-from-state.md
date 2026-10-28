@@ -44,6 +44,9 @@ Put the mapping in a pure function next to the FIX-02 tracker so it is unit-test
 - Each `hangarRequest.status` maps to the same `HangarRequestStatus`; no snapshot → `nil`.
 - ClearDriver fixture (`server-state-delta-clear-driver.json` in SCMFDBE) → QT `.unknown`, ATC `.idle`.
 
+> **Note (2026-10-28):** `server-state-delta-clear-driver.json` was removed on the server (41.23: `clearDriver` is no
+> longer sent). The iPad keeps it as the inline "older server" sample `ProtocolV2Tests.clearDriverDelta`.
+
 ## Out of scope
 
 Server-side QT `freeMode` and `displayName` (needs real in-game log lines), ATC request ids (the log has none).

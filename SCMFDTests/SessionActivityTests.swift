@@ -148,12 +148,8 @@ struct SessionActivityTests {
     }
 
     @Test func activityWireMessageDecodesAndRequiresTheWelcomedSession() throws {
-        let json = #"""
-        {"v":2,"type":"activity","sessionId":"7a42291e-21db-4ac5-a3e1-ea278bb54900",
-        "streamId":"982ba1b6-1aa8-4e7e-a73b-9a9e51abb8d1","startedAt":"2026-10-27T12:00:00.000Z",
-        "firstSeq":1,"latestSeq":1,"ended":false,
-        "events":[{"seq":1,"kind":"reward","at":"2026-10-27T12:00:01.000Z","text":"Awarded 500 aUEC:","amount":500,"currency":"aUEC"}]}
-        """#
+        // SCMFDBE `server-activity-rewards.json`; every field is checked in ProtocolV2Tests.
+        let json = ProtocolV2Tests.activityRewardsFixture
         guard case .activity(let decoded) = try ProtocolV2.decode(Data(json.utf8)) else {
             Issue.record("Expected activity"); return
         }

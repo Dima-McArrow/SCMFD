@@ -308,6 +308,21 @@ struct ShipContextTrackerTests {
         #expect(tracker.receive(state)?.hangarRequest == status)
     }
 
+    /// An unknown hangar status is "no data", never `idle` or an answer.
+    @Test func unknownHangarStatusIsNoData() {
+        var tracker = ShipContextTracker()
+        let state = snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler, hangar: .unrecognized("queued"))
+        #expect(tracker.receive(state)?.hangarRequest == nil)
+    }
+
+    /// An unknown ship-context status keeps the Deck off; only `assumed` enables it.
+    @Test func unknownShipContextStatusKeepsTheDeckOff() {
+        var tracker = ShipContextTracker()
+        let update = tracker.receive(snapshot(revision: 3, reason: .channelJoined, status: .unrecognized("parked"), ship: Self.rambler))
+        #expect(update?.enabled == false)
+        #expect(tracker.enableManually()?.enabled == true)
+    }
+
     @Test func noSnapshotMeansNoServerData() {
         #expect(DeckUpdate(enabled: true, shipName: nil, resetKeys: false).hangarRequest == nil)
         var tracker = ShipContextTracker()

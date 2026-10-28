@@ -66,19 +66,19 @@ struct SecureConnectionDebugSection: View {
             rows.append(("Game", "\(game.running ? "running" : "not running")\(game.focused ? ", focused" : "") · build \(game.build ?? "?")"))
         }
         if case .value(let log) = state.log {
-            rows.append(("Game.log", log.status.rawValue))
+            rows.append(("Game.log", log.status.wireValue))
         }
         if case .value(let ship) = state.ship {
-            rows.append(("Ship", ship.map { "\($0.name) · \($0.confidence.rawValue)" } ?? "none"))
+            rows.append(("Ship", ship.map { "\($0.name) · \($0.confidence.wireValue)" } ?? "none"))
         }
         if case .value(let context) = state.shipContext {
-            rows.append(("Context", "r\(context.revision) \(context.status.rawValue) · \(context.reason)"))
+            rows.append(("Context", "r\(context.revision) \(context.status.wireValue) · \(context.reason)"))
         }
         if case .value(let target) = state.qtTarget {
-            rows.append(("QT target", target.displayName ?? target.internalName ?? target.mode.rawValue))
+            rows.append(("QT target", target.displayName ?? target.internalName ?? target.mode.wireValue))
         }
         if case .value(let request) = state.hangarRequest {
-            rows.append(("ATC", request.status.rawValue))
+            rows.append(("ATC", request.status.wireValue))
         }
         return rows
     }

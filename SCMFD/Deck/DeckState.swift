@@ -12,8 +12,11 @@ nonisolated enum QuantumTarget: Equatable, Sendable {
 }
 
 /// Server-reported request state. An answer does not confirm clearance or open doors.
-nonisolated enum HangarRequestStatus: String, Sendable {
+nonisolated enum HangarRequestStatus: Sendable, Equatable {
     case idle, pending, answered, timeout
+    /// A status this build does not know, with the server's word (wire fallback). Never `idle` or anything that
+    /// reads as an answer: `ShipContextTracker` turns it into "no data" (nil), and it looks like "no data" here too.
+    case unrecognized(String)
 
     var title: LocalizedStringResource {
         switch self {
@@ -21,6 +24,7 @@ nonisolated enum HangarRequestStatus: String, Sendable {
         case .pending: "Awaiting response"
         case .answered: "Response received"
         case .timeout: "No confirmation · Retry"
+        case .unrecognized: "ATC · No data"
         }
     }
 }

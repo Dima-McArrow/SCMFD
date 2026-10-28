@@ -27,7 +27,8 @@ nonisolated extension QuantumTarget {
     /// shown as is, without guessing a prettier name.
     init(_ status: QuantumTargetStatus) {
         switch status.mode {
-        case .unknown:
+        // A mode this build does not know: no target is invented from the names.
+        case .unknown, .unrecognized:
             self = .unknown
         case .freeMode:
             self = .freeMode
@@ -71,7 +72,10 @@ nonisolated struct ShipContextTracker: Sendable {
         if case .value(let ship) = state.ship { shipName = ship?.name }
         // The server resets both on a new context, so the FE only mirrors them.
         if case .value(let target) = state.qtTarget { quantumTarget = QuantumTarget(target) }
-        if case .value(let request) = state.hangarRequest { hangarRequest = request.status }
+        if case .value(let request) = state.hangarRequest {
+            // An unknown status is "no data", never an answer or `idle`.
+            if case .unrecognized = request.status { hangarRequest = nil } else { hangarRequest = request.status }
+        }
 
         let reason = context.knownReason
         if reason == .clearDriver {
