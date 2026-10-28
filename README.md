@@ -102,6 +102,8 @@ xcodebuild -project SCMFD.xcodeproj -scheme SCMFD \
 | Live session rewards/contracts and saved history | Implemented in source; requires updated BE. Simulator build, Swift tests and in-game validation pending on Mac |
 | One path for the Deck, the theme and the keys: `state.shipContext` only ([FIX-07](FIX-07-one-path-deck-and-theme.md), spec 41.23; replaces the channel-activity theme of FIX-04 and the ClearDriver rules of FIX-02). Deck off at app start, on after `channelJoined`, off after a leave / `vehicleDestroyed` / game end / log reset; Auto theme follows the same transitions; keys reset only on `vehicleDestroyed` or Reset Deck; one-tap Enable Deck on the off screen | Implemented and unit-tested on the simulator (2026-10-28); not yet verified against the real server or in game |
 | QT readout and ATC status mirrored from state ([FIX-03](FIX-03-quantum-target-and-atc-from-state.md)) | Implemented and unit-tested; not yet verified against the real server |
+| Readable names for quantum targets ([FIX-08](FIX-08-quantum-target-names.md)) | Planned, not implemented: the readout still shows the raw `internalName` |
+| QT target readout directly above the Engage quantum key ([FIX-09](FIX-09-qt-readout-above-engage.md)) | Implemented (layout only, 2026-10-28), checked in previews; not yet checked on the device |
 
 ## Keeping the emote list in sync
 

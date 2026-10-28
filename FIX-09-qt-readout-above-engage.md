@@ -5,6 +5,7 @@
 | Size | XS (layout only) |
 | Depends on | nothing |
 | Requested | owner, 2026-10-28 |
+| Status | implemented 2026-10-28 (`DeckPage.swift`, `case .quantum`), previews `Quantum / destination` (550×650) and `Quantum / destination, compact` (360×560) checked: the readout sits above Engage and does not overlap the hold ring. At 360 pt a long name (`MISSION_QT_Quantum_Beacon_LongRange_0042`) stays on one line but is truncated, not fully shrunk. Not yet checked on the device |
 
 ## Problem
 

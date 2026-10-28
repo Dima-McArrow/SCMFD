@@ -91,16 +91,20 @@ struct DeckPageContent: View {
             }
         case .quantum:
             // The engage key is the focal control, but capped so it doesn't swallow the page.
+            // The QT target sits right above it: it is what you check before engaging (FIX-09).
             GeometryReader { geometry in
                 VStack(spacing: spacing) {
-                    QuantumTargetReadout(target: state.quantumTarget)
                     HStack(spacing: spacing) {
                         MFDKey(.masterMode)
                         MFDKey(.operatorMode)
                     }
                     .frame(maxHeight: .infinity)
-                    MFDHoldKey(action: .quantumEngage, caption: "Tap to engage")
-                        .frame(height: min(geometry.size.height * 0.55, 280))
+                    // Tighter spacing groups the readout with the key, so it reads as the key's own label.
+                    VStack(spacing: 6) {
+                        QuantumTargetReadout(target: state.quantumTarget)
+                        MFDHoldKey(action: .quantumEngage, caption: "Tap to engage")
+                            .frame(height: min(geometry.size.height * 0.55, 280))
+                    }
                 }
             }
         case .emergency:
@@ -144,4 +148,31 @@ struct DeckPageContent: View {
         .padding(20)
         .background { ThemeBackdropView() }
         .manufacturerTheme(.drake)
+}
+
+#Preview("Quantum / destination", traits: .fixedLayout(width: 550, height: 650)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        state.quantumTarget = .destination("CRU-L4")
+        return state
+    }()
+    DeckPageContent(page: .quantum, state: state)
+        .padding(20)
+        .background { ThemeBackdropView() }
+        .manufacturerTheme(.drake)
+}
+
+#Preview("Quantum / destination, compact", traits: .fixedLayout(width: 360, height: 560)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        // A long technical name must still shrink onto one line.
+        state.quantumTarget = .destination("MISSION_QT_Quantum_Beacon_LongRange_0042")
+        return state
+    }()
+    DeckPageContent(page: .quantum, state: state)
+        .padding(20)
+        .background { ThemeBackdropView() }
+        .manufacturerTheme(.aegis)
 }

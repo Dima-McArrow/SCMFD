@@ -1505,6 +1505,22 @@
         }
       }
     },
+    "No data" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Aucune donnée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Нет данных"
+          }
+        }
+      }
+    },
     "No link" : {
       "localizations" : {
         "fr" : {
@@ -2900,22 +2916,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "VTOL"
-          }
-        }
-      }
-    },
-    "Waiting for Game.log" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En attente de Game.log"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ожидание Game.log"
           }
         }
       }

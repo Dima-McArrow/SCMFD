@@ -349,7 +349,7 @@ nonisolated struct ShipContextStatus: Decodable, Sendable, Equatable {
 nonisolated struct QuantumTargetStatus: Decodable, Sendable, Equatable {
     nonisolated enum Mode: LenientWireEnum {
         case unknown, freeMode, destination
-        /// A mode this build does not know. The readout shows it like `.unknown` ("Waiting for Game.log"); no target
+        /// A mode this build does not know. The readout shows it like `.unknown` (". . ."); no target
         /// is invented from the names.
         case unrecognized(String)
 

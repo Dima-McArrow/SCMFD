@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// HUD readout of the current quantum target: a starmap destination, free mode,
-/// or no data while the Game.log feed is not connected.
+/// HUD readout of the current quantum target: a starmap destination, free mode, or a neutral ". . ." when there
+/// is no target data (not connected, nothing selected yet, or a mode this build does not know). Not "waiting":
+/// a jump without a starmap destination is a normal thing to do.
 struct QuantumTargetReadout: View {
     @Environment(\.manufacturerTheme) private var theme
 
@@ -17,7 +18,8 @@ struct QuantumTargetReadout: View {
 
     private var value: String {
         switch target {
-        case .unknown: theme.label("Waiting for Game.log")
+        // Not words, so not localized; VoiceOver reads "No data" instead (see `body`).
+        case .unknown: theme.label(verbatim: ". . .")
         case .freeMode: theme.label("Free mode")
         case .destination(let name): name
         }
@@ -43,6 +45,7 @@ struct QuantumTargetReadout: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                     .contentTransition(.opacity)
+                    .accessibilityLabel(target == .unknown ? Text("No data") : Text(verbatim: value))
             }
 
             Spacer(minLength: 8)

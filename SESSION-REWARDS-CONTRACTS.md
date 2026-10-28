@@ -48,7 +48,7 @@ or gear tracking. Those remain separate work.
 ## Shared contract and tests
 
 The additive protocol v2 `activity` message is specified in section 41.21 of
-`Claude outputs/CSMFD-discussion.md` (also mirrored in `Docs/CSMFD-discussion.md`). Old clients ignore the new
+`Claude outputs/CSMFD-discussion.md`. Old clients ignore the new
 message type; new clients using an older server wait for a feed rather than displaying sample transactions.
 The BE reference fixture is `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/server-activity-rewards.json`.
 

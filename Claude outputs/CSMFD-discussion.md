@@ -722,7 +722,7 @@ C:\Users\Dimitri\.codex\visualizations\2026\10\26\01a178b9-4355-7eb1-a917-7ceb70
 
 | Состояние | Отображение |
 |---|---|
-| `.unknown` | «Waiting for Game.log», приглушённо (сейчас всегда) |
+| `.unknown` | «. . .», приглушённо; VoiceOver читает «No data». Не «ожидание»: цели может не быть и при прыжке без карты (2026-10-28) |
 | `.freeMode` | «Free mode», янтарным |
 | `.destination(name)` | Имя цели акцентным цветом |
 
