@@ -1855,18 +1855,22 @@ Rules:
   observed; it does not prove a currently locked target, a completed jump or the current ship identity.
 - Model/entity fields in the record can still enrich the existing ship binding when its old rules succeed.
   They are not prerequisites for QT and do not create a ship context by themselves.
-- Preserved: ship-channel join/leave, ClearDriver, vehicle destruction.
-- Cleared to unknown: verified PU exit, SystemQuit/process exit, log-generation reset. A later exit also clears
+- Preserved: ship-channel join and ClearDriver. A join does not clear QT: a selection logged right before
+  the join line must survive, and leaving the previous ship has already cleared the old one.
+- Cleared to unknown: leave of the current ship channel, vehicle destruction, verified PU exit,
+  SystemQuit/process exit, log-generation reset. A later exit also clears
   a selection received after menu reentry without a new ship channel, even if `shipContext` still says
   `gameEnded`; this does not create another ship revision.
 - Generic navigation, remote selection markers and malformed/overlong target names do not set a destination.
 - No new reader, polling, timer, history, input action or BE name resolution.
 
 Evidence limits: there is no validated clear-target/free-mode source, so the value is the last observation
-until a newer selection or a session/log boundary. Missing selection records cannot be reconstructed.
+until a newer selection, a session/log boundary or the ship goes away. Missing selection records cannot be
+reconstructed.
 
 iPad: no decoder change is needed. Show the value as the last observed local selection, not as live ship
 telemetry; `observedAt` describes freshness.
 
-Server commit: `c46424d`. BE Release build and the full 425-test suite pass on Windows; iPad build and FE
-runtime behavior are unverified until checked on Mac.
+Server commits: `c46424d`, `59bb202`. For `c46424d` the BE Release build and the full 425-test suite pass on
+Windows; `59bb202` is not yet built or tested on Windows (no dotnet on the Mac). iPad build and FE runtime
+behavior are unverified until checked on Mac.
