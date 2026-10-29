@@ -1277,6 +1277,10 @@ FE применяет связанные поля в одной транзакц
 > **Superseded in part by 41.23 (2026-10-28):** the ClearDriver rows and the manual-override rules tied to
 > ClearDriver no longer apply. The original decision is kept below.
 
+> **Superseded in part by 41.25 (2026-10-29):** QT is no longer reset on ClearDriver (row «Подходящий локальный
+> ClearDriver», «сброс ATC/QT») or on a join to another ship channel (row «Вход в другой корабельный канал»,
+> «сброс старых действий/данных»). The rows are kept below as history.
+
 Принятое пользователем временное допущение: **новое событие входа в распознанный корабельный канал разрешает Deck**, хотя не доказывает посадку в кресло. Это всегда assumed. Обычный публичный канал, название похожего NPC-корабля или отдельное диагностическое упоминание модели не активируют управление.
 
 | Событие | BE | FE |
@@ -1437,6 +1441,8 @@ SendInput ограничен UIPI, не сбрасывает текущее со
 Microsoft предупреждает о потере уведомлений при переполнении буфера FileSystemWatcher и стоимости увеличения его non-paged buffer. Узкий фильтр и восстановление по offset важнее бесконечного увеличения буфера. [Microsoft: FileSystemWatcher.InternalBufferSize](https://learn.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher.internalbuffersize).
 
 Для ClearDriver фильтровать локального игрока и подходящий entityId; чужой корабль не должен выключать Deck. Если entityId неизвестен, допускается ранее согласованная эвристика модели с явным assumed и тестами неоднозначности одинаковых кораблей. Привязка корабля по одному совпадению имени не доказывает владение.
+
+> **Superseded in part by 41.25 (2026-10-29):** QT no longer requires a binding to the current ship.
 
 QT: передавать только проверенные сигналы с нужной привязкой. `No Route loaded!` не становится автоматически freeMode или прибытием. Не найдено события — unknown; отсутствие события не означает, что игрок не прыгал. Точные образцы «сесть обратно» и «free mode» остаются исследовательскими задачами.
 
@@ -1826,3 +1832,41 @@ have a member leave, then leave locally. Note times and actual roster to compare
 
 Windows validation covers BE build/tests and formatting. iPad simulator build, Swift tests and visual layout
 must be checked on Mac; in-game behavior and frametime are unverified until the controlled run.
+
+### 41.25. Local QT selection (owner decision, 2026-10-29)
+
+Supersedes the QT resets in the 41.9 rows for ClearDriver and for a join to another ship channel, and the
+ship-binding requirement for QT in 41.14. No wire change: no new fields, enums or protocol version. Existing
+state coalescing and full snapshots are reused.
+
+Owner decision: an explicit `Player Selected Quantum Target - Local` record is sufficient evidence of the local
+player's selected QT destination. The selection is assumed to be made in a ship; a recognized ship channel, a
+spawn or a match with `ship.entityId` is not required. No ship name, identity or Deck transition is invented.
+
+Evidence: the previous ship-binding gate dropped all 24 selection records in the 28/29 October game sessions
+before the Corsair fix. The source records existed; they were blocked by missing context or entity binding.
+
+Rules:
+
+- The same single reader and parser recognize the local-selection marker. The latest parsed local selection
+  replaces `state.qtTarget`, even when `ship` is null or its ID differs.
+- Values: `mode=destination`, `internalName` = the exact bounded source identifier, `displayName=null`,
+  `confidence=confirmed`, `observedAt` = the source timestamp. `confirmed` means that a selection was explicitly
+  observed; it does not prove a currently locked target, a completed jump or the current ship identity.
+- Model/entity fields in the record can still enrich the existing ship binding when its old rules succeed.
+  They are not prerequisites for QT and do not create a ship context by themselves.
+- Preserved: ship-channel join/leave, ClearDriver, vehicle destruction.
+- Cleared to unknown: verified PU exit, SystemQuit/process exit, log-generation reset. A later exit also clears
+  a selection received after menu reentry without a new ship channel, even if `shipContext` still says
+  `gameEnded`; this does not create another ship revision.
+- Generic navigation, remote selection markers and malformed/overlong target names do not set a destination.
+- No new reader, polling, timer, history, input action or BE name resolution.
+
+Evidence limits: there is no validated clear-target/free-mode source, so the value is the last observation
+until a newer selection or a session/log boundary. Missing selection records cannot be reconstructed.
+
+iPad: no decoder change is needed. Show the value as the last observed local selection, not as live ship
+telemetry; `observedAt` describes freshness.
+
+Server commit: `c46424d`. BE Release build and the full 425-test suite pass on Windows; iPad build and FE
+runtime behavior are unverified until checked on Mac.
