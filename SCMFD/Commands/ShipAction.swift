@@ -45,9 +45,10 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         switch self {
         case .requestLanding, .operatorMode: .tap
         case .raiseWeapons, .raiseThrusters, .raiseShields, .resetPower: .tap
-        // No telemetry for coupled or cruise state, so these must not show a tablet-side ON/OFF.
-        case .coupledMode, .cruiseMode, .resetFlightAccelerometer, .cycleConfiguration: .tap
+        case .resetFlightAccelerometer, .cycleConfiguration: .tap
         case .flightReady, .landingGear, .vtol, .lights: .toggle
+        // No telemetry for coupled or cruise: like the other toggles, the lit state follows the taps, not the game.
+        case .coupledMode, .cruiseMode: .toggle
         case .powerAll, .powerWeapons, .powerThrusters, .powerShields: .toggle
         case .autoLand, .exitSeat: .hold(seconds: 1)
         // Long-press B cycles master mode; the game threshold is about a quarter second.
@@ -102,7 +103,7 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .masterMode: "SCM / NAV"
         case .operatorMode: "Operator mode"
         case .quantumEngage: "Engage quantum"
-        case .coupledMode: "Coupled / Decoupled"
+        case .coupledMode: "Coupled"
         case .cruiseMode: "Cruise mode"
         case .resetFlightAccelerometer: "Reset accelerometer"
         case .cycleConfiguration: "Transform"

@@ -33,8 +33,8 @@ nonisolated enum HangarRequestStatus: Sendable, Equatable {
 /// whether the Deck is enabled and supplies the ship name, QT target and ATC status (`ShipContextTracker`).
 @Observable
 final class DeckState {
-    /// Keys at app start and after a reset: a parked ship has its landing gear down (FIX-07).
-    static let defaultLit: Set<ShipAction> = [.landingGear]
+    /// Keys at app start and after a reset: landing gear down and coupled flight enabled.
+    static let defaultLit: Set<ShipAction> = [.landingGear, .coupledMode]
 
     private(set) var lit: Set<ShipAction> = DeckState.defaultLit
     /// Off at app start in every mode, the console link included (FIX-07, first row): the first `channelJoined`
@@ -67,6 +67,8 @@ final class DeckState {
     /// The latest transition's theme; the app switches the auto theme when it changes.
     private(set) var lastThemeChange: ThemeChange?
     var selfDestructArmed = false
+    /// Shared across both drums and page lifetimes; resetting the deck must not release a pending step.
+    let wheelCommands = WheelCommandController()
     /// Mirrored from the server state; nil means no server data. The ship name survives a dropped link,
     /// the ATC status does not.
     var shipName: String?

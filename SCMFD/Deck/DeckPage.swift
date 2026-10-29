@@ -2,6 +2,7 @@ import SwiftUI
 
 nonisolated enum DeckPage: String, CaseIterable, Identifiable, Sendable {
     case flight
+    case flightControls
     case power
     case quantum
     case emergency
@@ -9,11 +10,12 @@ nonisolated enum DeckPage: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 
     static let leftPages: [DeckPage] = [.flight, .power]
-    static let rightPages: [DeckPage] = [.quantum, .emergency]
+    static let rightPages: [DeckPage] = [.quantum, .flightControls, .emergency]
 
     var title: LocalizedStringResource {
         switch self {
         case .flight: "Flight"
+        case .flightControls: "FC"
         case .power: "Power"
         case .quantum: "Quantum"
         case .emergency: "Emergency"
@@ -23,6 +25,7 @@ nonisolated enum DeckPage: String, CaseIterable, Identifiable, Sendable {
 
 /// The keys of one deck page.
 struct DeckPageContent: View {
+    @Environment(\.commandLink) private var link
     let page: DeckPage
     @Bindable var state: DeckState
 
@@ -64,6 +67,29 @@ struct DeckPageContent: View {
                 GridRow {
                     MFDHoldKey(action: .autoLand, caption: "Tap to land")
                         .gridCellColumns(2)
+                }
+            }
+        case .flightControls:
+            VStack(spacing: spacing) {
+                // Fixed vertically: the keys take their natural height (all as tall as the tallest one),
+                // so the drums below are the only flexible row and get all the remaining height.
+                HStack(spacing: spacing) {
+                    MFDKey(.coupledMode, isLit: state.binding(for: .coupledMode))
+                    MFDKey(.cruiseMode, isLit: state.binding(for: .cruiseMode))
+                    MFDKey(.resetFlightAccelerometer)
+                    MFDKey(.cycleConfiguration)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: spacing) {
+                    MFDWheelDrum(title: "Speed limiter", keycap: "ALT+WHEEL",
+                                 failure: state.wheelCommands.failure(for: .speedLimiter)) { intention in
+                        state.wheelCommands.submit(intention, for: .speedLimiter, link: link)
+                    }
+                    MFDWheelDrum(title: "Acceleration limiter", keycap: "RALT+WHEEL",
+                                 failure: state.wheelCommands.failure(for: .accelerationLimiter)) { intention in
+                        state.wheelCommands.submit(intention, for: .accelerationLimiter, link: link)
+                    }
                 }
             }
         case .power:
@@ -145,6 +171,18 @@ struct DeckPageContent: View {
         return state
     }()
     DeckPageContent(page: .flight, state: state)
+        .padding(20)
+        .background { ThemeBackdropView() }
+        .manufacturerTheme(.drake)
+}
+
+#Preview("Flight controls", traits: .fixedLayout(width: 550, height: 650)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        return state
+    }()
+    DeckPageContent(page: .flightControls, state: state)
         .padding(20)
         .background { ThemeBackdropView() }
         .manufacturerTheme(.drake)

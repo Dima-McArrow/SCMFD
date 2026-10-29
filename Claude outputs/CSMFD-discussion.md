@@ -1321,6 +1321,8 @@ BE не отклоняет разрешённую команду только п
 
 ### 41.10. Команды, allowlist и ответы
 
+**Расширение 2026-10-29:** команда `wheel` для двух лимитеров описана в 41.26; таблица ниже остаётся key-allowlist из 23 действий. Wheel имеет отдельный allowlist из двух действий с биндами на BE.
+
 Семантика `key`, `chat`, `releaseAll`, `ping` сохраняется из 40.4, но envelope `v=2`. Каждое поступление key/chat/releaseAll получает один terminal ack, если соединение остаётся доступным. Повтор уже известного id получает rejected/duplicate, включая случай изменённого payload; исходная команда не исполняется повторно. Гарантия дедупликации ограничена последними 200 id текущего соединения. Клиент никогда не повторяет команду автоматически и никогда не переиспользует UUID; после вытеснения id сервер не обещает exactly-once. `sent` означает успешно выполненную соответствующую операцию ввода Windows, не результат игры. Для hold ack sent относится к успешному началу удержания; завершение длительности не означает выполненный прыжок.
 
 ```json
@@ -1371,10 +1373,27 @@ Close codes: 4001 replacement; 4002 unsupported version; 4003 unauthenticated; 4
 | masterMode | b | — | hold, up для отмены | 500 |
 | operatorMode | mouse3 | — | down/up | — |
 | quantumEngage | mouse1 | — | hold, up для отмены | 1500 |
+| coupledMode | c | — | down/up | — |
+| cruiseMode | c | alt | down/up | — |
+| resetFlightAccelerometer | c | ralt | down/up | — |
+| cycleConfiguration | k | alt | down/up | — |
 | exitSeat | y | — | hold, up для отмены | 1000 |
 | selfDestruct | backspace | — | hold, up для отмены | 3000 |
 
 `mods` — уникальные элементы ctrl/shift/alt/ralt, но конкретное сочетание обязано соответствовать allowlist. `ms` — целое 50…10 000, только для hold; реальный диапазон можно сузить на ПК по action. Не принимать down для действия, разрешённого только как hold. Пользовательские переназначения — отдельная согласованная конфигурация, не произвольное доверие присланному key. F8 и длительности всё ещё требуют калибровки в игре.
+
+**Flight controls (2026-10-29):** allowlist содержит 23 действия. Четыре новых строки выше фиксируют текущие
+FE-бинды, **ещё не проверенные в игре**: Coupled — C без модификаторов; Cruise — Left Alt+C;
+Reset flight accelerometer — Right Alt+C; Cycle configuration (Transform) — Left Alt+K.
+`alt` означает левый Alt, `ralt` — правый Alt; подмена стороны, отсутствие или добавление модификатора,
+неверная клавиша либо фаза отклоняются как `invalid`. Все четыре действия используют существующий tap:
+`down` / `up`, без `hold`, фазы `toggle` и поля `ms`. Подсветка ON/OFF Coupled и Cruise — локальное
+представление FE после успешного tap, а не подтверждённое состояние игры; серверное toggle-состояние и
+телеметрия не добавляются. Формат сообщений и версия v2 не меняются. Действующие проверки безопасности и
+исполнитель ввода для tap сохраняются; отдельная команда колеса лимитеров описана в 41.26. JSON-примеры запросов находятся
+в `SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol/client-key-{coupled-mode,cruise-mode,reset-flight-accelerometer,cycle-configuration}-down.json`.
+Сборка, тесты и проверка форматирования BE ожидают запуска на Windows; затем требуется игровая проверка всех
+четырёх сочетаний, включая различие Left/Right Alt, с соответствующими сборками FE и BE.
 
 Self-destruct на FE защищён слайдером, но BE не должен считать клиентский слайдер доказательством намерения: сопряжённый клиент технически может отправить разрешённый hold напрямую. Дополнительная серверная двухфазная защита — отдельное расширение; не заявлять её существующей.
 
@@ -1874,3 +1893,108 @@ telemetry; `observedAt` describes freshness.
 Server commits: `c46424d`, `59bb202`. For `c46424d` the BE Release build and the full 425-test suite pass on
 Windows; `59bb202` is not yet built or tested on Windows (no dotnet on the Mac). iPad build and FE runtime
 behavior are unverified until checked on Mac.
+
+### 41.26. Single-step limiter wheels (2026-10-29)
+
+Adds one client command to protocol v2; no version bump, new server DTO, state field or telemetry.
+Supersedes earlier statements that the BE has no wheel support. The 23-entry key allowlist in 41.10 is
+unchanged. A separate `WheelActionCatalog` owns exactly two wheel bindings; the client supplies intentions,
+never bindings. Existing key/tap/hold behavior and input safety rules remain in force.
+
+#### Exact request
+
+```json
+{"v":2,"type":"wheel","id":"71b5d971-9ef6-48af-b4ab-668a2b991101","action":"speedLimiter","step":1}
+{"v":2,"type":"wheel","id":"71b5d971-9ef6-48af-b4ab-668a2b991102","action":"speedLimiter","step":-1}
+{"v":2,"type":"wheel","id":"71b5d971-9ef6-48af-b4ab-668a2b991103","action":"accelerationLimiter","step":1}
+{"v":2,"type":"wheel","id":"71b5d971-9ef6-48af-b4ab-668a2b991104","action":"accelerationLimiter","step":-1}
+```
+
+| Field | Required contract |
+|---|---|
+| `v` | JSON integer `2`, as for existing messages |
+| `type` | Exact string `wheel` |
+| `id` | Fresh UUID per step; FE writes lowercase canonical UUID, as for existing commands |
+| `action` | Exact case-sensitive `speedLimiter` or `accelerationLimiter` |
+| `step` | JSON integer `1` (increase) or `-1` (decrease); no zero, batches, fractions, decimal/exponent notation, strings or null |
+
+These are the only allowed fields for `wheel`. Unlike the older message types that ignore unknown fields,
+wheel rejects every extra field as `invalid`, including `key`, `mods`, `phase`, `ms`, `delta`, `axis`, `steps`
+and future-looking fields. There is no down/up/hold phase and no follow-up release request for a step.
+Wheel actions cannot be sent as `key` actions, and key actions cannot be sent as `wheel` actions.
+Missing/invalid action or step is `rejected/invalid`; a structurally valid unknown wheel action is
+`rejected/unknown_action`. A valid UUID correlates such failures through the existing ack. Missing/invalid
+UUID, duplicate JSON properties or malformed JSON follow the existing `malformed` error rules. Existing
+frame/UTF-8/depth/version/connection limits are unchanged.
+
+#### Server-owned input and outcomes
+
+| Action | Intended binding | Increase (`1`) | Decrease (`-1`) |
+|---|---|---|---|
+| `speedLimiter` | Left Alt + vertical wheel | `Alt down`, wheel `+120`, `Alt up` | `Alt down`, wheel `-120`, `Alt up` |
+| `accelerationLimiter` | Right Alt + vertical wheel | `RAlt down`, wheel `+120`, `RAlt up` | `RAlt down`, wheel `-120`, `RAlt up` |
+
+One wheel event uses Windows `MOUSEINPUT`, `MOUSEEVENTF_WHEEL` (`0x0800`), signed `mouseData` `+120` or `-120`
+(encoded in the DWORD), with no pointer movement, horizontal wheel or button press. Alt uses scan code `0x38`;
+RAlt also sets the extended-key flag. One click equals `WHEEL_DELTA` 120; positive is forward/away from the
+user. See [Microsoft MOUSEINPUT](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-mouseinput).
+These intended bindings and the mapping of direction to game increase/decrease are **not verified in game**.
+
+Each wheel command is a new gesture in the existing admission path: authenticated/active controller only,
+shared token bucket 30 starts/s with burst 30 across key/chat/wheel, last-200-ID per-connection deduplication,
+250 ms command-age check at execution, local pause/blocked-input/session-lock checks, game process/focus check
+and physical-modifier conflicts. Any physical Ctrl/Shift/Alt/RAlt conflicts. Active key/hold/chat input makes
+wheel `busy`; no modifier merging or delayed execution. Up/releaseAll for existing gestures retain their
+release priority and exemption from the start rate limit.
+
+The executor serializes the complete wheel under its existing lock and sends one `SendInput` batch:
+modifier down, wheel, modifier up. There is no tap minimum or timer for wheel, and no residual held input
+on success. Safety cancellation/disconnect cannot interleave this synchronous batch; subsequent input is
+checked again. The existing unavoidable focus/physical-state race before `SendInput` still applies.
+
+Exactly one terminal ack is produced per request while the connection remains available, using the existing
+writer and FE outcome semantics:
+
+```json
+{"v":2,"type":"ack","id":"71b5d971-9ef6-48af-b4ab-668a2b991101","status":"sent"}
+{"v":2,"type":"ack","id":"71b5d971-9ef6-48af-b4ab-668a2b991102","status":"rejected","reason":"busy"}
+```
+
+`sent` means all three input events were inserted, not a confirmed limiter value/change. The normal existing
+reasons apply: `game_not_running`, `game_not_focused`, `input_paused`, `busy`, `expired`, `rate_limited`,
+`duplicate`, `input_failed`, `cancelled`. A valid wheel step has no normal `ignored` outcome and no later
+completion notification. A duplicate UUID is rejected even with a changed action/direction; it never fires
+again within the existing deduplication window.
+
+Zero inserted events: reject `input_failed`, no cleanup input. One or two inserted events: the modifier was
+pressed, so release only that modifier once, never replay or reverse the wheel. Two inserted events mean
+the wheel may already have changed the game. Even if cleanup succeeds, the terminal result is
+`rejected/input_failed`. Failed cleanup blocks new key/chat/wheel input until the existing local re-enable;
+no automatic retry, recovery shortcut or wheel compensation. A lost ack is unknown: never resend the step.
+No server-side limiter values, toggle state or telemetry are introduced.
+
+#### FE connection and validation handoff
+
+Both existing `MFDWheelDrum` controls remain visual prototypes with empty callbacks in this BE task.
+The FE agent must add `wheel` encoding and a session command through `ProtocolV2.swift`, `ServerSession.swift`
+and the normal authenticated command-link/pending-UUID path, then wire callbacks:
+
+- Speed `onStep(.increase)` -> `action: speedLimiter`, `step: 1`; `.decrease` -> `step: -1`.
+- Acceleration `onStep(.increase)` -> `action: accelerationLimiter`, `step: 1`; `.decrease` -> `step: -1`.
+- Allocate a new UUID for every submitted step, settle its ticket from the existing ack, and display failures.
+  No separately sent modifiers, key events or release messages. Do not infer an actual limiter percentage
+  or label drum animation as confirmed game state.
+- Bound outgoing work; discard intentions that cannot be submitted immediately. Do not accumulate a drag
+  backlog or replay it after busy/rate-limit failures, lost acks, disconnect or reconnect. For a simple initial
+  policy, permit at most one wheel request in flight across both controls and drop intentions while it is pending.
+  The drag distance stepper is not a network rate limiter.
+- Use the matching updated BE. Older v2 builds reply `unknown_type` to wheel; there is no capability negotiation
+  or fallback to arbitrary key input. Preserve existing unknown/lost-outcome behavior without retries.
+
+Reference requests are the four `client-wheel-{speed,acceleration}-limiter-{increase,decrease}.json` files in
+`SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol`. Ack shape is unchanged; existing `server-ack-*.json` fixtures apply.
+BE tests cover parsing, exact bindings, Win32 conversion without real input, serialized execution, focus/lock/
+pause/physical conflicts, partial insertion and failed cleanup, shared rate/deduplication and authenticated WSS.
+**Pending on Windows:** Release build, full tests, format verification. Then verify both bindings/directions in
+game with matching FE/BE builds, rapid/reversed drags, busy/focus failures and disconnects. No BE build, test,
+formatter or Windows execution was run on macOS for this change.

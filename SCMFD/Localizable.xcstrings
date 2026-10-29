@@ -1,512 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Party" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Группа"
-          }
-        }
-      }
-    },
-    "Observed group only. Membership may be incomplete; names are not live online status." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Observed group only. Membership may be incomplete; names are not live online status."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Groupe observé uniquement. La composition peut être incomplète ; les noms ne donnent pas le statut en ligne."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Только наблюдаемая группа. Состав может быть неполным; имена не показывают статус в сети."
-          }
-        }
-      }
-    },
-    "Observations may be stale" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Observations may be stale"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les observations peuvent être périmées"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Наблюдения могут быть устаревшими"
-          }
-        }
-      }
-    },
-    "Waiting for Party observations from the PC. An updated server is required." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Waiting for Party observations from the PC. An updated server is required."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En attente des observations du groupe depuis le PC. Un serveur à jour est nécessaire."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ожидание наблюдений о группе с ПК. Требуется обновлённый сервер."
-          }
-        }
-      }
-    },
-    "Last Party observation" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last Party observation"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dernière observation du groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Последнее наблюдение о группе"
-          }
-        }
-      }
-    },
-    "Observed members" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Observed members"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Membres observés"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Наблюдаемые участники"
-          }
-        }
-      }
-    },
-    "The list may be incomplete. No observed names does not mean an empty group." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The list may be incomplete. No observed names does not mean an empty group."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La liste peut être incomplète. L’absence de noms observés ne signifie pas que le groupe est vide."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Список может быть неполным. Отсутствие наблюдаемых имён не означает пустую группу."
-          }
-        }
-      }
-    },
-    "No member names observed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No member names observed"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun nom de membre observé"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Имена участников пока не наблюдались"
-          }
-        }
-      }
-    },
-    "Last known leader" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last known leader"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dernier chef connu"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Последний известный лидер"
-          }
-        }
-      }
-    },
-    "Leader unknown" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leader unknown"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chef inconnu"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лидер неизвестен"
-          }
-        }
-      }
-    },
-    "Invitations and disappearing markers do not change this list." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Invitations and disappearing markers do not change this list."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les invitations et les marqueurs qui disparaissent ne modifient pas cette liste."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Приглашения и исчезающие маркеры не меняют этот список."
-          }
-        }
-      }
-    },
-    "Party activity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party activity"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activité du groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "События группы"
-          }
-        }
-      }
-    },
-    "No Party events observed in this capture." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Party events observed in this capture."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun événement de groupe observé pendant cette capture."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "В текущем наблюдении событий группы пока нет."
-          }
-        }
-      }
-    },
-    "Latest 128 Party events in this capture. History is cleared when observation restarts." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Latest 128 Party events in this capture. History is cleared when observation restarts."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les 128 derniers événements de groupe de cette capture. L’historique est effacé au redémarrage de l’observation."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Последние 128 событий группы в текущем наблюдении. При перезапуске наблюдения история очищается."
-          }
-        }
-      }
-    },
-    "Party membership unknown" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party membership unknown"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appartenance au groupe inconnue"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Членство в группе неизвестно"
-          }
-        }
-      }
-    },
-    "Party membership observed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party membership observed"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appartenance au groupe observée"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Членство в группе наблюдалось"
-          }
-        }
-      }
-    },
-    "Party disbanding observed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party disbanding observed"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dissolution du groupe observée"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Наблюдался роспуск группы"
-          }
-        }
-      }
-    },
-    "You created a party" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You created a party"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vous avez créé un groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вы создали группу"
-          }
-        }
-      }
-    },
-    "You joined a party" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You joined a party"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vous avez rejoint un groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вы вступили в группу"
-          }
-        }
-      }
-    },
-    "Member joined" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Member joined"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un membre a rejoint le groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Участник вступил"
-          }
-        }
-      }
-    },
-    "Member left" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Member left"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un membre a quitté le groupe"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Участник вышел"
-          }
-        }
-      }
-    },
-    "Leader changed" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leader changed"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le chef a changé"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лидер сменился"
-          }
-        }
-      }
-    },
-    "Party disbanded" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Party disbanded"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Groupe dissous"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Группа распущена"
-          }
-        }
-      }
-    },
     "%@ aUEC" : {
       "localizations" : {
         "fr" : {
@@ -631,6 +125,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Успешная проверка открывает и сразу закрывает TCP-соединение, не отправляя данных приложения. TLS-сервер может записать это в журнал как незавершённое рукопожатие."
+          }
+        }
+      }
+    },
+    "Acceleration limiter" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limiteur d’accélération"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ограничитель ускорения"
           }
         }
       }
@@ -1243,7 +753,30 @@
         }
       }
     },
+    "Coupled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Coupled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Couplé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Сопряжённый"
+          }
+        }
+      }
+    },
     "Coupled / Decoupled" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -1335,6 +868,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пульт"
+          }
+        }
+      }
+    },
+    "Decoupled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Decoupled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Découplé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Несопряжённый"
           }
         }
       }
@@ -1579,6 +1134,22 @@
         }
       }
     },
+    "FC" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FC"
+          }
+        }
+      }
+    },
     "Finances" : {
       "localizations" : {
         "fr" : {
@@ -1819,6 +1390,28 @@
         }
       }
     },
+    "Invitations and disappearing markers do not change this list." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitations and disappearing markers do not change this list."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les invitations et les marqueurs qui disparaissent ne modifient pas cette liste."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приглашения и исчезающие маркеры не меняют этот список."
+          }
+        }
+      }
+    },
     "iPad unpaired" : {
       "localizations" : {
         "fr" : {
@@ -1847,6 +1440,116 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Шасси"
+          }
+        }
+      }
+    },
+    "Last known leader" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last known leader"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dernier chef connu"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последний известный лидер"
+          }
+        }
+      }
+    },
+    "Last Party observation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Party observation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dernière observation du groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последнее наблюдение о группе"
+          }
+        }
+      }
+    },
+    "Latest 128 Party events in this capture. History is cleared when observation restarts." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest 128 Party events in this capture. History is cleared when observation restarts."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les 128 derniers événements de groupe de cette capture. L’historique est effacé au redémarrage de l’observation."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последние 128 событий группы в текущем наблюдении. При перезапуске наблюдения история очищается."
+          }
+        }
+      }
+    },
+    "Leader changed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leader changed"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le chef a changé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лидер сменился"
+          }
+        }
+      }
+    },
+    "Leader unknown" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leader unknown"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chef inconnu"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лидер неизвестен"
           }
         }
       }
@@ -1943,6 +1646,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Совпадает с ПК — привязать"
+          }
+        }
+      }
+    },
+    "Member joined" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Member joined"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un membre a rejoint le groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Участник вступил"
+          }
+        }
+      }
+    },
+    "Member left" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Member left"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un membre a quitté le groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Участник вышел"
           }
         }
       }
@@ -2071,6 +1818,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Нет связи"
+          }
+        }
+      }
+    },
+    "No member names observed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No member names observed"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun nom de membre observé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имена участников пока не наблюдались"
+          }
+        }
+      }
+    },
+    "No Party events observed in this capture." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Party events observed in this capture."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun événement de groupe observé pendant cette capture."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В текущем наблюдении событий группы пока нет."
           }
         }
       }
@@ -2219,6 +2010,28 @@
         }
       }
     },
+    "Observations may be stale" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Observations may be stale"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les observations peuvent être périmées"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наблюдения могут быть устаревшими"
+          }
+        }
+      }
+    },
     "Observed" : {
       "localizations" : {
         "fr" : {
@@ -2231,6 +2044,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Зафиксирован"
+          }
+        }
+      }
+    },
+    "Observed group only. Membership may be incomplete; names are not live online status." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Observed group only. Membership may be incomplete; names are not live online status."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groupe observé uniquement. La composition peut être incomplète ; les noms ne donnent pas le statut en ligne."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только наблюдаемая группа. Состав может быть неполным; имена не показывают статус в сети."
+          }
+        }
+      }
+    },
+    "Observed members" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Observed members"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membres observés"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наблюдаемые участники"
           }
         }
       }
@@ -2395,6 +2252,138 @@
         }
       }
     },
+    "Party" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Группа"
+          }
+        }
+      }
+    },
+    "Party activity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party activity"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activité du groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "События группы"
+          }
+        }
+      }
+    },
+    "Party disbanded" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party disbanded"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groupe dissous"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Группа распущена"
+          }
+        }
+      }
+    },
+    "Party disbanding observed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party disbanding observed"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dissolution du groupe observée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наблюдался роспуск группы"
+          }
+        }
+      }
+    },
+    "Party membership observed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party membership observed"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appartenance au groupe observée"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Членство в группе наблюдалось"
+          }
+        }
+      }
+    },
+    "Party membership unknown" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party membership unknown"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appartenance au groupe inconnue"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Членство в группе неизвестно"
+          }
+        }
+      }
+    },
     "PC IPv4 address" : {
       "localizations" : {
         "fr" : {
@@ -2503,6 +2492,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Прослушать звук"
+          }
+        }
+      }
+    },
+    "Preview: not connected yet" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aperçu : pas encore connecté"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Превью: пока не подключено"
           }
         }
       }
@@ -2699,22 +2705,6 @@
         }
       }
     },
-    "Reset Deck" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "machine_translated",
-            "value" : "Réinitialiser le pupitre"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "machine_translated",
-            "value" : "Сбросить пульт"
-          }
-        }
-      }
-    },
     "Reset accelerometer" : {
       "localizations" : {
         "fr" : {
@@ -2727,6 +2717,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сброс акселерометра"
+          }
+        }
+      }
+    },
+    "Reset Deck" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Réinitialiser le pupitre"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Сбросить пульт"
           }
         }
       }
@@ -3099,6 +3105,22 @@
         }
       }
     },
+    "Speed limiter" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limiteur de vitesse"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ограничитель скорости"
+          }
+        }
+      }
+    },
     "Spending and fines" : {
       "localizations" : {
         "fr" : {
@@ -3307,6 +3329,28 @@
         }
       }
     },
+    "The list may be incomplete. No observed names does not mean an empty group." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The list may be incomplete. No observed names does not mean an empty group."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La liste peut être incomplète. L’absence de noms observés ne signifie pas que le groupe est vide."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Список может быть неполным. Отсутствие наблюдаемых имён не означает пустую группу."
+          }
+        }
+      }
+    },
     "The recent list is limited to the latest 128 activity events. Session reward totals retain all received rewards." : {
       "localizations" : {
         "fr" : {
@@ -3506,6 +3550,28 @@
         }
       }
     },
+    "Waiting for Party observations from the PC. An updated server is required." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for Party observations from the PC. An updated server is required."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente des observations du groupe depuis le PC. Un serveur à jour est nécessaire."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание наблюдений о группе с ПК. Требуется обновлённый сервер."
+          }
+        }
+      }
+    },
     "Waiting for the code" : {
       "localizations" : {
         "fr" : {
@@ -3598,6 +3664,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Отозван"
+          }
+        }
+      }
+    },
+    "You created a party" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You created a party"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez créé un groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы создали группу"
+          }
+        }
+      }
+    },
+    "You joined a party" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You joined a party"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez rejoint un groupe"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы вступили в группу"
           }
         }
       }

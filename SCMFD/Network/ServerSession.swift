@@ -62,6 +62,7 @@ nonisolated enum SessionCloseReason: Equatable, Sendable {
 
 nonisolated enum SessionCommand: Equatable, Sendable {
     case key(KeyEvent)
+    case wheel(WheelEvent)
     case chat(String)
     case releaseAll
 }
@@ -154,6 +155,7 @@ nonisolated struct ServerSession: Sendable {
         pending[id] = now
         switch command {
         case .key(let event): return [.send(.key(id: id, event))]
+        case .wheel(let event): return [.send(.wheel(id: id, event))]
         case .chat(let text): return [.send(.chat(id: id, text: text))]
         case .releaseAll: return [.send(.releaseAll(id: id))]
         }

@@ -54,13 +54,14 @@ nonisolated enum ClientMessage: Sendable, Equatable {
     /// `id` is any unique string up to 64 characters; `unixMilliseconds` is echoed back in `pong`.
     case ping(id: String, unixMilliseconds: Int64)
     case key(id: UUID, KeyEvent)
+    case wheel(id: UUID, WheelEvent)
     case chat(id: UUID, text: String)
     case releaseAll(id: UUID)
 }
 
 nonisolated extension ClientMessage: Encodable {
     private enum CodingKeys: String, CodingKey {
-        case v, type, id, client, appVersion, deviceName, token, code, t, action, phase, key, mods, ms, text
+        case v, type, id, client, appVersion, deviceName, token, code, t, action, phase, key, mods, ms, text, step
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -99,6 +100,11 @@ nonisolated extension ClientMessage: Encodable {
                 try container.encode("hold", forKey: .phase)
                 try container.encode(milliseconds, forKey: .ms)
             }
+        case .wheel(let id, let event):
+            try container.encode("wheel", forKey: .type)
+            try container.encode(id.wireString, forKey: .id)
+            try container.encode(event.action.rawValue, forKey: .action)
+            try container.encode(event.step.rawValue, forKey: .step)
         case .chat(let id, let text):
             try container.encode("chat", forKey: .type)
             try container.encode(id.wireString, forKey: .id)

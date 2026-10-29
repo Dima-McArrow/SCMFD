@@ -438,6 +438,7 @@ final class ServerConnection {
         case .pair: "pair (code sent)"
         case .ping: nil
         case .key(let id, let event): "key \(event.action.rawValue) \(event.phase.label) · \(id.wireString.prefix(8))"
+        case .wheel(let id, let event): "wheel \(event.action.rawValue) \(event.step.rawValue) · \(id.wireString.prefix(8))"
         case .chat(let id, let text): "chat \(text) · \(id.wireString.prefix(8))"
         case .releaseAll(let id): "releaseAll · \(id.wireString.prefix(8))"
         }

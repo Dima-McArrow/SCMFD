@@ -33,6 +33,10 @@ final class NetworkCommandLink: CommandLink {
         submit(.key(event))
     }
 
+    func send(wheel event: WheelEvent) -> CommandTicket {
+        submit(.wheel(event))
+    }
+
     func send(chat event: ChatEvent) -> CommandTicket {
         submit(.chat(event.text))
     }

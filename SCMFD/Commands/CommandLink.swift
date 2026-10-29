@@ -56,11 +56,12 @@ nonisolated struct CommandTicket: Sendable {
     }
 }
 
-/// Transport for key and chat events. The deck only talks to this protocol, so the console
+/// Transport for key, wheel and chat events. The deck only talks to this protocol, so the console
 /// stub and the network link to the Windows server are interchangeable.
 nonisolated protocol CommandLink: Sendable {
     @MainActor @discardableResult func send(_ event: KeyEvent) -> CommandTicket
     @MainActor @discardableResult func send(chat event: ChatEvent) -> CommandTicket
+    @MainActor @discardableResult func send(wheel event: WheelEvent) -> CommandTicket
     /// Yields once if input that was already `sent` ends early on the server
     /// (`input_cancelled`, `auto_released`), with the server's reason. Subscribe right after
     /// `send` and cancel the consuming task when the input ends normally.
@@ -134,6 +135,11 @@ nonisolated final class ConsoleCommandLink: CommandLink {
         let phase = event.phase.label.padding(toLength: 12, withPad: " ", startingAt: 0)
         let line = "⌨️ \(phase)  \(chord) · \(event.action.rawValue)"
         logger.notice("\(line, privacy: .public)")
+        return .immediate(.sent)
+    }
+
+    func send(wheel event: WheelEvent) -> CommandTicket {
+        logger.notice("WHEEL \(event.action.rawValue, privacy: .public) · \(event.step.rawValue)")
         return .immediate(.sent)
     }
 

@@ -49,6 +49,13 @@ struct MFDKey: View {
         return theme.label("Ready")
     }
 
+    private var displayTitle: LocalizedStringResource {
+        if action == .coupledMode {
+            return isLit ? "Coupled" : "Decoupled"
+        }
+        return title ?? action.title
+    }
+
     private var status: String {
         theme.label(isLit ? "On" : "Off")
     }
@@ -85,7 +92,7 @@ struct MFDKey: View {
 
             Spacer(minLength: 6)
 
-            Text(theme.label(title ?? action.title))
+            Text(theme.label(displayTitle))
                 .mfdLabelStyle(theme, size: 14)
                 .foregroundStyle(theme.palette.text)
                 .lineLimit(2)
@@ -171,7 +178,7 @@ struct MFDKey: View {
         .sensoryFeedback(.impact(weight: .light), trigger: pressCount)
         .sensoryFeedback(.success, trigger: hold.completions)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(title ?? action.title))
+        .accessibilityLabel(Text(displayTitle))
         // Verbatim: an empty localized literal would become an empty String Catalog key.
         .accessibilityHint(detail ?? Text(verbatim: ""))
         .accessibilityValue(Text(isToggle ? status : action.defaultChord.description))

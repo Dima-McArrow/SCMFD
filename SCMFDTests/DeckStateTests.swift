@@ -30,25 +30,25 @@ struct DeckStateTests {
         return (deck, full)
     }
 
-    /// FIX-07 first row: off at app start, in every mode, with only the landing gear lit.
-    @Test func freshDeckIsOffWithOnlyTheLandingGearLit() {
+    /// FIX-07 first row: off at app start, in every mode, with landing gear and coupled mode lit.
+    @Test func freshDeckIsOffWithLandingGearAndCoupledLit() {
         let deck = DeckState()
         #expect(deck.isShipDisconnected)
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
         #expect(!deck.selfDestructArmed)
     }
 
     @Test func tapsOnTheOffDeckAreIgnored() {
         let deck = DeckState()
         deck.binding(for: .lights).wrappedValue = true
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
     }
 
     @Test func firstAssumedChannelJoinedEnablesTheDeck() throws {
         let deck = DeckState()
         deck.receive(try state(ProtocolV2Tests.fullState))
         #expect(!deck.isShipDisconnected)
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
         #expect(deck.lastThemeChange?.theme == .manufacturer(.drake))
     }
 
@@ -57,7 +57,7 @@ struct DeckStateTests {
         deck.enableManually()
         deck.binding(for: .lights).wrappedValue = true
         deck.receive(try state(ProtocolV2Tests.fullState))
-        #expect(deck.lit == [.landingGear, .lights])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights])
         #expect(!deck.isShipDisconnected)
         #expect(deck.lastThemeChange?.theme == .manufacturer(.drake))
     }
@@ -69,24 +69,26 @@ struct DeckStateTests {
         deck.receive(left)
         #expect(deck.isShipDisconnected)
         #expect(deck.lastThemeChange?.theme == .standard)
-        #expect(deck.lit == [.landingGear, .lights, .vtol])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights, .vtol])
 
         deck.receive(left.merged(with: try state(contextDelta(revision: 5, status: "assumed", reason: "channelJoined",
                                                               prefix: "ANVL"))))
         #expect(!deck.isShipDisconnected)
         #expect(deck.lastThemeChange == ThemeChange(theme: .manufacturer(.anvil),
                                                     sessionId: full.sessionId, revision: 5))
-        #expect(deck.lit == [.landingGear, .lights, .vtol])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights, .vtol])
         #expect(deck.selfDestructArmed)
     }
 
     @Test func vehicleDestroyedFixtureResetsTheKeys() throws {
         let (deck, full) = try joinedWithLights()
         deck.binding(for: .landingGear).wrappedValue = false
+        deck.binding(for: .coupledMode).wrappedValue = false
+        #expect(!deck.lit.contains(.coupledMode))
         deck.receive(full.merged(with: try state(ProtocolV2Tests.vehicleDestroyedDelta)))
         #expect(deck.isShipDisconnected)
         #expect(deck.lastThemeChange?.theme == .standard)
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
         #expect(!deck.selfDestructArmed)
     }
 
@@ -96,7 +98,7 @@ struct DeckStateTests {
         deck.receive(full.merged(with: try state(ProtocolV2Tests.clearDriverDelta)))
         #expect(!deck.isShipDisconnected)
         #expect(deck.lastThemeChange == theme)
-        #expect(deck.lit == [.landingGear, .lights, .vtol])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights, .vtol])
         #expect(deck.selfDestructArmed)
     }
 
@@ -107,7 +109,7 @@ struct DeckStateTests {
                                                               prefix: nil))))
         #expect(deck.isShipDisconnected)
         #expect(deck.lastThemeChange == theme)
-        #expect(deck.lit == [.landingGear, .lights, .vtol])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights, .vtol])
     }
 
     @Test func manualEnableThenSameRevisionDeltaStaysOn() throws {
@@ -131,16 +133,18 @@ struct DeckStateTests {
         let deck = DeckState()
         deck.enableManually()
         #expect(!deck.isShipDisconnected)
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
         deck.binding(for: .lights).wrappedValue = true
-        #expect(deck.lit == [.landingGear, .lights])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights])
     }
 
-    @Test func resetDeckLightsOnlyTheLandingGearAndDisarmsSelfDestruct() throws {
+    @Test func resetDeckLightsLandingGearAndCoupledAndDisarmsSelfDestruct() throws {
         let (deck, _) = try joinedWithLights()
         deck.binding(for: .landingGear).wrappedValue = false
+        deck.binding(for: .coupledMode).wrappedValue = false
+        #expect(!deck.lit.contains(.coupledMode))
         deck.resetDeck()
-        #expect(deck.lit == [.landingGear])
+        #expect(deck.lit == [.landingGear, .coupledMode])
         #expect(!deck.selfDestructArmed)
     }
 
@@ -148,6 +152,6 @@ struct DeckStateTests {
         let (deck, _) = try joinedWithLights()
         deck.connectionLost()
         #expect(!deck.isShipDisconnected)
-        #expect(deck.lit == [.landingGear, .lights, .vtol])
+        #expect(deck.lit == [.landingGear, .coupledMode, .lights, .vtol])
     }
 }

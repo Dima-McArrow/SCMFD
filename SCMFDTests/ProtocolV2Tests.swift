@@ -106,23 +106,36 @@ struct ProtocolV2Tests {
         #expect(json["ms"] as? Int == 1500)
     }
 
-    /// Flight-control actions as agreed with the SCMFDBE ActionCatalog: the server rejects a key event whose
-    /// action name, key or modifier set differs. "alt" is left Alt, "ralt" is right Alt.
-    nonisolated static let flightControlContract: [(ShipAction, String, String, [String])] = [
-        (.coupledMode, "coupledMode", "c", []),
-        (.cruiseMode, "cruiseMode", "c", ["alt"]),
-        (.resetFlightAccelerometer, "resetFlightAccelerometer", "c", ["ralt"]),
-        (.cycleConfiguration, "cycleConfiguration", "k", ["alt"]),
+    /// SCMFDBE `client-key-*-down.json` fixtures. "alt" is left Alt, "ralt" is right Alt.
+    nonisolated static let flightControlContract: [(ShipAction, ShipAction.Kind, String)] = [
+        (.coupledMode, .toggle,
+         #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"coupledMode","phase":"down","key":"c","mods":[]}"#),
+        (.cruiseMode, .toggle,
+         #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"cruiseMode","phase":"down","key":"c","mods":["alt"]}"#),
+        (.resetFlightAccelerometer, .tap,
+         #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"resetFlightAccelerometer","phase":"down","key":"c","mods":["ralt"]}"#),
+        (.cycleConfiguration, .tap,
+         #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"cycleConfiguration","phase":"down","key":"k","mods":["alt"]}"#),
     ]
 
     @Test(arguments: flightControlContract)
-    func flightControlKeyMatchesServerCatalog(action: ShipAction, name: String, key: String, mods: [String]) throws {
-        let json = try object(.key(id: UUID(), KeyEvent(action: action, phase: .down)))
-        #expect(json["action"] as? String == name)
-        #expect(json["key"] as? String == key)
-        #expect(json["mods"] as? [String] == mods)
-        // No telemetry for these, so the tablet must not show an ON/OFF state.
-        #expect(action.kind == .tap)
+    func flightControlKeyMatchesServerCatalog(
+        action: ShipAction, kind: ShipAction.Kind, fixture: String
+    ) throws {
+        let expected = try #require(JSONSerialization.jsonObject(with: Data(fixture.utf8)) as? [String: Any])
+        let idString = try #require(expected["id"] as? String)
+        let id = try #require(UUID(uuidString: idString))
+        let down = try object(.key(id: id, KeyEvent(action: action, phase: .down)))
+        #expect(down as NSDictionary == expected as NSDictionary)
+
+        // ActionCatalog allows up for every tap; release keeps the same action, key and modifiers.
+        var expectedUp = expected
+        expectedUp["phase"] = "up"
+        let up = try object(.key(id: id, KeyEvent(action: action, phase: .up)))
+        #expect(up as NSDictionary == expectedUp as NSDictionary)
+
+        // Coupled and cruise light up from the taps (no telemetry); the one-shot actions never show ON/OFF.
+        #expect(action.kind == kind)
     }
 
     @Test func chatTextKeepsSlashUnescaped() throws {
