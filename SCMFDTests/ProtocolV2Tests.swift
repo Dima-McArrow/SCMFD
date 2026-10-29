@@ -106,6 +106,25 @@ struct ProtocolV2Tests {
         #expect(json["ms"] as? Int == 1500)
     }
 
+    /// Flight-control actions as agreed with the SCMFDBE ActionCatalog: the server rejects a key event whose
+    /// action name, key or modifier set differs. "alt" is left Alt, "ralt" is right Alt.
+    nonisolated static let flightControlContract: [(ShipAction, String, String, [String])] = [
+        (.coupledMode, "coupledMode", "c", []),
+        (.cruiseMode, "cruiseMode", "c", ["alt"]),
+        (.resetFlightAccelerometer, "resetFlightAccelerometer", "c", ["ralt"]),
+        (.cycleConfiguration, "cycleConfiguration", "k", ["alt"]),
+    ]
+
+    @Test(arguments: flightControlContract)
+    func flightControlKeyMatchesServerCatalog(action: ShipAction, name: String, key: String, mods: [String]) throws {
+        let json = try object(.key(id: UUID(), KeyEvent(action: action, phase: .down)))
+        #expect(json["action"] as? String == name)
+        #expect(json["key"] as? String == key)
+        #expect(json["mods"] as? [String] == mods)
+        // No telemetry for these, so the tablet must not show an ON/OFF state.
+        #expect(action.kind == .tap)
+    }
+
     @Test func chatTextKeepsSlashUnescaped() throws {
         let data = try ProtocolV2.encode(.chat(id: UUID(), text: "/asl_thanks2"))
         #expect(String(decoding: data, as: UTF8.self).contains(#""text":"/asl_thanks2""#))

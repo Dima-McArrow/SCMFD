@@ -1243,6 +1243,38 @@
         }
       }
     },
+    "Coupled / Decoupled" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couplé / Découplé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сопряж. / несопряж."
+          }
+        }
+      }
+    },
+    "Cruise mode" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode croisière"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Крейсерский режим"
+          }
+        }
+      }
+    },
     "Currencies are counted separately. This is recorded income, not session profit." : {
       "localizations" : {
         "fr" : {
@@ -2683,6 +2715,22 @@
         }
       }
     },
+    "Reset accelerometer" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinit. accéléromètre"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сброс акселерометра"
+          }
+        }
+      }
+    },
     "Reset power" : {
       "localizations" : {
         "fr" : {
@@ -3358,6 +3406,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сессия наблюдения"
+          }
+        }
+      }
+    },
+    "Transform" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transformer"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трансформация"
           }
         }
       }

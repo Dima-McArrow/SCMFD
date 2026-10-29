@@ -12,6 +12,10 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
     case masterMode
     case operatorMode
     case quantumEngage
+    case coupledMode
+    case cruiseMode
+    case resetFlightAccelerometer
+    case cycleConfiguration
     case powerAll
     case powerWeapons
     case powerThrusters
@@ -41,6 +45,8 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         switch self {
         case .requestLanding, .operatorMode: .tap
         case .raiseWeapons, .raiseThrusters, .raiseShields, .resetPower: .tap
+        // No telemetry for coupled or cruise state, so these must not show a tablet-side ON/OFF.
+        case .coupledMode, .cruiseMode, .resetFlightAccelerometer, .cycleConfiguration: .tap
         case .flightReady, .landingGear, .vtol, .lights: .toggle
         case .powerAll, .powerWeapons, .powerThrusters, .powerShields: .toggle
         case .autoLand, .exitSeat: .hold(seconds: 1)
@@ -54,6 +60,8 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
     /// Star Citizen default bindings, checked against Alpha 4.10.2: RAlt+R flight ready,
     /// long-press B cycles master mode, middle mouse cycles operator modes,
     /// long-press left mouse engages quantum.
+    /// Flight-control chords (coupled, cruise, accelerometer, transform) come from the SCMFDBE ActionCatalog
+    /// contract and are not yet checked in game.
     var defaultChord: KeyChord {
         switch self {
         case .flightReady: KeyChord("r", .ralt)
@@ -65,6 +73,11 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .masterMode: KeyChord("b")
         case .operatorMode: KeyChord("mouse3")
         case .quantumEngage: KeyChord("mouse1")
+        // Must match the SCMFDBE ActionCatalog exactly; `.alt` is left Alt, `.ralt` is right Alt.
+        case .coupledMode: KeyChord("c")
+        case .cruiseMode: KeyChord("c", .alt)
+        case .resetFlightAccelerometer: KeyChord("c", .ralt)
+        case .cycleConfiguration: KeyChord("k", .alt)
         case .powerAll: KeyChord("u")
         case .powerWeapons: KeyChord("p")
         case .powerThrusters: KeyChord("i")
@@ -89,6 +102,10 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .masterMode: "SCM / NAV"
         case .operatorMode: "Operator mode"
         case .quantumEngage: "Engage quantum"
+        case .coupledMode: "Coupled / Decoupled"
+        case .cruiseMode: "Cruise mode"
+        case .resetFlightAccelerometer: "Reset accelerometer"
+        case .cycleConfiguration: "Transform"
         case .powerAll: "Power"
         case .powerWeapons: "Weapons"
         case .powerThrusters: "Thrusters"
@@ -114,6 +131,10 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .masterMode: "arrow.left.arrow.right"
         case .operatorMode: "slider.horizontal.3"
         case .quantumEngage: "sparkles"
+        case .coupledMode: "link"
+        case .cruiseMode: "gauge.with.dots.needle.67percent"
+        case .resetFlightAccelerometer: "gyroscope"
+        case .cycleConfiguration: "arrow.triangle.2.circlepath"
         case .powerAll: "bolt"
         case .powerWeapons: "scope"
         case .powerThrusters: "flame"
