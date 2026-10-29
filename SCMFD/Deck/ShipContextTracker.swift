@@ -70,7 +70,9 @@ nonisolated struct ShipContextTracker: Sendable {
         let isTransition = key != previous
         applied = key
         if case .value(let ship) = state.ship { shipName = ship?.name }
-        // The server resets both on a new context, so the FE only mirrors them.
+        // The FE only mirrors both. The server resets hangarRequest on every ship-context transition; since
+        // spec 41.25 it clears qtTarget only on gameEnded / logReset (or a later PU exit), so the last local
+        // selection survives channel join/leave, ClearDriver and vehicle destruction.
         if case .value(let target) = state.qtTarget { quantumTarget = QuantumTarget(target) }
         if case .value(let request) = state.hangarRequest {
             // An unknown status is "no data", never an answer or `idle`.
