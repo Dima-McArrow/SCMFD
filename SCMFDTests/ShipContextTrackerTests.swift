@@ -337,6 +337,92 @@ struct ShipContextTrackerTests {
         #expect(update?.hangarRequest == .pending)
     }
 
+    // MARK: - 41.25: local QT selection
+
+    private static let hurston = "OOC_Stanton_1_Hurston"
+    private static let arcCorp = "OOC_Stanton_3_ArcCorp"
+
+    /// A state delta with only the given top-level keys, decoded like a server message: a key left out
+    /// is `.absent`, not a value.
+    private func stateDelta(seq: Int, shipContext: String? = nil, qtTarget: String? = nil) throws -> ServerState {
+        let sessionId = Self.sessionId.uuidString.lowercased()
+        var keys = [#""v":2,"type":"state","sessionId":"\#(sessionId)","seq":\#(seq),"partial":true"#]
+        if let shipContext { keys.append(#""shipContext":\#(shipContext)"#) }
+        if let qtTarget { keys.append(#""qtTarget":\#(qtTarget)"#) }
+        return try delta("{" + keys.joined(separator: ",") + "}")
+    }
+
+    private func contextJSON(revision: Int, status: String, reason: String) -> String {
+        #"{"revision":\#(revision),"status":"\#(status)","reason":"\#(reason)","#
+            + #""contextId":null,"manufacturerPrefix":"DRAK","observedAt":null}"#
+    }
+
+    /// `qtTarget` as the server sends a local selection; `nil` is the unknown target.
+    private func targetJSON(_ internalName: String?) -> String {
+        guard let internalName else {
+            return #"{"mode":"unknown","internalName":null,"displayName":null,"#
+                + #""confidence":"stale","observedAt":null}"#
+        }
+        return #"{"mode":"destination","internalName":"\#(internalName)","displayName":null,"#
+            + #""confidence":"confirmed","observedAt":"2026-10-29T00:00:00.000Z"}"#
+    }
+
+    @Test func selectionWithoutAShipIsShownWithoutATransition() throws {
+        var tracker = ShipContextTracker()
+        let before = snapshot(revision: 4, reason: .channelLeft, ship: nil)
+        _ = tracker.receive(before)
+        let selection = try stateDelta(seq: 6, qtTarget: targetJSON(Self.hurston))
+        let update = tracker.receive(before.merged(with: selection))
+        #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false,
+                                     quantumTarget: .destination(Self.hurston), hangarRequest: .idle))
+    }
+
+    @Test func newerSelectionReplacesTheOlder() throws {
+        var tracker = ShipContextTracker()
+        var state = snapshot(revision: 4, reason: .channelLeft, ship: nil)
+        _ = tracker.receive(state)
+        state = state.merged(with: try stateDelta(seq: 6, qtTarget: targetJSON(Self.hurston)))
+        _ = tracker.receive(state)
+        state = state.merged(with: try stateDelta(seq: 7, qtTarget: targetJSON(Self.arcCorp)))
+        #expect(tracker.receive(state)?.quantumTarget == .destination(Self.arcCorp))
+    }
+
+    /// The FE adds no reset of its own: a join without a `qtTarget` key keeps the selection made before it.
+    @Test func joinWithoutAQtTargetKeyKeepsTheSelection() throws {
+        var tracker = ShipContextTracker()
+        let before = snapshot(revision: 4, reason: .channelLeft, ship: nil,
+                              qtTarget: target(.destination, internal: Self.hurston, display: nil))
+        _ = tracker.receive(before)
+        let join = try stateDelta(seq: 6, shipContext: contextJSON(revision: 5, status: "assumed",
+                                                                   reason: "channelJoined"))
+        let update = tracker.receive(before.merged(with: join))
+        #expect(update?.enabled == true)
+        #expect(update?.quantumTarget == .destination(Self.hurston))
+    }
+
+    /// The server clears QT with the leave; the FE mirrors it.
+    @Test func leaveWithAnUnknownQtTargetClearsTheSelection() throws {
+        var tracker = ShipContextTracker()
+        let before = snapshot(revision: 3, reason: .channelJoined, ship: Self.rambler,
+                              qtTarget: target(.destination, internal: Self.hurston, display: nil))
+        _ = tracker.receive(before)
+        let leave = try stateDelta(seq: 5, shipContext: contextJSON(revision: 4, status: "noShip",
+                                                                    reason: "channelLeft"),
+                                   qtTarget: targetJSON(nil))
+        let update = tracker.receive(before.merged(with: leave))
+        #expect(update?.enabled == false)
+        #expect(update?.quantumTarget == .unknown)
+    }
+
+    @Test func reconnectSnapshotShowsTheSelectionAgain() {
+        var tracker = ShipContextTracker()
+        let state = snapshot(revision: 4, reason: .channelLeft, ship: nil,
+                             qtTarget: target(.destination, internal: Self.hurston, display: nil))
+        _ = tracker.receive(state)
+        tracker.connectionLost()
+        #expect(tracker.receive(state)?.quantumTarget == .destination(Self.hurston))
+    }
+
     // MARK: - Transport lost
 
     @Test func lostConnectionClearsReadoutsButKeepsTheDeck() {
