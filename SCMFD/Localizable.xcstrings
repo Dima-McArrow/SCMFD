@@ -481,6 +481,22 @@
         }
       }
     },
+    "Combat" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combat"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бой"
+          }
+        }
+      }
+    },
     "Compare with the fingerprint in the Pair window on the PC:" : {
       "localizations" : {
         "fr" : {

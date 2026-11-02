@@ -29,6 +29,7 @@ nonisolated enum EmoteCategory: String, CaseIterable, Identifiable, Sendable {
     case reactions
     case poses
     case signLanguage
+    case combat
 
     var id: String { rawValue }
 
@@ -39,6 +40,7 @@ nonisolated enum EmoteCategory: String, CaseIterable, Identifiable, Sendable {
         case .reactions: "Reactions"
         case .poses: "Poses"
         case .signLanguage: "Sign language"
+        case .combat: "Combat"
         }
     }
 
@@ -106,6 +108,15 @@ nonisolated enum EmoteCategory: String, CaseIterable, Identifiable, Sendable {
                 EmoteGroup("asl_upset", title: "Upset"),
                 EmoteGroup("asl_angry", title: "Angry"),
                 EmoteGroup("asl_bullshit", title: "Bullshit"),
+            ]
+        case .combat:
+            [
+                EmoteGroup("left"),
+                EmoteGroup("stop"),
+                EmoteGroup("right"),
+                EmoteGroup("yes"),
+                EmoteGroup("forward"),
+                EmoteGroup("no"),
             ]
         }
     }
