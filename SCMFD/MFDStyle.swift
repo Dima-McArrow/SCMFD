@@ -262,3 +262,46 @@ struct MFDGridBackground: View {
         .accessibilityHidden(true)
     }
 }
+
+#Preview("MFD style / primitives", traits: .fixedLayout(width: 834, height: 900)) {
+    let theme = MFDTheme.mission
+    ZStack {
+        theme.background.ignoresSafeArea()
+        MFDGridBackground(theme: theme).ignoresSafeArea()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                MFDPageHeading(
+                    eyebrow: "MISSION CONTROL",
+                    title: "Contracts",
+                    subtitle: "Observed from Game.log during the current tracking session.",
+                    theme: theme
+                )
+                HStack(spacing: 8) {
+                    MFDTag(text: "LIVE", theme: theme, filled: true)
+                    MFDTag(text: "DEMO / ARCHIVE", theme: theme)
+                }
+                MFDColumns(horizontal: true) {
+                    MFDPanel(theme: theme, highlighted: true) {
+                        MFDLabel(text: "ACTIVE CONTRACT", theme: theme)
+                        Text(verbatim: "Delivery: Port Tressler → Everus Harbor")
+                    }
+                } trailing: {
+                    MFDPanel(theme: theme) {
+                        MFDLabel(text: "REWARD", theme: theme)
+                        Text(verbatim: "24,500 aUEC")
+                    }
+                }
+                MFDReceipt(title: "LAST EVENT", message: "Contract accepted at 21:42:07", theme: theme)
+                Button {} label: { Text(verbatim: "Prominent action") }
+                    .buttonStyle(MFDButtonStyle(theme: theme, prominent: true))
+                Button {} label: { Text(verbatim: "Secondary action") }
+                    .buttonStyle(MFDButtonStyle(theme: theme))
+                MFDSourceNote(theme: theme, lines: ["Sample line one from Game.log", "Sample line two from Game.log"])
+            }
+            .padding(32)
+        }
+    }
+    .foregroundStyle(theme.text)
+    .tint(theme.accent)
+    .preferredColorScheme(.dark)
+}

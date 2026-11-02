@@ -66,3 +66,22 @@ struct TickRing<Center: View>: View {
         .aspectRatio(1, contentMode: .fit)
     }
 }
+
+#Preview("Tick ring / progress", traits: .fixedLayout(width: 640, height: 220)) {
+    let palette = ManufacturerTheme.drake.palette
+    let track = palette.lineHighlight.opacity(0.6)
+    HStack(spacing: 24) {
+        TickRing(progress: 0, color: palette.accent, track: track, isSpinning: false) {
+            Image(systemName: "sparkles").foregroundStyle(palette.accent)
+        }
+        TickRing(progress: 0.35, color: palette.accent, track: track, isSpinning: true) {
+            Image(systemName: "sparkles").foregroundStyle(palette.accent)
+        }
+        TickRing(progress: 1, color: palette.green, track: track, isSpinning: false) {
+            Image(systemName: "checkmark").foregroundStyle(palette.green)
+        }
+    }
+    .padding(24)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(palette.background)
+}

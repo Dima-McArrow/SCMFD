@@ -55,3 +55,12 @@ struct ActivitySessionControls: View {
         }
     }
 }
+
+#Preview("Activity session / waiting for feed", traits: .fixedLayout(width: 560, height: 200)) {
+    @Previewable @State var selectedID: UUID?
+    ActivitySessionControls(store: SessionActivityStore(fileURL: nil), selectedID: $selectedID)
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ManufacturerTheme.rsi.palette.background)
+        .manufacturerTheme(.rsi)
+}

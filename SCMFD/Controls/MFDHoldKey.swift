@@ -167,3 +167,18 @@ struct MFDHoldKey: View {
         .padding(16)
     }
 }
+
+#Preview("Hold keys / full, compact, locked", traits: .fixedLayout(width: 560, height: 420)) {
+    HStack(spacing: 12) {
+        MFDHoldKey(action: .quantumEngage)
+        VStack(spacing: 12) {
+            MFDHoldKey(action: .autoLand)
+                .frame(height: 120)
+            MFDHoldKey(action: .selfDestruct, tint: .red, isEnabled: false, caption: "Tap to destruct")
+                .frame(height: 120)
+        }
+    }
+    .padding(20)
+    .background { ThemeBackdropView() }
+    .manufacturerTheme(.drake)
+}

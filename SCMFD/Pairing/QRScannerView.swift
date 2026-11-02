@@ -69,3 +69,11 @@ struct QRScannerView: View {
         }
     }
 }
+
+#Preview("QR scanner", traits: .fixedLayout(width: 560, height: 420)) {
+    QRScannerView { print("Scanned: \($0)") }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ManufacturerTheme.drake.palette.background)
+        .manufacturerTheme(.drake)
+}

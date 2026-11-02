@@ -114,3 +114,15 @@ struct MFDSlideToArm: View {
         }
     }
 }
+
+#Preview("Slide to arm / idle and armed", traits: .fixedLayout(width: 480, height: 200)) {
+    @Previewable @State var isArmed = false
+    VStack(spacing: 20) {
+        MFDSlideToArm(isArmed: $isArmed)
+        MFDSlideToArm(isArmed: .constant(true))
+    }
+    .padding(20)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background { ThemeBackdropView() }
+    .manufacturerTheme(.drake)
+}

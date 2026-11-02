@@ -242,3 +242,26 @@ struct MFDKey: View {
         }
     }
 }
+
+#Preview("Keys / kinds and tints", traits: .fixedLayout(width: 640, height: 420)) {
+    Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+        GridRow {
+            MFDKey(.landingGear, isLit: .constant(true))
+            MFDKey(.lights, isLit: .constant(false))
+            MFDKey(.coupledMode, isLit: .constant(false))
+        }
+        GridRow {
+            MFDKey(.masterMode)
+            MFDKey(.resetPower)
+            MFDKey(.requestLanding, tint: .amber, title: "Request landing / takeoff", detail: Text("ATC · No data"))
+        }
+        GridRow {
+            MFDKey(.powerWeapons, isLit: .constant(true), tint: .red)
+            MFDKey(.powerThrusters, isLit: .constant(true), tint: .blue)
+            MFDKey(.powerShields, isLit: .constant(false), tint: .green)
+        }
+    }
+    .padding(20)
+    .background { ThemeBackdropView() }
+    .manufacturerTheme(.drake)
+}

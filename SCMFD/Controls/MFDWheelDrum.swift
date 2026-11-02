@@ -235,3 +235,15 @@ private struct WheelKeycap: View {
             .accessibilityHidden(true)
     }
 }
+
+#Preview("Wheel drums / idle and failure", traits: .fixedLayout(width: 520, height: 360)) {
+    HStack(spacing: 14) {
+        MFDWheelDrum(title: "Speed limiter", keycap: "ALT+WHEEL") { print("Speed limiter: \($0)") }
+        MFDWheelDrum(title: "Acceleration limiter", keycap: "RALT+WHEEL", failure: "Game not focused") {
+            print("Acceleration limiter: \($0)")
+        }
+    }
+    .padding(20)
+    .background { ThemeBackdropView() }
+    .manufacturerTheme(.drake)
+}

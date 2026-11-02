@@ -83,3 +83,12 @@ struct SecureConnectionDebugSection: View {
         return rows
     }
 }
+
+#Preview("Debug / server connection, idle", traits: .fixedLayout(width: 700, height: 260)) {
+    SecureConnectionDebugSection(connection: ServerConnection(store: ServerTrustStore(service: "com.csmfd.preview")))
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(ManufacturerTheme.drake.palette.background)
+        .foregroundStyle(ManufacturerTheme.drake.palette.text)
+        .manufacturerTheme(.drake)
+}

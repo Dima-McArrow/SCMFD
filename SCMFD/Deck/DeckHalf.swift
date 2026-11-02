@@ -94,3 +94,28 @@ struct DeckHalf: View {
         .sensoryFeedback(.selection, trigger: current)
     }
 }
+
+#Preview("Deck half / left pages", traits: .fixedLayout(width: 590, height: 800)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        state.shipName = "Drake Cutter Rambler"
+        return state
+    }()
+    DeckHalf(pages: DeckPage.leftPages, state: state)
+        .padding(16)
+        .background { ThemeBackdropView() }
+        .manufacturerTheme(.drake)
+}
+
+#Preview("Deck half / right pages", traits: .fixedLayout(width: 590, height: 800)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        return state
+    }()
+    DeckHalf(pages: DeckPage.rightPages, state: state)
+        .padding(16)
+        .background { ThemeBackdropView() }
+        .manufacturerTheme(.drake)
+}
