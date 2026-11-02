@@ -184,7 +184,7 @@ private struct DrumTicks: View, Animatable {
                 index += 1
                 y += spacing
             }
-            let color = theme.palette.lineHighlight
+            let color = theme.palette.accent
             context.stroke(minor, with: .color(color.opacity(0.35)), lineWidth: HUD.hairline)
             context.stroke(major, with: .color(color.opacity(0.7)), lineWidth: HUD.hairline)
 
