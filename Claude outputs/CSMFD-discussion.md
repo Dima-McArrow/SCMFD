@@ -1998,3 +1998,43 @@ pause/physical conflicts, partial insertion and failed cleanup, shared rate/dedu
 **Pending on Windows:** Release build, full tests, format verification. Then verify both bindings/directions in
 game with matching FE/BE builds, rapid/reversed drags, busy/focus failures and disconnects. No BE build, test,
 formatter or Windows execution was run on macOS for this change.
+
+### 41.27. Combat emotes as keypad taps (owner decision, 2026-11-02)
+
+Extends the 41.10 key allowlist from 23 to 29 actions and the key dictionary with `numpad1`…`numpad6`.
+No new message type, field, reason or protocol version. Supersedes sending the six combat emotes as `chat`:
+they are not in the emote allowlist, and `/left`, `/stop`, `/right`, `/yes`, `/forward`, `/no` sent as chat
+are `rejected/invalid`. Reason: one tap on a default binding avoids the chat sequence of 41.12 (chat key,
+delays, layout-dependent typing, Enter, unknown chat state).
+
+| Action | Key | `mods` | Kind | Default binding |
+|---|---|---|---|---|
+| `combatLeft` | `numpad1` | `[]` | tap | Keypad 1 (`/left`) |
+| `combatStop` | `numpad2` | `[]` | tap | Keypad 2 (`/stop`) |
+| `combatRight` | `numpad3` | `[]` | tap | Keypad 3 (`/right`) |
+| `combatYes` | `numpad4` | `[]` | tap | Keypad 4 (`/yes`) |
+| `combatForward` | `numpad5` | `[]` | tap | Keypad 5 (`/forward`) |
+| `combatNo` | `numpad6` | `[]` | tap | Keypad 6 (`/no`) |
+
+```json
+{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"combatLeft","phase":"down","key":"numpad1","mods":[]}
+```
+
+- Phases `down` / `up` with the existing tap rules (60 ms minimum, 10 s auto release); no `hold` or `ms`.
+- The parser requires the exact action/key/mods. `numpad1` is not `left` (arrow) and not `1` (top row):
+  `combatLeft` with `left` or `combatStop` with `2` is `rejected/invalid`.
+- Windows: Set 1 scan codes `0x4F 0x50 0x51 0x4B 0x4C 0x4D` without the E0 prefix (with it they are
+  End/Down/PageDown/Left/Right). Physical-conflict virtual keys are `VK_NUMPAD1`…`VK_NUMPAD6`, so a held keypad
+  key is seen only while NumLock is on.
+- All existing admission and safety rules apply (focus, process, pause, session lock, rate limit, dedup,
+  physical modifiers, release triggers).
+
+iPad: send these six as `key` taps through the existing command path instead of `chat`; the `ShipAction`
+binding must match key and mods exactly. Reference request: `client-key-combat-left-down.json` in
+`SCMFDBE/tests/Csmfd.Tests/Fixtures/Protocol`.
+
+Server side also logs a warning at start naming built-in emotes that an existing `emotes.txt` lacks (the file
+is written only when missing and never rewritten); no wire change.
+
+**Not verified:** BE build, tests and format on Windows (no dotnet on the Mac); the default keypad bindings and
+the game's reaction with NumLock off, in game.
