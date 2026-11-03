@@ -8,6 +8,9 @@ nonisolated struct EmoteGroup: Identifiable, Sendable {
     let variants: Int
     /// Display name; commands are English in game, so the name is not localized.
     let title: String
+    /// When set, the tile taps this key instead of typing `command` into chat (combat emotes, spec 41.27).
+    /// `command` is then only the label shown on the tile.
+    let key: ShipAction?
 
     var id: String { stem }
 
@@ -15,10 +18,11 @@ nonisolated struct EmoteGroup: Identifiable, Sendable {
 
     func command(variant: Int) -> String { "/\(stem)\(variant)" }
 
-    init(_ stem: String, variants: Int = 0, title: String? = nil) {
+    init(_ stem: String, variants: Int = 0, title: String? = nil, key: ShipAction? = nil) {
         self.stem = stem
         self.variants = variants
         self.title = title ?? stem.replacingOccurrences(of: "_", with: " ").capitalized
+        self.key = key
     }
 }
 
@@ -111,12 +115,13 @@ nonisolated enum EmoteCategory: String, CaseIterable, Identifiable, Sendable {
             ]
         case .combat:
             [
-                EmoteGroup("left"),
-                EmoteGroup("stop"),
-                EmoteGroup("right"),
-                EmoteGroup("yes"),
-                EmoteGroup("forward"),
-                EmoteGroup("no"),
+                // Keypad taps on the default bindings; the server rejects these names as chat.
+                EmoteGroup("left", key: .combatLeft),
+                EmoteGroup("stop", key: .combatStop),
+                EmoteGroup("right", key: .combatRight),
+                EmoteGroup("yes", key: .combatYes),
+                EmoteGroup("forward", key: .combatForward),
+                EmoteGroup("no", key: .combatNo),
             ]
         }
     }

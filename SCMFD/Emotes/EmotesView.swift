@@ -135,7 +135,15 @@ private struct EmoteTile: View {
     }
 
     private func send(_ command: String) {
-        let ticket = link.send(chat: ChatEvent(text: command))
+        let ticket: CommandTicket
+        if let key = group.key {
+            // Down then up at once: the server keeps a tap down for its minimum, so the game sees the press.
+            // The outcome of the press is what the tile shows, as on the deck keys.
+            ticket = link.send(KeyEvent(action: key, phase: .down))
+            link.send(KeyEvent(action: key, phase: .up))
+        } else {
+            ticket = link.send(chat: ChatEvent(text: command))
+        }
         Task {
             guard let label = await ticket.outcome.value.failureLabel else { return }
             withAnimation(.easeOut(duration: 0.2)) { failure = label }

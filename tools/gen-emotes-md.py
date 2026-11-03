@@ -14,9 +14,11 @@ import sys
 
 SOURCE = pathlib.Path(__file__).resolve().parent.parent / "SCMFD" / "Commands" / "Emote.swift"
 
-# Matches EmoteGroup("stem"), EmoteGroup("stem", variants: 2), EmoteGroup("stem", title: "T")
-# and EmoteGroup("stem", variants: 2, title: "T"), in the argument order of the Swift initializer.
-GROUP = re.compile(r'EmoteGroup\("([^"]+)"(?:, variants: (\d+))?(?:, title: "([^"]+)")?\)')
+# Matches EmoteGroup("stem") with optional `variants: 2`, `title: "T"` and `key: .action`,
+# in the argument order of the Swift initializer.
+GROUP = re.compile(
+    r'EmoteGroup\("([^"]+)"(?:, variants: (\d+))?(?:, title: "([^"]+)")?(?:, key: \.(\w+))?\)'
+)
 
 
 def default_title(stem):
@@ -32,7 +34,7 @@ def main():
     if not categories:
         sys.exit("error: no emote categories found in Emote.swift")
 
-    sections, stems, command_count = [], [], 0
+    sections, stems, chat_stems, command_count = [], [], [], 0
     for category, body in categories:
         groups = GROUP.findall(body)
         # Fail loudly instead of silently dropping an emote written in another shape.
@@ -46,13 +48,19 @@ def main():
             "| Name | Base command | Variants | All commands |",
             "|---|---|---|---|",
         ]
-        for stem, variants, title in groups:
+        for stem, variants, title, key in groups:
             count = int(variants) if variants else 0
+            if key:
+                # Sent as a key tap (spec 41.27): not chat, so not in emotes.txt.
+                sections.append(f"| {title or default_title(stem)} | `/{stem}` | key tap `{key}` | — |")
+                stems.append(stem)
+                continue
             commands = [f"`/{stem}`"] + [f"`/{stem}{index}`" for index in range(1, count + 1)]
             sections.append(
                 f"| {title or default_title(stem)} | `/{stem}` | {count or '—'} | {', '.join(commands)} |"
             )
             stems.append(stem)
+            chat_stems.append(stem)
             command_count += len(commands)
         sections.append("")
 
@@ -70,13 +78,15 @@ def main():
         "- Every command goes out as a protocol v2 `chat` message: "
         '`{"v":2,"type":"chat","id":"<uuid>","text":"/wave2"}`.',
         "- The server checks `text` against `emotes.txt` (one base name per line; "
-        "`/name` and `/name<N>` accepted). A name missing there is rejected.\n",
+        "`/name` and `/name<N>` accepted). A name missing there is rejected.",
+        "- Exception: rows marked `key tap` (combat emotes, spec 41.27) are sent as protocol v2 `key` taps "
+        "on keypad 1-6, not as chat, and are not in `emotes.txt`.\n",
         f"**Total:** {len(stems)} base names, {command_count} commands.\n",
         *sections,
         "## `emotes.txt` for the Windows server\n",
         "Replace `%LocalAppData%\\CSMFD\\emotes.txt` with this list to match the iPad:\n",
         "```text",
-        *stems,
+        *chat_stems,
         "```",
     ]
     output = "\n".join(lines) + "\n"

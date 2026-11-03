@@ -138,6 +138,36 @@ struct ProtocolV2Tests {
         #expect(action.kind == kind)
     }
 
+    /// SCMFDBE `client-key-combat-left-down.json`.
+    @Test func combatLeftMatchesServerFixture() throws {
+        let fixture = #"{"v":2,"type":"key","id":"4d88b2ad-d306-443a-8524-155575227708","action":"combatLeft","phase":"down","key":"numpad1","mods":[]}"#
+        let expected = try #require(JSONSerialization.jsonObject(with: Data(fixture.utf8)) as? [String: Any])
+        let id = try #require(UUID(uuidString: "4d88b2ad-d306-443a-8524-155575227708"))
+        let down = try object(.key(id: id, KeyEvent(action: .combatLeft, phase: .down)))
+        #expect(down as NSDictionary == expected as NSDictionary)
+    }
+
+    /// Spec 41.27: each combat emote taps its keypad key with no modifiers.
+    nonisolated static let combatContract: [(String, ShipAction, String)] = [
+        ("left", .combatLeft, "numpad1"),
+        ("stop", .combatStop, "numpad2"),
+        ("right", .combatRight, "numpad3"),
+        ("yes", .combatYes, "numpad4"),
+        ("forward", .combatForward, "numpad5"),
+        ("no", .combatNo, "numpad6"),
+    ]
+
+    @Test(arguments: combatContract)
+    func combatEmoteTapsItsKeypadKey(stem: String, action: ShipAction, key: String) throws {
+        let group = try #require(EmoteCategory.combat.groups.first { $0.stem == stem })
+        #expect(group.key == action)
+        #expect(action.kind == .tap)
+        let down = try object(.key(id: UUID(), KeyEvent(action: action, phase: .down)))
+        #expect(down["action"] as? String == action.rawValue)
+        #expect(down["key"] as? String == key)
+        #expect(down["mods"] as? [String] == [])
+    }
+
     @Test func chatTextKeepsSlashUnescaped() throws {
         let data = try ProtocolV2.encode(.chat(id: UUID(), text: "/asl_thanks2"))
         #expect(String(decoding: data, as: UTF8.self).contains(#""text":"/asl_thanks2""#))

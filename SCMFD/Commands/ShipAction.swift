@@ -26,6 +26,13 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
     case resetPower
     case exitSeat
     case selfDestruct
+    // Combat emotes (spec 41.27): sent from the Emotes tab as keypad taps, not as chat.
+    case combatLeft
+    case combatStop
+    case combatRight
+    case combatYes
+    case combatForward
+    case combatNo
 
     /// How the key behaves on the tablet. The game always receives a real press and release;
     /// the kind only changes the visuals (lit state, hold ring) and the haptics.
@@ -46,6 +53,7 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .requestLanding, .operatorMode: .tap
         case .raiseWeapons, .raiseThrusters, .raiseShields, .resetPower: .tap
         case .resetFlightAccelerometer, .cycleConfiguration: .tap
+        case .combatLeft, .combatStop, .combatRight, .combatYes, .combatForward, .combatNo: .tap
         case .flightReady, .landingGear, .vtol, .lights: .toggle
         // No telemetry for coupled or cruise: like the other toggles, the lit state follows the taps, not the game.
         case .coupledMode, .cruiseMode: .toggle
@@ -89,6 +97,13 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .resetPower: KeyChord("f8")
         case .exitSeat: KeyChord("y")
         case .selfDestruct: KeyChord("backspace")
+        // Keypad 1-6, not the arrows and not the top-row digits; the server rejects any other key or modifier.
+        case .combatLeft: KeyChord("numpad1")
+        case .combatStop: KeyChord("numpad2")
+        case .combatRight: KeyChord("numpad3")
+        case .combatYes: KeyChord("numpad4")
+        case .combatForward: KeyChord("numpad5")
+        case .combatNo: KeyChord("numpad6")
         }
     }
 
@@ -117,6 +132,12 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .resetPower: "Reset power"
         case .exitSeat: "Exit seat"
         case .selfDestruct: "Self-destruct"
+        case .combatLeft: "Combat: left"
+        case .combatStop: "Combat: stop"
+        case .combatRight: "Combat: right"
+        case .combatYes: "Combat: yes"
+        case .combatForward: "Combat: forward"
+        case .combatNo: "Combat: no"
         }
     }
 
@@ -144,6 +165,12 @@ nonisolated enum ShipAction: String, CaseIterable, Identifiable, Codable, Sendab
         case .resetPower: "arrow.counterclockwise"
         case .exitSeat: "figure.walk.departure"
         case .selfDestruct: "exclamationmark.triangle"
+        case .combatLeft: "arrow.left"
+        case .combatStop: "hand.raised"
+        case .combatRight: "arrow.right"
+        case .combatYes: "hand.thumbsup"
+        case .combatForward: "arrow.up"
+        case .combatNo: "hand.thumbsdown"
         }
     }
 }
