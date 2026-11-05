@@ -214,3 +214,23 @@ struct DeckPageContent: View {
         .background { ThemeBackdropView() }
         .manufacturerTheme(.aegis)
 }
+
+/// The longest FIX-08 label in the widest display fonts (Black Ops One, Saira Stencil One), compact width.
+#Preview("Quantum / long name, wide fonts", traits: .fixedLayout(width: 720, height: 560)) {
+    @Previewable @State var state: DeckState = {
+        let state = DeckState()
+        state.enableManually()
+        state.quantumTarget = .destination("Pyro III · орбитальная станция")
+        return state
+    }()
+    HStack(spacing: 0) {
+        DeckPageContent(page: .quantum, state: state)
+            .padding(20)
+            .background { ThemeBackdropView() }
+            .manufacturerTheme(.anvil)
+        DeckPageContent(page: .quantum, state: state)
+            .padding(20)
+            .background { ThemeBackdropView() }
+            .manufacturerTheme(.drake)
+    }
+}

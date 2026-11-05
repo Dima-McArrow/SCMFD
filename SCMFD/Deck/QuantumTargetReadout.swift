@@ -76,3 +76,16 @@ struct QuantumTargetReadout: View {
     .background { ThemeBackdropView() }
     .manufacturerTheme(.rsi)
 }
+
+/// The longest FIX-08 labels, as the readout receives them in ru and fr.
+#Preview("QT target / long names", traits: .fixedLayout(width: 560, height: 280)) {
+    VStack(spacing: 14) {
+        QuantumTargetReadout(target: .destination("Pyro III · орбитальная станция"))
+        QuantumTargetReadout(target: .destination("Припаркованный транспорт"))
+        QuantumTargetReadout(target: .destination("Pyro III · station orbitale"))
+    }
+    .padding(20)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background { ThemeBackdropView() }
+    .manufacturerTheme(.rsi)
+}

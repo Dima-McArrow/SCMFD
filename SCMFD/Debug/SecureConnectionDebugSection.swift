@@ -30,7 +30,7 @@ struct SecureConnectionDebugSection: View {
                     row("Round trip", roundTrip.formatted(.units(allowed: [.milliseconds], width: .abbreviated)))
                 }
                 if let state = connection.latestState {
-                    ForEach(stateRows(state), id: \.0) { name, value in
+                    ForEach(Self.stateRows(state), id: \.0) { name, value in
                         row(name, value)
                     }
                 }
@@ -60,7 +60,7 @@ struct SecureConnectionDebugSection: View {
     }
 
     /// Only the keys this state carried; a delta leaves the others unchanged.
-    private func stateRows(_ state: ServerState) -> [(String, String)] {
+    static func stateRows(_ state: ServerState) -> [(String, String)] {
         var rows = [("State", "seq \(state.seq)\(state.partial ? " (delta)" : " (full)")")]
         if case .value(let game) = state.game {
             rows.append(("Game", "\(game.running ? "running" : "not running")\(game.focused ? ", focused" : "") · build \(game.build ?? "?")"))
@@ -75,7 +75,8 @@ struct SecureConnectionDebugSection: View {
             rows.append(("Context", "r\(context.revision) \(context.status.wireValue) · \(context.reason.wireValue)"))
         }
         if case .value(let target) = state.qtTarget {
-            rows.append(("QT target", target.displayName ?? target.internalName ?? target.mode.wireValue))
+            // The raw Game.log name first: it is what the FIX-08 table is built from.
+            rows.append(("QT target", target.internalName ?? target.displayName ?? target.mode.wireValue))
         }
         if case .value(let request) = state.hangarRequest {
             rows.append(("ATC", request.status.wireValue))
