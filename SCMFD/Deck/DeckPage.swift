@@ -47,7 +47,7 @@ struct DeckPageContent: View {
                     MFDKey(
                         .flightReady,
                         isLit: state.binding(for: .flightReady),
-                        detail: state.shipName.map { Text(verbatim: $0) } ?? Text("Ship · No data")
+                        detail: state.shipName ?? String(localized: "Ship · No data")
                     )
                         .gridCellColumns(2)
                 }
@@ -61,7 +61,7 @@ struct DeckPageContent: View {
                         .requestLanding,
                         tint: hangarTint,
                         title: "Request landing / takeoff",
-                        detail: state.hangarRequest.map { Text($0.title) } ?? Text("ATC · No data")
+                        detail: state.hangarRequest.map { String(localized: $0.title) } ?? String(localized: "ATC · No data")
                     )
                 }
                 GridRow {

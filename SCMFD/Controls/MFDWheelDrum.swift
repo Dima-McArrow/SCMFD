@@ -28,16 +28,18 @@ struct MFDWheelDrum: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(theme.label(title))
-                        .mfdLabelStyle(theme, size: 14)
+                    let titleText = theme.label(title)
+                    Text(titleText)
+                        .mfdLabelStyle(theme, size: 14, text: titleText)
                         .foregroundStyle(theme.palette.text)
                         // Always two lines tall, so side-by-side drums keep aligned windows when only one title wraps.
                         .lineLimit(2, reservesSpace: true)
                         .minimumScaleFactor(0.7)
                     HStack(spacing: 5) {
                         StatusPip(color: theme.palette.red, isOn: failure != nil, size: 5)
-                        Text(failure.map { theme.label($0) } ?? "")
-                            .mfdLabelStyle(theme, size: 9)
+                        let failureText = failure.map { theme.label($0) } ?? ""
+                        Text(failureText)
+                            .mfdLabelStyle(theme, size: 9, text: failureText)
                             .foregroundStyle(theme.palette.red)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)

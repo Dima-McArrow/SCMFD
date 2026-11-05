@@ -30,8 +30,9 @@ struct EmotesView: View {
             Rectangle()
                 .fill(theme.palette.accent)
                 .frame(width: 2, height: 12)
-            Text(theme.label(category.title))
-                .mfdLabelStyle(theme, size: 13, display: true)
+            let categoryTitle = theme.label(category.title)
+            Text(categoryTitle)
+                .mfdLabelStyle(theme, size: 13, display: true, text: categoryTitle)
                 .foregroundStyle(theme.palette.accent)
                 .fixedSize()
             TickRuler(color: theme.palette.lineHighlight)
@@ -73,8 +74,9 @@ private struct EmoteTile: View {
             send(group.command)
         } label: {
             VStack(alignment: .leading, spacing: 6) {
-                Text(theme.label(verbatim: group.title))
-                    .mfdLabelStyle(theme, size: 13)
+                let groupTitle = theme.label(verbatim: group.title)
+                Text(groupTitle)
+                    .mfdLabelStyle(theme, size: 13, text: groupTitle)
                     .foregroundStyle(theme.palette.text)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)

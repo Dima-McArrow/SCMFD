@@ -14,8 +14,9 @@ struct DisconnectedDeckView: View {
                     .font(.system(size: 48, weight: .ultraLight))
                     .foregroundStyle(theme.palette.dim)
                     .accessibilityHidden(true)
-                Text("No ship connection")
-                    .mfdLabelStyle(theme, size: 22, display: true)
+                let headline = String(localized: "No ship connection")
+                Text(headline)
+                    .mfdLabelStyle(theme, size: 22, display: true, text: headline)
                     .foregroundStyle(theme.palette.text)
                     .multilineTextAlignment(.center)
             }
@@ -23,8 +24,9 @@ struct DisconnectedDeckView: View {
 
             Button(action: onEnable) {
                 // An explicit resource: a plain literal would pick the unlocalized `label(String)` overload.
-                Label(theme.label(LocalizedStringResource("Enable Deck")), systemImage: "power")
-                    .mfdLabelStyle(theme, size: 15)
+                let enableTitle = theme.label(LocalizedStringResource("Enable Deck"))
+                Label(enableTitle, systemImage: "power")
+                    .mfdLabelStyle(theme, size: 15, text: enableTitle)
                     .foregroundStyle(theme.palette.accent)
                     .padding(.horizontal, 18)
                     .frame(minHeight: 48)

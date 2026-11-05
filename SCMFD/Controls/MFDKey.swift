@@ -11,7 +11,8 @@ struct MFDKey: View {
     @Binding var isLit: Bool
     var tint: KeyTint
     var title: LocalizedStringResource?
-    var detail: Text?
+    /// Final text (localized or a ship name), so the font can follow its letters.
+    var detail: String?
 
     @GestureState private var isPressed = false
     @State private var inputPress = KeyPressTracker()
@@ -23,7 +24,7 @@ struct MFDKey: View {
     @State private var rejection: LocalizedStringResource?
     @State private var rejectionTask: Task<Void, Never>?
 
-    init(_ action: ShipAction, isLit: Binding<Bool> = .constant(false), tint: KeyTint = .accent, title: LocalizedStringResource? = nil, detail: Text? = nil) {
+    init(_ action: ShipAction, isLit: Binding<Bool> = .constant(false), tint: KeyTint = .accent, title: LocalizedStringResource? = nil, detail: String? = nil) {
         self.action = action
         self._isLit = isLit
         self.tint = tint
@@ -68,8 +69,9 @@ struct MFDKey: View {
     private func failureLine(_ failure: LocalizedStringResource) -> some View {
         HStack(spacing: 5) {
             StatusPip(color: theme.palette.red, isOn: true, size: 5)
-            Text(theme.label(failure))
-                .mfdLabelStyle(theme, size: 9)
+            let failureText = theme.label(failure)
+            Text(failureText)
+                .mfdLabelStyle(theme, size: 9, text: failureText)
                 .foregroundStyle(theme.palette.red)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -92,15 +94,16 @@ struct MFDKey: View {
 
             Spacer(minLength: 6)
 
-            Text(theme.label(displayTitle))
-                .mfdLabelStyle(theme, size: 14)
+            let titleText = theme.label(displayTitle)
+            Text(titleText)
+                .mfdLabelStyle(theme, size: 14, text: titleText)
                 .foregroundStyle(theme.palette.text)
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
 
             if let detail {
-                detail
-                    .mfdLabelStyle(theme, size: 11)
+                Text(verbatim: detail)
+                    .mfdLabelStyle(theme, size: 11, text: detail)
                     .foregroundStyle(color)
                     .lineLimit(2)
                     .minimumScaleFactor(0.7)
@@ -114,7 +117,7 @@ struct MFDKey: View {
                 HStack(spacing: 5) {
                     StatusPip(color: color, isOn: isLit, size: 5)
                     Text(status)
-                        .mfdLabelStyle(theme, size: 9)
+                        .mfdLabelStyle(theme, size: 9, text: status)
                         .foregroundStyle(isLit ? color : theme.palette.dim)
                         .contentTransition(.opacity)
                 }
@@ -123,7 +126,7 @@ struct MFDKey: View {
                 HStack(spacing: 5) {
                     StatusPip(color: color, isOn: hold.isRunning || hold.isEngaged, size: 5)
                     Text(holdPhase)
-                        .mfdLabelStyle(theme, size: 9)
+                        .mfdLabelStyle(theme, size: 9, text: holdPhase)
                         .foregroundStyle(hold.isRunning || hold.isEngaged ? color : theme.palette.dim)
                         .contentTransition(.opacity)
                 }
@@ -180,7 +183,7 @@ struct MFDKey: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(displayTitle))
         // Verbatim: an empty localized literal would become an empty String Catalog key.
-        .accessibilityHint(detail ?? Text(verbatim: ""))
+        .accessibilityHint(Text(verbatim: detail ?? ""))
         .accessibilityValue(Text(isToggle ? status : action.defaultChord.description))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction {
@@ -253,7 +256,7 @@ struct MFDKey: View {
         GridRow {
             MFDKey(.masterMode)
             MFDKey(.resetPower)
-            MFDKey(.requestLanding, tint: .amber, title: "Request landing / takeoff", detail: Text("ATC · No data"))
+            MFDKey(.requestLanding, tint: .amber, title: "Request landing / takeoff", detail: String(localized: "ATC · No data"))
         }
         GridRow {
             MFDKey(.powerWeapons, isLit: .constant(true), tint: .red)

@@ -37,15 +37,17 @@ struct ThemePickerView: View {
                     }
                     .foregroundStyle(theme.palette.text)
 
-                    Text(theme.label(LocalizedStringResource("Theme")))
-                        .mfdLabelStyle(theme, size: 13)
+                    let sectionTitle = theme.label(LocalizedStringResource("Theme"))
+                    Text(sectionTitle)
+                        .mfdLabelStyle(theme, size: 13, text: sectionTitle)
                         .foregroundStyle(theme.palette.dim)
 
                     VStack(alignment: .leading, spacing: 8) {
                         Toggle("Auto theme", isOn: $autoTheme)
                             .foregroundStyle(theme.palette.text)
-                        Text("Switches to the ship's manufacturer when you join its channel and back to SCMFD when you leave the ship. A manual pick stays until the next change.")
-                            .font(theme.typography.body.font(size: 13))
+                        let autoThemeHint = String(localized: "Switches to the ship's manufacturer when you join its channel and back to SCMFD when you leave the ship. A manual pick stays until the next change.")
+                        Text(autoThemeHint)
+                            .font(theme.typography.body.font(for: autoThemeHint, size: 13))
                             .foregroundStyle(theme.palette.dim)
                     }
 
@@ -85,8 +87,9 @@ private struct ThemeCard: View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
                 ThemeBackdropView()
-                Text(theme.label(ShipAction.quantumEngage.title))
-                    .mfdLabelStyle(theme, size: 15, display: true)
+                let sampleTitle = theme.label(ShipAction.quantumEngage.title)
+                Text(sampleTitle)
+                    .mfdLabelStyle(theme, size: 15, display: true, text: sampleTitle)
                     .foregroundStyle(theme.palette.text)
                     .padding(.horizontal, 12)
                     .modifier(MFDKeyChrome(tint: theme.palette.accent, isLit: isSelected, isPressed: false))
@@ -99,10 +102,10 @@ private struct ThemeCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: theme.shortName)
-                        .mfdLabelStyle(theme, size: 16, display: true)
+                        .mfdLabelStyle(theme, size: 16, display: true, text: theme.shortName)
                         .foregroundStyle(theme.palette.text)
                     Text(verbatim: theme.displayName)
-                        .font(theme.typography.body.font(size: 12))
+                        .font(theme.typography.body.font(for: theme.displayName, size: 12))
                         .foregroundStyle(theme.palette.dim)
                 }
                 Spacer()

@@ -99,10 +99,12 @@ extension View {
     }
 
     /// Themed label text: manufacturer font, letter case and tracking.
-    func mfdLabelStyle(_ theme: ManufacturerTheme, size: CGFloat, display: Bool = false) -> some View {
+    /// `text` is the string this view shows: a theme family without its letters (Cyrillic) hands the whole
+    /// string to Exo 2 instead of mixing fonts mid-word.
+    func mfdLabelStyle(_ theme: ManufacturerTheme, size: CGFloat, display: Bool = false, text: String) -> some View {
         let font = display ? theme.typography.display : theme.typography.body
         return self
-            .font(font.font(size: size, weight: theme.typography.labelWeight))
+            .font(font.font(for: text, size: size, weight: theme.typography.labelWeight))
             .tracking(theme.labelTracking(for: size))
     }
 
@@ -116,5 +118,30 @@ extension ManufacturerTheme {
     /// Localizes, then applies the manufacturer letter case.
     func label(_ resource: LocalizedStringResource) -> String {
         label(verbatim: String(localized: resource))
+    }
+}
+
+/// Russian in a theme without Cyrillic (Anvil, Drake) is drawn in Exo 2 as a whole, like RSI's own font.
+#Preview("Labels / Russian fallback", traits: .fixedLayout(width: 900, height: 200)) {
+    let text = "Запрос посадки · Шасси"
+    HStack(spacing: 0) {
+        ForEach([Manufacturer.anvil, .drake, .rsi], id: \.self) { manufacturer in
+            let theme = manufacturer.theme
+            VStack(alignment: .leading, spacing: 10) {
+                Text(verbatim: theme.shortName)
+                    .mfdLabelStyle(theme, size: 11, text: theme.shortName)
+                    .foregroundStyle(theme.palette.dim)
+                Text(verbatim: text)
+                    .mfdLabelStyle(theme, size: 18, display: true, text: text)
+                    .foregroundStyle(theme.palette.text)
+                Text(verbatim: text)
+                    .mfdLabelStyle(theme, size: 14, text: text)
+                    .foregroundStyle(theme.palette.accent)
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background { ThemeBackdropView() }
+            .manufacturerTheme(theme)
+        }
     }
 }

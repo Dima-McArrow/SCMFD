@@ -197,7 +197,7 @@ struct ContentView: View {
                 .frame(width: 2, height: 30)
             VStack(alignment: .leading, spacing: 3) {
                 Text(verbatim: theme.shortName)
-                    .mfdLabelStyle(theme, size: 18, display: true)
+                    .mfdLabelStyle(theme, size: 18, display: true, text: theme.shortName)
                     .foregroundStyle(theme.palette.accent)
                     .contentTransition(.opacity)
                 Text(verbatim: theme.displayName.uppercased())
@@ -217,8 +217,9 @@ struct ContentView: View {
                     withAnimation(.smooth(duration: 0.3)) { screen = item }
                 } label: {
                     VStack(spacing: 7) {
-                        Text(screenTitle(item))
-                            .mfdLabelStyle(theme, size: 16)
+                        let itemTitle = screenTitle(item)
+                        Text(itemTitle)
+                            .mfdLabelStyle(theme, size: 16, text: itemTitle)
                             .lineLimit(1)
                             .foregroundStyle(item == screen ? theme.palette.text : theme.palette.dim)
                         Rectangle()
@@ -256,8 +257,9 @@ struct ContentView: View {
         } label: {
             HStack(spacing: 6) {
                 StatusPip(color: color, isOn: true, size: 5)
-                Text(theme.label(title))
-                    .mfdLabelStyle(theme, size: 9)
+                let titleText = theme.label(title)
+                Text(titleText)
+                    .mfdLabelStyle(theme, size: 9, text: titleText)
                     .foregroundStyle(theme.palette.dim)
             }
             .frame(minHeight: 44)

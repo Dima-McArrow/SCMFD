@@ -21,8 +21,9 @@ struct MFDSlideToArm: View {
             ZStack(alignment: .leading) {
                 track(color: color)
 
-                Text(theme.label(isArmed ? "Armed" : "Slide to arm"))
-                    .mfdLabelStyle(theme, size: 11)
+                let title = theme.label(isArmed ? "Armed" : "Slide to arm")
+                Text(title)
+                    .mfdLabelStyle(theme, size: 11, text: title)
                     .foregroundStyle(isArmed ? color : theme.palette.dim)
                     .frame(maxWidth: .infinity)
                     .contentTransition(.opacity)

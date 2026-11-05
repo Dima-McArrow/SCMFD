@@ -35,12 +35,13 @@ struct QuantumTargetReadout: View {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 6) {
                     StatusPip(color: color, isOn: target != .unknown, size: 5)
-                    Text(theme.label("QT target"))
-                        .mfdLabelStyle(theme, size: 9)
+                    let caption = theme.label("QT target")
+                    Text(caption)
+                        .mfdLabelStyle(theme, size: 9, text: caption)
                         .foregroundStyle(theme.palette.dim)
                 }
                 Text(verbatim: value)
-                    .mfdLabelStyle(theme, size: target == .unknown ? 13 : 17, display: true)
+                    .mfdLabelStyle(theme, size: target == .unknown ? 13 : 17, display: true, text: value)
                     .foregroundStyle(target == .unknown ? theme.palette.dim : color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)

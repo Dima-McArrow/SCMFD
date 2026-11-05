@@ -44,8 +44,9 @@ struct DeckHalf: View {
             Rectangle()
                 .fill(theme.palette.accent)
                 .frame(width: 2, height: 12)
-            Text(theme.label(current.title))
-                .mfdLabelStyle(theme, size: 13, display: true)
+            let currentTitle = theme.label(current.title)
+            Text(currentTitle)
+                .mfdLabelStyle(theme, size: 13, display: true, text: currentTitle)
                 .foregroundStyle(theme.palette.accent)
                 .contentTransition(.opacity)
                 .fixedSize()
@@ -65,8 +66,9 @@ struct DeckHalf: View {
                     withAnimation(.smooth(duration: 0.3)) { selection = page }
                 } label: {
                     VStack(spacing: 8) {
-                        Text(theme.label(page.title))
-                            .mfdLabelStyle(theme, size: 16)
+                        let pageTitle = theme.label(page.title)
+                        Text(pageTitle)
+                            .mfdLabelStyle(theme, size: 16, text: pageTitle)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(page == current ? theme.palette.text : theme.palette.dim)
                         ZStack {

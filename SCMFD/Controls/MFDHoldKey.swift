@@ -34,6 +34,9 @@ struct MFDHoldKey: View {
         return theme.label(isEnabled ? "Ready" : "Locked")
     }
 
+    private var title: String { theme.label(action.title) }
+    private var captionText: String { theme.label(caption) }
+
     var body: some View {
         GeometryReader { geometry in
             Group {
@@ -109,7 +112,7 @@ struct MFDHoldKey: View {
             StatusPip(color: hold.rejection == nil ? color : theme.palette.red,
                       isOn: hold.isEngaged || hold.isRunning || hold.rejection != nil, size: 5)
             Text(phase)
-                .mfdLabelStyle(theme, size: 10)
+                .mfdLabelStyle(theme, size: 10, text: phase)
                 .foregroundStyle(phaseColor)
                 .contentTransition(.opacity)
         }
@@ -121,8 +124,8 @@ struct MFDHoldKey: View {
                 // GeometryReader can report a near-zero height in early layout passes; never go negative.
                 .frame(width: max(0, min(height - 28, 64)))
             VStack(alignment: .leading, spacing: 6) {
-                Text(theme.label(action.title))
-                    .mfdLabelStyle(theme, size: 15)
+                Text(title)
+                    .mfdLabelStyle(theme, size: 15, text: title)
                     .foregroundStyle(theme.palette.text)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -131,8 +134,8 @@ struct MFDHoldKey: View {
             Spacer(minLength: 8)
             VStack(alignment: .trailing, spacing: 6) {
                 KeycapLabel(chord: action.defaultChord)
-                Text(theme.label(caption))
-                    .mfdLabelStyle(theme, size: 9)
+                Text(captionText)
+                    .mfdLabelStyle(theme, size: 9, text: captionText)
                     .foregroundStyle(theme.palette.dim)
                     .lineLimit(1)
             }
@@ -143,8 +146,8 @@ struct MFDHoldKey: View {
     private func fullLayout(size: CGSize) -> some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                Text(theme.label(action.title))
-                    .mfdLabelStyle(theme, size: 18, display: true)
+                Text(title)
+                    .mfdLabelStyle(theme, size: 18, display: true, text: title)
                     .foregroundStyle(theme.palette.text)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
@@ -158,8 +161,8 @@ struct MFDHoldKey: View {
             HStack {
                 phaseLine
                 Spacer(minLength: 8)
-                Text(theme.label(caption))
-                    .mfdLabelStyle(theme, size: 9)
+                Text(captionText)
+                    .mfdLabelStyle(theme, size: 9, text: captionText)
                     .foregroundStyle(theme.palette.dim)
                     .lineLimit(1)
             }

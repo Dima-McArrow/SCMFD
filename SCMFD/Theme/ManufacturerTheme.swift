@@ -1,5 +1,6 @@
 import CoreText
 import SwiftUI
+import Synchronization
 
 // MARK: - Manufacturer
 
@@ -269,7 +270,75 @@ nonisolated struct ThemeFont: Sendable {
         if isAvailable {
             return .custom(family, size: size, relativeTo: style).weight(weight)
         }
-        return .system(size: size, weight: weight, design: fallbackDesign).width(fallbackWidth)
+        return systemFont(size: size, weight: weight)
+    }
+
+    /// The font for `text`: the theme family when it has every letter, otherwise `fallbackFamily` for the whole
+    /// string, so a word never mixes two fonts. Latin text gets exactly `font(size:weight:relativeTo:)`.
+    func font(for text: String, size: CGFloat, weight: Font.Weight = .regular,
+              relativeTo style: Font.TextStyle = .body) -> Font {
+        guard let family = resolvedFamily(for: text) else { return systemFont(size: size, weight: weight) }
+        return .custom(family, size: size, relativeTo: style).weight(weight)
+    }
+
+    private func systemFont(size: CGFloat, weight: Font.Weight) -> Font {
+        .system(size: size, weight: weight, design: fallbackDesign).width(fallbackWidth)
+    }
+
+    // MARK: Letter coverage
+
+    /// Has Cyrillic, unlike most bundled families; it draws a whole string the theme family cannot.
+    static let fallbackFamily = "Exo 2"
+
+    /// The family that draws `text`; nil means the system font.
+    func resolvedFamily(for text: String) -> String? {
+        guard isAvailable else { return nil }
+        if covers(text) { return family }
+        guard Self.installedFamilies.contains(Self.fallbackFamily),
+              Self.family(Self.fallbackFamily, covers: text) else { return nil }
+        return Self.fallbackFamily
+    }
+
+    func covers(_ text: String) -> Bool {
+        Self.family(family, covers: text)
+    }
+
+    /// Only letters count. Spaces, digits, punctuation and symbols still fall back glyph by glyph as before:
+    /// a missing arrow is not the mixed-word problem, and Exo 2 lacks some of them too.
+    static func family(_ family: String, covers text: String) -> Bool {
+        let letters = text.unicodeScalars.filter(\.properties.isAlphabetic)
+        guard !letters.isEmpty else { return true }
+        return coverage.withLock { cache in
+            var known = cache[family, default: [:]]
+            let unknown = letters.filter { known[$0] == nil }
+            if !unknown.isEmpty {
+                // CoreText is asked once per family and letter; every later string is a dictionary lookup.
+                let font = ctFont(family: family)
+                for letter in unknown {
+                    known[letter] = font.map { hasGlyph(letter, in: $0) } ?? false
+                }
+                cache[family] = known
+            }
+            return letters.allSatisfy { known[$0] == true }
+        }
+    }
+
+    /// Family → letter → has a glyph. A lock, not an actor: views ask synchronously while they build.
+    private static let coverage = Mutex<[String: [Unicode.Scalar: Bool]]>([:])
+
+    /// By family attribute: `CTFontCreateWithName` wants a PostScript or full name and silently returns
+    /// another font for "Chakra Petch", whose Cyrillic would then answer for the wrong family.
+    private static func ctFont(family: String) -> CTFont? {
+        _ = FontRegistry.registeredFontCount
+        let attributes = [kCTFontFamilyNameAttribute as String: family] as CFDictionary
+        let font = CTFontCreateWithFontDescriptor(CTFontDescriptorCreateWithAttributes(attributes), 12, nil)
+        return CTFontCopyFamilyName(font) as String == family ? font : nil
+    }
+
+    private static func hasGlyph(_ letter: Unicode.Scalar, in font: CTFont) -> Bool {
+        let units = Array(String(letter).utf16)
+        var glyphs = [CGGlyph](repeating: 0, count: units.count)
+        return CTFontGetGlyphsForCharacters(font, units, &glyphs, units.count)
     }
 }
 

@@ -85,13 +85,14 @@ private struct KeyGeometrySample: View {
         let key = theme.key
         VStack(alignment: .leading, spacing: 8) {
             Text(verbatim: theme.shortName)
-                .font(theme.typography.body.font(size: 12, weight: theme.typography.labelWeight))
+                .font(theme.typography.body.font(for: theme.shortName, size: 12, weight: theme.typography.labelWeight))
                 .tracking(theme.labelTracking(for: 12))
                 .foregroundStyle(theme.palette.dim)
 
             ZStack {
-                Text(theme.label("Landing gear"))
-                    .font(theme.typography.display.font(size: 18, weight: .semibold))
+                let sampleTitle = theme.label("Landing gear")
+                Text(sampleTitle)
+                    .font(theme.typography.display.font(for: sampleTitle, size: 18, weight: .semibold))
                     .tracking(theme.labelTracking(for: 18))
                     .foregroundStyle(theme.palette.text)
             }
