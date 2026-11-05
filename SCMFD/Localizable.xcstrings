@@ -515,22 +515,100 @@
       }
     },
     "Combat: forward" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : en avant"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: вперёд"
+          }
+        }
+      }
     },
     "Combat: left" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : à gauche"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: влево"
+          }
+        }
+      }
     },
     "Combat: no" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : non"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: нет"
+          }
+        }
+      }
     },
     "Combat: right" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : à droite"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: вправо"
+          }
+        }
+      }
     },
     "Combat: stop" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : halte"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: стой"
+          }
+        }
+      }
     },
     "Combat: yes" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Combat : oui"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Бой: да"
+          }
+        }
+      }
     },
     "Compare with the fingerprint in the Pair window on the PC:" : {
       "localizations" : {
