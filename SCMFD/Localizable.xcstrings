@@ -497,6 +497,24 @@
         }
       }
     },
+    "Combat: forward" : {
+
+    },
+    "Combat: left" : {
+
+    },
+    "Combat: no" : {
+
+    },
+    "Combat: right" : {
+
+    },
+    "Combat: stop" : {
+
+    },
+    "Combat: yes" : {
+
+    },
     "Compare with the fingerprint in the Pair window on the PC:" : {
       "localizations" : {
         "fr" : {
