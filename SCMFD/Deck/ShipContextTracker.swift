@@ -23,8 +23,8 @@ nonisolated struct ThemeChange: Equatable, Sendable {
 }
 
 nonisolated extension QuantumTarget {
-    /// The UI prefers `displayName` (41.8). Today the server sends only the technical `internalName`; it is
-    /// shown as is, without guessing a prettier name.
+    /// The UI prefers `displayName` (41.8). Today the server sends only the technical `internalName`; the FE
+    /// lookup makes it readable when it knows the name (FIX-08), otherwise it is shown as is.
     init(_ status: QuantumTargetStatus) {
         switch status.mode {
         // A mode this build does not know: no target is invented from the names.
@@ -33,7 +33,8 @@ nonisolated extension QuantumTarget {
         case .freeMode:
             self = .freeMode
         case .destination:
-            if let name = status.displayName ?? status.internalName {
+            let internalName = status.internalName.map { QuantumTargetName.display(for: $0) ?? $0 }
+            if let name = status.displayName ?? internalName {
                 self = .destination(name)
             } else {
                 self = .unknown

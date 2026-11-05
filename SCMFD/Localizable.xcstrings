@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ · orbit station" : {
+      "comment" : "Quantum target: an unconfirmed station orbiting a planet, e.g. Pyro III",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "%@ · station orbitale"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "%@ · орбитальная станция"
+          }
+        }
+      }
+    },
     "%@ aUEC" : {
       "localizations" : {
         "fr" : {
@@ -1728,6 +1745,23 @@
         }
       }
     },
+    "Mission beacon" : {
+      "comment" : "Quantum target: a mission quantum beacon",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Balise de mission"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Маяк миссии"
+          }
+        }
+      }
+    },
     "Missions" : {
       "localizations" : {
         "fr" : {
@@ -1756,6 +1790,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сессия наблюдения"
+          }
+        }
+      }
+    },
+    "Nav marker" : {
+      "comment" : "Quantum target: a dynamic navigation marker",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Marqueur de navigation"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Навигационный маркер"
           }
         }
       }
@@ -2286,6 +2337,23 @@
         }
       }
     },
+    "Parked vehicle" : {
+      "comment" : "Quantum target: the player's unattended vehicle",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Véhicule garé"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Припаркованный транспорт"
+          }
+        }
+      }
+    },
     "Party" : {
       "localizations" : {
         "en" : {
@@ -2799,6 +2867,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ответ получен"
+          }
+        }
+      }
+    },
+    "Rest stop" : {
+      "comment" : "Quantum target: an unnamed rest stop",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Aire de repos"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "Станция отдыха"
           }
         }
       }

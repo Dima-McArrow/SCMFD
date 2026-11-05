@@ -286,9 +286,10 @@ struct ShipContextTrackerTests {
         #expect(QuantumTarget(target(.unknown, internal: nil, display: nil)) == .unknown)
     }
 
-    @Test func destinationWithOnlyInternalNameShowsItAsIs() {
-        #expect(QuantumTarget(target(.destination, internal: "OOC_Stanton_1_Hurston", display: nil))
-                == .destination("OOC_Stanton_1_Hurston"))
+    /// A name the FIX-08 lookup does not know is shown as is.
+    @Test func destinationWithOnlyAnUnknownInternalNameShowsItAsIs() {
+        #expect(QuantumTarget(target(.destination, internal: "social_001_keeger_segment_rckcrk_095", display: nil))
+                == .destination("social_001_keeger_segment_rckcrk_095"))
     }
 
     @Test func destinationPrefersDisplayName() {
@@ -333,7 +334,7 @@ struct ShipContextTrackerTests {
         let hurston = target(.destination, internal: "OOC_Stanton_1_Hurston", display: nil)
         _ = tracker.receive(snapshot(revision: 0, reason: .startup, ship: nil, qtTarget: hurston, hangar: .pending))
         let update = tracker.enableManually()
-        #expect(update?.quantumTarget == .destination("OOC_Stanton_1_Hurston"))
+        #expect(update?.quantumTarget == .destination("Hurston"))
         #expect(update?.hangarRequest == .pending)
     }
 
@@ -374,7 +375,7 @@ struct ShipContextTrackerTests {
         let selection = try stateDelta(seq: 6, qtTarget: targetJSON(Self.hurston))
         let update = tracker.receive(before.merged(with: selection))
         #expect(update == DeckUpdate(enabled: false, shipName: nil, resetKeys: false,
-                                     quantumTarget: .destination(Self.hurston), hangarRequest: .idle))
+                                     quantumTarget: .destination("Hurston"), hangarRequest: .idle))
     }
 
     @Test func newerSelectionReplacesTheOlder() throws {
@@ -384,7 +385,7 @@ struct ShipContextTrackerTests {
         state = state.merged(with: try stateDelta(seq: 6, qtTarget: targetJSON(Self.hurston)))
         _ = tracker.receive(state)
         state = state.merged(with: try stateDelta(seq: 7, qtTarget: targetJSON(Self.arcCorp)))
-        #expect(tracker.receive(state)?.quantumTarget == .destination(Self.arcCorp))
+        #expect(tracker.receive(state)?.quantumTarget == .destination("ArcCorp"))
     }
 
     /// The FE adds no reset of its own: a join without a `qtTarget` key keeps the selection made before it.
@@ -397,7 +398,7 @@ struct ShipContextTrackerTests {
                                                                    reason: "channelJoined"))
         let update = tracker.receive(before.merged(with: join))
         #expect(update?.enabled == true)
-        #expect(update?.quantumTarget == .destination(Self.hurston))
+        #expect(update?.quantumTarget == .destination("Hurston"))
     }
 
     /// The server clears QT with the leave; the FE mirrors it.
@@ -420,7 +421,7 @@ struct ShipContextTrackerTests {
                              qtTarget: target(.destination, internal: Self.hurston, display: nil))
         _ = tracker.receive(state)
         tracker.connectionLost()
-        #expect(tracker.receive(state)?.quantumTarget == .destination(Self.hurston))
+        #expect(tracker.receive(state)?.quantumTarget == .destination("Hurston"))
     }
 
     // MARK: - Transport lost
