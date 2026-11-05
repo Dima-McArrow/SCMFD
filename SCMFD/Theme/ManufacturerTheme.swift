@@ -266,15 +266,9 @@ nonisolated struct ThemeFont: Sendable {
         return Set(families)
     }()
 
-    func font(size: CGFloat, weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
-        if isAvailable {
-            return .custom(family, size: size, relativeTo: style).weight(weight)
-        }
-        return systemFont(size: size, weight: weight)
-    }
-
-    /// The font for `text`: the theme family when it has every letter, otherwise `fallbackFamily` for the whole
-    /// string, so a word never mixes two fonts. Latin text gets exactly `font(size:weight:relativeTo:)`.
+    /// The only way to get a theme font, so no text skips the letter check: the theme family when it has every
+    /// letter, otherwise `fallbackFamily` for the whole string, so a word never mixes two fonts. Latin text keeps
+    /// the theme family.
     func font(for text: String, size: CGFloat, weight: Font.Weight = .regular,
               relativeTo style: Font.TextStyle = .body) -> Font {
         guard let family = resolvedFamily(for: text) else { return systemFont(size: size, weight: weight) }

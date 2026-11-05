@@ -264,7 +264,7 @@ nonisolated private struct SplitMix64: RandomNumberGenerator {
             ZStack(alignment: .topLeading) {
                 ThemeBackdropView()
                 Text(manufacturer.shortName)
-                    .font(theme.typography.display.font(size: 22, weight: .semibold))
+                    .font(theme.typography.display.font(for: manufacturer.shortName, size: 22, weight: .semibold))
                     .tracking(theme.labelTracking(for: 22))
                     .foregroundStyle(theme.palette.text)
                     .padding(20)
